@@ -1,0 +1,20 @@
+{
+  "name": "01_SystemJS",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "lite-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "systemjs": "^0.19.47",
+    "typescript": "^3.9.5"
+  },
+  "devDependencies": {
+    "lite-server": "^2.5.4"
+  }
+}
