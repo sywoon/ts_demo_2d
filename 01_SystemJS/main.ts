@@ -8,3 +8,7 @@ if ( canvas === null ) {
 
 let canvas2d: Canvas2D = new Canvas2D( canvas );
 canvas2d.drawText("Hello World");
+
+//import { Canvas3D } from "./Canvas3D"
+let canvas3d: Canvas3D = new Canvas3D( canvas );
+canvas3d.drawText("Hello World");
