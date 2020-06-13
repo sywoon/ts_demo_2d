@@ -1,0 +1,19 @@
+{
+  "name": "debug_ts_gulp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "lite-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.2.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "lite-server": "^2.5.4",
+    "typescript": "^3.8.3"
+  }
+}

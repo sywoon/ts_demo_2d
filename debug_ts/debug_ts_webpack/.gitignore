@@ -1,0 +1,7 @@
+#files
+/*.js
+
+#folders
+node_modules
+dist
+

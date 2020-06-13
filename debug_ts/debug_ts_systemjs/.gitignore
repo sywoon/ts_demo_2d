@@ -1,0 +1,8 @@
+#files
+canvas/*.js
+/*.js
+
+#folders
+node_modules
+
+

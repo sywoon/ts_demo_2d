@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello</title>
+    <meta http-equiv = "X-UA-Compatible" content = "IE=edge,chrome=1" >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" type = "text/css" media = "screen" href = "main.css" />
+    <link rel="shortcut icon" href="#" />
+</head>
+
+<body>
+    <canvas id = "canvas" width = "800" height = "600"></canvas>
+    <!-- <script src="main.js" type = "module"></script> -->
+    <script src="node_modules/systemjs/dist/system.js"></script>
+    <script src="node_modules/typescript/lib/typescript.js"></script>
+    <script>
+        System.config({
+            transpiler: "typescript",
+            package: {
+                "./": {
+                    defaultExtension: "ts"  //编译当前目录./下所有ts文件  必须设定否则报错
+                }
+            }
+        });
+        System
+            .import("./main.ts")
+            .then(null, console.error.bind(console));
+    </script>
+    
+    
+</body>
+</html>

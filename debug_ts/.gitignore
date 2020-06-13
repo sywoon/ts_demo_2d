@@ -1,0 +1,14 @@
+#files
+debug_ts_systemjs/*.js
+debug_ts_systemjs/canvas/*.js
+
+debug_ts_tsc/*.js
+debug_ts_tsc/*.js.map
+
+debug_ts_webpack/*.js
+
+
+#folders
+node_modules
+dist
+
