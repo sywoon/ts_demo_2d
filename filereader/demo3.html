@@ -1,0 +1,39 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+<title>图片上传预览</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+<!--script src="http://www.codefans.net/ajaxjs/jquery-1.6.2.min.js"></script--> 
+</head> 
+<body> 
+<form name="form0" id="form0" > 
+<input type="file" name="file0" id="file0" multiple="multiple" onchange="fileChang(this.files)" />
+<br>
+<img src="" width="100" height="100" id="img0" > 
+</form> 
+<script> 
+var efile = document.getElementById("file");
+function fileChang(files) { 
+    var file = files[0]; 
+　　var objUrl = getObjectURL(file) ; 
+　　console.log("objUrl = "+objUrl) ; 
+　　if (objUrl) { 
+　　　　$("#img0").attr("src", objUrl) ; 
+　　} 
+}; 
+
+//取得该文件的url 
+function getObjectURL(file) { 
+　　var url = null ; 
+　　if (window.createObjectURL!=undefined) { 
+　　　　url = window.createObjectURL(file) ; 
+　　} else if (window.URL!=undefined) { 
+　　　　url = window.URL.createObjectURL(file) ; 
+　　} else if (window.webkitURL!=undefined) { 
+　　　　url = window.webkitURL.createObjectURL(file) ; 
+　　} 
+　　return url ; 
+} 
+</script> 
+</body> 
+</html>
