@@ -1,28 +1,28 @@
 Canvas3D = /** @class */ (function () {
-    // public·ÃÎÊ¼¶±ğµÄ¹¹Ôìº¯Êı
+    // publicè®¿é—®çº§åˆ«çš„æ„é€ å‡½æ•°
     function Canvas3D(canvas) {
         this.context = canvas.getContext("2d");
     }
-    // public·ÃÎÊ¼¶±ğµÄ³ÉÔ±º¯Êı
+    // publicè®¿é—®çº§åˆ«çš„æˆå‘˜å‡½æ•°
     Canvas3D.prototype.drawText = function (text) {
         if (this.context === null)
             return;
         this.context.save();
-        //ÈÃÒª»æÖÆµÄÎÄ±¾¾ÓÖĞ¶ÔÆë
+        //è®©è¦ç»˜åˆ¶çš„æ–‡æœ¬å±…ä¸­å¯¹é½
         this.context.textBaseline = "middle";
         this.context.textAlign = "center";
-        //¼ÆËãcanvasµÄÖĞĞÄ×ø±ê
+        //è®¡ç®—canvasçš„ä¸­å¿ƒåæ ‡
         var centerX = this.context.canvas.width * 0.5;
         var centerY = this.context.canvas.height * 0.6;
-        //ºìÉ«Ìî³ä
+        //çº¢è‰²å¡«å……
         // this . context . fillStyle = " red " ;
-        //µ÷ÓÃÎÄ×ÖÌî³äÃüÁî 
+        //è°ƒç”¨æ–‡å­—å¡«å……å‘½ä»¤ 
         this.context.fillText(text, centerX, centerY);
-        //ÂÌÉ«Ãè±ß
+        //ç»¿è‰²æè¾¹
         this.context.strokeStyle = "red";
-        //µ÷ÓÃÎÄ×ÖÃè±ßÃüÁî 
+        //è°ƒç”¨æ–‡å­—æè¾¹å‘½ä»¤ 
         this.context.strokeText(text, centerX, centerY);
-        //½«ÉÏÃæcontextÖĞµÄtextAlign , textBaseLine , fillStyle , strokeStyle×´Ì¬»Ö¸´µ½³õÊ¼»¯×´Ì¬
+        //å°†ä¸Šé¢contextä¸­çš„textAlign , textBaseLine , fillStyle , strokeStyleçŠ¶æ€æ¢å¤åˆ°åˆå§‹åŒ–çŠ¶æ€
         this.context.restore();
     };
     return Canvas3D;
