@@ -819,6 +819,24 @@ laya中估计是自己做了兼容优化 可以只设置部分
 
 
 ## 第五章 Canvas2D坐标系变换
+context2d局部坐标系变换相关函数：  
+```
+    改变当前canvas坐标系到新的位置 即原(0,0)点 变为现在的(x,y)点
+    比较适合画局部对象 用save和restore包含 防止影响其他的绘制
+    translate(x:number, y)   
+    rotate(angle)  顺时针转 单位弧度 以当前原点为轴心  会受ranslate影响 
+    scale(x,y)
+    transform(m11, m12, m21, m22, dx, dy) 矩阵相乘
+```
+
+* 怎样实现绕矩形内任意点 绕原点旋转 而不是默认的左上角  
+通过默认在(0,0)点绘制和旋转 +　坐标变换来实现偏移　　
+比如：画任意矩形fillText(title, 0, 0, w, h) + rotate(40)
+    若想轴心点改为中心 而非左上角  
+    fillText(title, -w/2,-h/2,w,h) + rotate(40)
+  在前面插入transform(x, y)  修改真实绘制的位置
+
+
 
 
 ## 第六章 向量数学及基本形体的点选
