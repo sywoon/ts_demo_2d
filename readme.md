@@ -1,5 +1,8 @@
 
 # 《TypeScript图形渲染实战-2D架构设计与实现》
+运行demo方式：  
+移动node_modules到demo文件夹(比较大 留一份即可)  
+npm run dev  
 
 
 ## 第一章 构建TypeScript开发、编译和调试环境
@@ -520,6 +523,299 @@ new Timer(time, cbk, once, data)
 
 
 ## 第四章　使用Canvas2D绘图
+可绘制种类：几何图形 文字 图像 视频 阴影  
+支持裁剪 碰撞检测 空间变换  
+注意：不是直接在canvas表面上绘图 而是基于内部的渲染上下文CanvasRenderingContext2D  
+
+清屏：  
+```
+    this.context2d.clearRect(0, 0, 0this.context2d.canvas.width, .height)
+```
+绘制矩形：坐标原点在左上   
+知识点：  
+填充色 描边色 线的宽度 绘制path需要begin和close之间  
+可以通过save和restore来保持和恢复上下文状态    
+```
+    drawRect(x, y, w, h) {
+        let ctx = this.context2d;
+        ctx.save();
+        ctx.fillStyle = "grey";
+        ctx.strokeStyle = "blue";
+        ctx.lineWidth = 20;
+        
+        ctx.beginPath();
+        ctx.moveTo(x, y);   //左上
+        ctx.lineTo(x+w, y);
+        ctx.lineTo(x+w, y+h);   //右下
+        ctx.lineTo(x, y+h);
+        ctx.closePath();
+        ctx.fill();   //填充内部
+        ctx.strok();  //描边
+        ctx.restore();
+    }
+```
+
+* 渲染状态堆栈的实现原理  
+```
+    首先由状态的记录对象 当前上下文相关的所有状态
+    class RenderState {
+        lineWidth:number = 1;
+        strokeStyle: string = "red";
+        fillStyle: string = "green";
+        clone(): RenderState {
+            let s = new RenderState();
+            s.lineWidth = this.lineWidth;
+            ...
+        }
+        toString() { return JSON.stringify(this, null, ' ')};
+    }
+    
+    class RenderStateStack()  {
+        stack:RenderState[] = [new RenderState()];  //第一次为初始状态 即:全局状态
+        get current(): RenderState {
+            return this.stack[this.stack.length-1];
+        }
+        save() {
+            this.stack.push(this.current.clone());
+        }
+        restore() {
+            this.stack.pop();
+        }
+        get set lineWidth() { this.current.lineWidth = v;}
+        get set strokeStyle()
+        get set fillStyle()
+        toString() { return this.current.toString(); }
+    }
+```
+注意：  
+a、默认必须先存放一个 表示全局状态  
+b、save和restore可以嵌套 但必须成对 否则破坏栈  
+
+
+### 线段的属性和描边stroke
+canvas的矢量图形 基于路径对象 由轮廓边和内部填充区域组成  
+对应stroke和fill(允许非封闭区域) 
+
+* 描边属性：  
+```
+  lineWidth  1
+  lineJoin  如何绘制两个线段的连接处
+    miter 绘制四边形 默认
+    round 绘制圆弧(扇形)
+    bevel 绘制三角形
+  lineCap   影响线段的端点形状 需关闭封闭线段 注释ctx.closePath()
+    butt默认 两端无效果
+    round 额外多出 半圆 半径为线宽的一半
+    square 额外多出 矩形 宽度为线宽的一半
+  miterLimit  10
+    只有lineJoin为miter时才有用 什么功能？
+```
+* 绘制虚线  
+setLineDash([v1,v2]) 实线和虚线的长度
+lineDashOffset 虚线 起始偏移量 默认0  通过定时器 可以实现旋转运动效果  
+```
+    ctx.lineWidth = 20
+    ctx.setLineDash([30, 15])
+```
+
+### 使用颜色描边和填充
+通过style 有3种类型：  
+```
+    strokeStyle : string | CanvasGradient | CanvasPattern;
+    fillStyle : string | CanvasGradient | CanvasPattern;
+```
+1. string css颜色字符串格式
+```
+  方式1：
+    html和css规范定义了147种颜色 其中17种常用标准色  
+    black blue gray green red white yellow
+    aqua 浅绿色  fuchsia 紫红色 lime 绿黄色  
+    maroon 褐红色  navy 海军蓝  olive 橄榄色  
+    teal 蓝绿色 silver 银灰色 purple 紫色 orange 橙色
+    例如：
+    strokStyle = "silver"
+  方式2：
+    rgb rgba  [0,255]  [0%,100%]  alpha [0,1] 0:全透  
+    例如：
+    strokStyle = "rgb(0,0,255)"
+    rgb(0%,0%,100%) rgba(0,255,0,0.5)
+  方式3：
+    十六进制 #rrggbb 不支持半透  
+  方式4：
+    hsl hsla格式  比较少用  
+```
+2. CanvasGradient
+分为：线性渐变和反射渐变  
+```
+  线性渐变: 创建时 传入左上有右下角位置
+    从左到右的渐变
+    let linear:CanvasGradient = ctx.createLinearGradient(x, y, x+w, y);
+    从右到左 (x+w,y,x,y)
+    从上到下 (x,y,x,y+h)  从下到上 (x,y+h,x,y)
+    从左上到右下 (x,y,x+w,y+h)  从右下到左上 (x+w,y+h,x,y)
+    设置不同位置的颜色 可多个：
+    linear.addColorStop(0.0, 'grey')  起始色
+    linear.addColorStop(0.35, 'rgba(255,200,100,1)')
+    linear.addColorStop(0.75, '#00ff00')
+    linear.addColorStop(1.0, 'grey')  结束色
+    
+    ctx.save()
+    ctx.fillStyle = linear;
+    ctx.beginPath();  //不用closePath ?
+    ctx.rect(x, y, w, h);
+    ctx.fill();
+    ctx.restore();
+    
+  反射渐变： 由内外圆组成   圆心可以不同？
+    let radial = ctx.createRadialGradient(centx, centy, radius * 0.3, centx, centy, radius)
+    radial.addColorStop(...) 同上
+    
+    ctx.fillStyle = radial
+    ctx.fillRect(x,y,w,h);
+```
+3. CanvasPattern 使用图像描边和填充  
+可以使用image canvas 或 video 元素来填充  
+不支持缩放 只能选择重复方式  
+```
+    let img:HTMLImageElement = document.createElement("img")
+    img.src = "./res/aa.jpg"
+    img.onload = (evt:Event): void => {
+        //参数2：填充区域大于图片大小时的处理方式： repeat repeat-x repeat-y no-repeat
+        let pattern = ctx.createPattern(img, "repeat");
+        ctx.save()
+        ctx.fillStyle = pattern
+        ctx.beginPath()
+        ctx.rect(x,y,w,h)
+        ctx.fill() 只填充 不描边
+        ctx.restore()
+    }
+```
+
+### 点和圆的绘制
+可通过画圆弧arc方法来实现  
+点：通过圆实现  
+圆：是圆弧的特殊形式  
+```
+  fillCircle(x,y,radius,fillStyle)
+    .fillStyle = 
+    ctx.beginPath()
+    中心点 起始和结束角度
+    ctx.arc(x, y, radius, 0, Math.PI*2)
+    ctx.fill()
+```
+
+### 线段的绘制
+```
+  封装后 可以实现画坐标轴
+  strockLine(x1,y1,x2,y2) {
+    ctx.beginPath()
+    ctx.moveTo(x1,y1)
+    ctx.lineTo(x2,y2)
+    ctx.stroke()  只描边 没填充
+  }
+```
+
+
+### 绘制文本
+两种方式：stroke和fill  
+相关属性：  
+```
+    font:string;   10px simhei
+    textAlign: string;  start left center right end  横向对齐
+    textBaseline: string;  alphabetic hanging top middle bottom 纵向对齐
+    strokeText(text:string, x, y, maxWidth?:number)
+    fillText(text:string, x, y, maxWidth?:number)
+    measureText(text:string): TextMetrics;  //只有.width属性
+```
+计算字符串像素大小：　　
+```
+    let w = ctx.measureText(text).width
+    可惜没height  作者用了  h = 1.5 * "w".width 一个估计值
+    可以考虑从字体大小来估计
+```
+
+
+###　font属性
+css格式字符串 一次设置多个属性  
+"italic small-caps bold 10px simhei"
+注意：必须按这个顺序设置所有属性 否则不起作用  
+laya中估计是自己做了兼容优化 可以只设置部分    
+```
+    font-style: normal italic oblique
+    font-variant: normal small-caps
+    font-weight: normal bold bolder lighter 100 200 .. 900
+    font-size: 10px 50% 100% xx-small x-small small medium large x-large xx-large
+    font-family: serif yahei 宋体 sans-serif
+```
+
+
+###　绘制图像
+```
+  原图大小 绘制到canvas的某个坐标处
+  drawImage(img:HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap,
+    destX, destY)
+    
+  支持拉伸和缩放 指定目标区域大小
+  drawImage(img, destX, destY, destW, destH)
+  支持选择原始图片的某个区域
+  drawImage(img, srcX, srcY, srcW, srcH,
+    destX, destY, destW, destH)
+```
+之前通过CanvasPattern方式 用图片画矢量图  
+支持repeat模式 这里不支持这种设置 不过可以自己计算大小来模拟实现  
+
+
+###　离屏Canvas
+动态创建一个canvas 并绘制内容后 作为drawImage的第一个参数  
+```
+  createOfflineCanvas() {
+    let canvas = document.createElement("canvas")
+    canvas.width = 200
+    canvas.height = 200
+    let context = canvas.getContext("2d")
+    context.save()
+    context.fillStyle = "black"
+    context.fillRect(10, 10, 100, 100)
+    context.restore()
+    return canvas;
+  }
+    
+```
+
+
+### 操作canvas中的图像数据
+* createImageData() 得到ImageData对象  
+* getImageData(x,y,w,h)  从context中获取一块图像数据
+* putImageData(imgData,destX,destY,x,y,w,h)  将一块图像数据放回context中
+
+
+```
+    // size*size个像素 每个像素[r,g,b,a]
+    let imgData = ctx.createImageData(size, size)
+    // 一维数组 [r,g,b,a,r,g,b,a,...]
+    let data:uint8ClampedArray = imgData.data;
+    let count = data.length / 4;  像素个数
+    for (let i = 0; i < count; i++) {
+        data[i*4 + 0] = 255
+        data[i*4 + 1] = 0
+        data[i*4 + 2] = 0
+        data[i*4 + 3] = 255
+    }
+    绘制到ctx的(col,row)这个位置 从imageData的[0, 0, size, size]这个区域获取数据
+    ctx.putImageData(imgData, col, row, 0, 0, size, size)
+```
+
+
+### 绘制阴影
+作用范围：绘制图形 图像 文字  
+属性：  
+* shadowColor: css颜色字符串   rbga(0,0,0,0)
+* shadowBlur: 指定一个数 参与高斯模糊计算   0
+* shadowOffsetX  0
+* shadowOffsetY  0
+
+
+
 
 
 ## 第五章 Canvas2D坐标系变换
