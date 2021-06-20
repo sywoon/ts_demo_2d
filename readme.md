@@ -837,6 +837,29 @@ context2d局部坐标系变换相关函数：
   在前面插入transform(x, y)  修改真实绘制的位置
 
 
+### 3大特性(translate rotate scale)
+1. 变换的是局部坐标系  
+2. 所有后续的绘制函数都是在变换后的局部坐标系上进行  
+3. 累积性  
+translate rotate scale对局部坐标系的变换都具有累积性  
+每次都是对上一次结果的叠加  
+比如：  
+translate(0, h/2,w,h)
+translate(w/2,0,w,h)
+==>
+translate(w/2,h/2,w,h)
+
+
+### 月亮的公转和自转模型
+```
+    ctx.save()
+    ctx.rotate(revolution)  //注意：这才是公转 因为先在原点旋转 再平移出去
+    ctx.translate(radius, 0)
+    ctx.rotate(rotationSelf)  //这是自转 因为坐标已经平移完成 旋转只针对局部坐标
+    this.drawRect(w/2,h/2,w,h,title)
+    ctx.restore()
+```
+
 
 
 ## 第六章 向量数学及基本形体的点选
