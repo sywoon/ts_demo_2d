@@ -80,7 +80,7 @@ npm run server   =>  http://localhost:3000/
 ##### 编译ts  
 1. 方式1：tsc编译器
 tsc main.ts  => main.js  
-a <script标签 要在<canvas之后   获得带上defer属性  
+a <script标签 要在<canvas之后   或者带上defer属性  
 b 若有多个ts文件 浏览器受限制-跨域问题 需要启动服务器来支持 npm run server  -> lite-server插件
 c 其他文件引入方式 import { Canvas2D } from "./Canvas2D.js";  需要带上.js 很不方便
 对应ts需要编译为ts6 设置tsconfig.json的module:es2015  target可以为es5 
@@ -98,6 +98,7 @@ tsc --init 得到配置文件
     
     "watch": true
 ```
+优点：只需要全局的tsc 无需安装超大文件夹node_modules  
 
 
 2. 方式2 使用SystemJS  
@@ -164,9 +165,38 @@ tsc --init 生成tsconfig.json 开启strict
 f5 同vs 可以直接在ts中断点  
 
   
+
+3. 方式3 使用webpack
+编译为bin/dist.js
+可不带扩展名 import { Canvas2D } from "./Canvas2D"
+export class Canvas2D
+
+
+4. 方式4 使用gulp cli
+
+
+5. 方式5 使用parcel
+npm init -y
+npm install parcel-bundler typescript ts-node -D
+html中直接使用ts文件
+```
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
   
-  
-  
+<body>
+  <script src="./index.ts"></script>
+```
+编译 生成运行版本
+npx parcel build index.html --out-dir dist --public-url ./
+运行web服务器 可以在浏览器中调试ts代码 编译和打包项目 日常调试用
+npx parcel index.html
+
+
+
+
 ## 第二章 使用TypeScript实现Doom3词法解析器
 [ECMAScript词法解析网站](http://esprima.org/demo/parse.html)
 模板字符串：支持多行 变量插入  
