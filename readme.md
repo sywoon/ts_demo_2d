@@ -1,8 +1,15 @@
 
 # 《TypeScript图形渲染实战-2D架构设计与实现》
 运行demo方式：  
+早期systemjs方式：
 移动node_modules到demo文件夹(比较大 留一份即可)  
 npm run dev  
+
+最新parcel采用：
+npm install parcel-bundler typescript ts-node -D  每个文件夹都需要
+or
+npm install parcel-bundler typescript ts-node -g  全局设置一次
+运行：run_proj.bat
 
 
 ## 第一章 构建TypeScript开发、编译和调试环境

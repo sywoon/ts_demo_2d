@@ -30,23 +30,7 @@
             box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
         }
     </style>
-
-    <script src="node_modules/systemjs/dist/system.js"></script>
-    <script src="node_modules/typescript/lib/typescript.js"></script>
-    <script>
-        System.config({
-            transpiler: 'typescript',
-            packages: {
-                './': {
-                    defaultExtension: 'ts'
-                }
-            }
-        });
-        System
-            .import('applicationTest.ts')
-            //.import('testTimer.ts')
-            .then(null, console.error.bind(console));
-    </script>
+    
 </head>
 
 <body id="body">
@@ -55,6 +39,7 @@
         <button id="stop">stop</button>
     </div>
     <canvas id="canvas" width="300" height="300"></canvas>
+    <script src="applicationTest.ts"></script>
 </body>
 
 </html>

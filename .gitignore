@@ -7,5 +7,6 @@
 #folders
 node_modules
 .laya/
-
+.cache
+dist
 

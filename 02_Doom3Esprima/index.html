@@ -22,26 +22,12 @@
         }
     </style>
 
-    <script src="node_modules/systemjs/dist/system.js"></script>
-    <script src="node_modules/typescript/lib/typescript.js"></script>
-    <script>
-        System.config({
-            transpiler: 'typescript',
-            packages: {
-                './': {
-                    defaultExtension: 'ts'
-                }
-            }
-        });
-        System
-           .import('main.ts')
-            .then(null, console.error.bind(console));
-    </script>
 </head>
 
 <body id="body">
     <canvas id="canvas" width="800" height="600"></canvas>
     <image src="/data/test.jpg"></image>
+    <script src="main.ts"></script>
 </body>
 
 </html>

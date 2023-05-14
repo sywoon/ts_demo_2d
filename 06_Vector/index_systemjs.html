@@ -1,0 +1,45 @@
+<html>
+
+<head>
+    <title>SystemJS</title>
+
+    <style>
+        body {
+            background: #eeeeee;
+        }
+        /*
+        css选择器：# 表示id选择器
+        */
+        #canvas {
+            background: #ffffff ; /* 背景白色 */
+
+            -webkit-box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+            -moz-box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+
+    <script src="node_modules/systemjs/dist/system.js"></script>
+    <script src="node_modules/typescript/lib/typescript.js"></script>
+    <script>
+        System.config({
+            transpiler: 'typescript',
+            packages: {
+                './': {
+                    defaultExtension: 'ts'
+                }
+            }
+        });
+        System
+            //.import('TestVec2Application.ts')
+            //.import('TankVec2Application.ts')
+            .import('MouseLineProjectionApplication.ts')
+            .then(null, console.error.bind(console));
+    </script>
+</head>
+
+<body id="body">
+    <canvas id="canvas" width="800" height="600"></canvas>
+</body>
+
+</html>
