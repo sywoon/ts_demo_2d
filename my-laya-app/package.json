@@ -1,0 +1,12 @@
+{
+  "name": "my-laya-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-packager . --platform=win32"
+  },
+  "author": "",
+  "license": "ISC"
+}
