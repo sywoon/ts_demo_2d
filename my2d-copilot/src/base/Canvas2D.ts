@@ -1,19 +1,21 @@
-import { Size } from "./Size";
+import { Size } from "../Size";
 
 export class Canvas2D {
     //声明public访问级别的成员变量
-    public context: CanvasRenderingContext2D;
-    public size: Size = new Size();
+    context: CanvasRenderingContext2D;
+    size: Size = new Size();
+    canvas: HTMLCanvasElement;
 
     // public访问级别的构造函数
     public constructor(canvas: HTMLCanvasElement) {
+        this.canvas = canvas;
         this.context = canvas.getContext("2d");
         this.size.width = canvas.width;
         this.size.height = canvas.height;
 
         this.context.imageSmoothingEnabled = true; //启用平滑处理，以减少锯齿效果 实践没区别
 
-        this.setStatus({
+        this.setStyle({
             fillStyle : "white",
             strokeStyle : "black",
             font : "24px sans-serif",
@@ -23,11 +25,11 @@ export class Canvas2D {
         })
     }
 
-    public setStatus(status: any): void {
+    public setStyle(status: any): void {
         if (this.context === null) return;
 
         let ctx = this.context;
-        status["fillStyle"] ? ctx.fillStyle = status["fillStyle"] : null;  //red rgb(200,0,0)
+        status["fillStyle"] ? ctx.fillStyle = status["fillStyle"] : null;  //red rgb(200,0,0) 画文字 矩形
         status["font"] ? ctx.font = status["font"] : null;  //"20px sans-serif"
         status["textBaseline"] ? ctx.textBaseline = status["textBaseline"] : null;  //top middle bottom
         status["textAlign"] ? ctx.textAlign = status["textAlign"] : null;  //left center right
