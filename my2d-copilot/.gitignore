@@ -1,0 +1,12 @@
+
+#files
+01/*.js
+*.rar
+
+
+#folders
+node_modules
+.laya/
+.cache
+dist
+
