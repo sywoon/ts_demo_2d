@@ -1,32 +1,50 @@
 import { UINode } from "./UINode";
+import { Color } from "../../math/Color";
+import { UIStyle } from "./UIStyle";
 
-export class UILable extends UINode {
+
+export class UILabel extends UINode {
     text: string = "";
-    style: any = {
-        fillStyle: "red",
-        strokeStyle: "green",
-        font: "20px sans-serif",
-        textBaseline: "middle",
-        textAlign: "center",
-    };
+    style: UIStyle = new UIStyle();
+    debug: boolean = true;
 
     public constructor() {
         super();
     }
 
-    setStyle(status: any): void {
-        let style = this.style;
-        status["fillStyle"] ? style.fillStyle = status["fillStyle"] : null;  //red rgb(200,0,0) 画文字 矩形
-        status["font"] ? style.font = status["font"] : null;  //"20px sans-serif"
-        status["textBaseline"] ? style.textBaseline = status["textBaseline"] : null;  //top middle bottom
-        status["textAlign"] ? style.textAlign = status["textAlign"] : null;  //left center right
+    public set font(font:string) {
+        this.style.font = font;
+    }
+
+    public set fontSize(size:number) {
+        this.style.fontSize = size;
+    }
+
+    public set fontColor(color:Color) {
+        this.style.fontColor = color;
+    }
+
+    public set strokeColor(color:Color) {
+        this.style.strokeColor = color;
+    }
+
+    public set hAlign(align:string) {
+        this.style.hAlign = align;
+    }
+
+    public set vAlign(align:string) {
+        this.style.vAlign = align;
     }
 
     public onRender(x:number, y:number): void {
-        this.graphic.saveStyle();
+        // this.graphic.saveStyle();
         this.graphic.setStyle(this.style);
         this.graphic.drawText(this.text, this.x+x, this.y+y);
-        this.graphic.restoreStyle();
+        // this.graphic.restoreStyle();
+
+        if (this.debug) {
+            this.graphic.strokeRect(this.x+x, this.y+y, this.width, this.height, Color.Green);
+        }
     }
 }
 

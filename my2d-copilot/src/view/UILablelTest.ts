@@ -1,25 +1,41 @@
 import { ViewBase } from "../base/ui/ViewBase";
-import { UILable } from "../base/ui/ctrl/UILabel";
+import { UILabel } from "../base/ui/ctrl/UILabel";
+import { Color } from "../base/math/Color";
 
 export class UILabelTest extends ViewBase {
 
     onCreate() {
         super.onCreate();
 
-        let lable = new UILable();
+        {
+            let lable;
+            let text = "你好，世界！ Hello World!";
+            lable = this._createLable(text, this.width * 0.5, this.height * 0.5);
+
+            lable = this._createLable(text, 0, 0);
+            lable.hAlign = "left";
+            lable.vAlign = "top";
+
+            lable = this._createLable(text, this.width, this.height);
+            lable.hAlign = "right";
+            lable.vAlign = "bottom";
+        }
+        
+    }
+
+    private _createLable(text:string, x:number, y:number) {
+        let lable = new UILabel();
         this.addChild(lable);
 
-        lable.style = {
-            fillStyle: "red",
-            strokeStyle: "green",
-            font: "20px sans-serif",
-            textBaseline: "middle",
-            textAlign: "center",
-        };
+        lable.fontColor = Color.Red;
+        lable.strokeColor = Color.Black;
+        lable.fontSize = 22;
+        lable.hAlign = "center";
+        lable.vAlign = "middle";
 
-        let size = this.gameApp.getCanvasSize();
-        lable.x = size.width * 0.5;
-        lable.y = size.height * 0.5;
-        lable.text = "你好，世界！ Hello World!";
+        lable.x = x;
+        lable.y = y;
+        lable.text = text;
+        return lable;
     }
 }

@@ -13,6 +13,12 @@ export class ViewBase extends UINode {
         super();
     }
 
+    public onCreate(): void {
+        let size = this.gameApp.getCanvasSize();
+        this.width = size.width;
+        this.height = size.height;
+    }
+
     //控件层没有update功能 只有render
     public onUpdate(): void {}
 }
