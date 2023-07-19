@@ -11,6 +11,19 @@ export class Color {
         return new Color(r, g, b, a);
     }
 
+    // 0xff0000 0xff0000ff
+    static FromHex(hex:number): Color {
+        let color = new Color();
+        color.fromHex(hex);
+        return color;
+    }
+
+    public static FromString(str: string): Color {
+        let color = new Color();
+        color.fromString(str);
+        return color;
+    }
+
     r: number = 0;
     g: number = 0;
     b: number = 0;
@@ -24,25 +37,56 @@ export class Color {
         this.a = a;
     }
 
-    public static fromHex(hex: number, alpha: number = 1): Color {
+    // #ff0000 or #ff0000ff
+    public fromHex(hex: number): Color {
+        if (hex < 0) {
+            console.error("Color.fromHex error: hex < 0");
+            return;
+        }
+
+        if (hex <= 0xFFFFFF) {
+            return this.fromHex2(hex, 1);
+        }
+
+        let r = (hex >> 24) & 0xFF;
+        let g = (hex >> 16) & 0xFF;
+        let b = (hex >> 8) & 0xFF;
+        let a = hex & 0xFF;
+        
+        this.r = r / 255;
+        this.g = g / 255;
+        this.b = b / 255;
+        this.a = a / 255;
+        return this;
+    }
+
+    //#ff0000
+    public fromHex2(hex: number, alpha: number = 1): Color {
         let r = (hex >> 16) & 0xFF;
         let g = (hex >> 8) & 0xFF;
         let b = hex & 0xFF;
-        return new Color(r / 255, g / 255, b / 255, alpha);
+
+        this.r = r / 255;
+        this.g = g / 255;
+        this.b = b / 255;
+        this.a = alpha;
+        return this;
     }
 
-    public static fromRGB(r: number, g: number, b: number, a: number = 1): Color {
-        return new Color(r / 255, g / 255, b / 255, a);
+    public fromRGB(r: number, g: number, b: number, a: number = 1): Color {
+        this.r = r / 255;
+        this.g = g / 255;
+        this.g = b / 255;
+        this.a = a;
+        return this;
     }
 
-    public static fromRGBA(r: number, g: number, b: number, a: number): Color {
-        return new Color(r / 255, g / 255, b / 255, a / 255);
-    }
-
-    public static fromString(str: string): Color {
-        let color = new Color();
-        color.fromString(str);
-        return color;
+    public fromRGBA(r: number, g: number, b: number, a: number): Color {
+        this.r = r / 255;
+        this.g = g / 255;
+        this.g = b / 255;
+        this.a = a / 255;
+        return this;
     }
 
     //#ffffff or #ffffffff

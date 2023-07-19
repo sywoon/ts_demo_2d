@@ -1,4 +1,5 @@
 import { GameEvent, MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
+import { Color } from "./math/Color";
 import { Size } from "./math/Size";
 import { Vec2 } from "./math/Vec2";
 
@@ -93,14 +94,124 @@ export class Canvas2D {
     }
 
     // public访问级别的成员函数
-    public drawText(text: string, x: number, y: number): void {
+    public drawText(text: string, x: number, y: number, color:Color = null): void {
         if (this.context === null) return;
         let ctx = this.context;
+        if (color) {
+            let cssColor = color.toCssColor();
+            ctx.fillStyle = cssColor;
+        }
 
         //调用文字填充命令
         ctx.fillText(text, x, y);
         //调用文字描边命令
         ctx.strokeText(text, x, y);
+    }
+
+    public fillRect(x:number, y:number, width:number, height:number, color:Color = null) {
+        if (this.context === null) return;
+        let ctx = this.context;
+        if (color) {
+            let cssColor = color.toCssColor();
+            ctx.fillStyle = cssColor;
+        }
+        ctx.fillRect(x, y, width, height);
+    }
+
+    public strokeRect(x:number, y:number, width:number, height:number, color:Color = null) {
+        if (this.context === null) return;
+        let ctx = this.context;
+        if (color) {
+            let cssColor = color.toCssColor();
+            ctx.strokeStyle = cssColor;
+        }
+        ctx.strokeRect(x, y, width, height);
+    }
+
+    clearRect(x:number, y:number, width:number, height:number) {
+        if (this.context === null) return;
+        this.context.clearRect(x, y, width, height);
+    }
+
+    private _drawByMode(mode:string) {
+        let ctx = this.context;
+        if (mode === "fill") {
+            ctx.fill();
+        } else if (mode === "stroke") {
+            ctx.stroke();
+        } else if (mode === "all") {
+            ctx.fill();
+            ctx.stroke();
+        }
+    }
+
+    //mode:fill stroke all
+    //注意: 1像素 若水平/垂直 fill模式 看不见
+    public drawLine(x1:number, y1:number, x2:number, y2:number, mode:string="stroke",
+                    colorFill:Color = null, colorStroke:Color = null): void {
+        if (this.context === null) return;
+        let ctx = this.context;
+        if (colorFill) {
+            let cssColor = colorFill.toCssColor();
+            ctx.fillStyle = cssColor;
+        }
+
+        if (colorStroke) {
+            let cssColor = colorStroke.toCssColor();
+            ctx.strokeStyle = cssColor;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+
+        this._drawByMode(mode);
+        ctx.closePath();
+    }
+
+    public drawTriangle(x1:number, y1:number, x2:number, y2:number, 
+                        x3:number, y3:number, mode:string="stroke",
+                        colorFill:Color = null, colorStroke:Color = null) {
+        if (this.context === null) return;
+        let ctx = this.context;
+        if (colorFill) {
+            let cssColor = colorFill.toCssColor();
+            ctx.fillStyle = cssColor;
+        }
+
+        if (colorStroke) {
+            let cssColor = colorStroke.toCssColor();
+            ctx.strokeStyle = cssColor;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.lineTo(x3, y3);
+
+        this._drawByMode(mode);
+        ctx.closePath();
+    }
+
+    drawArc(x:number, y:number, radius:number, startAngle:number, endAngle:number, 
+            antiClockWise:boolean=true, mode:string="stroke",
+            colorFill:Color = null, colorStroke:Color = null) {
+        if (this.context === null) return;
+        let ctx = this.context;
+        if (colorFill) {
+            let cssColor = colorFill.toCssColor();
+            ctx.fillStyle = cssColor;
+        }
+
+        if (colorStroke) {
+            let cssColor = colorStroke.toCssColor();
+            ctx.strokeStyle = cssColor;
+        }
+        
+        ctx.beginPath();
+        ctx.arc(x, y, radius, startAngle, endAngle, antiClockWise);
+        this._drawByMode(mode);
+        ctx.closePath();
     }
 
     //canvas原生鼠标事件转游戏内部鼠标事件

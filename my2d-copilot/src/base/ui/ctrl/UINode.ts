@@ -25,7 +25,7 @@ export enum PropertyType {
 
 
 //坐标系：采用opengl坐标系  左下角为原点 同cocos creator
-//锚点：0-1  左下为[0,0] 右上为[1,1]
+//锚点：0-1  左上为[0,0] 右下为[1,1] 同canvas坐标 方便画文字
 //子节点的位置是相对于父节点的锚点位置 同cocos creator 这点和cocos2dx不一样
 //即：每个控件都以自己的锚点为原点 创建特有的坐标系
 // UINode

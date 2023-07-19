@@ -1,11 +1,11 @@
 import { UINode } from "./UINode";
 import { Color } from "../../math/Color";
-import { UIStyle } from "./UIStyle";
+import { UIFontStyle } from "./UIStyle";
 
 
 export class UILabel extends UINode {
     text: string = "";
-    style: UIStyle = new UIStyle();
+    style: UIFontStyle = new UIFontStyle();
     debug: boolean = true;
 
     public constructor() {
@@ -21,7 +21,7 @@ export class UILabel extends UINode {
     }
 
     public set fontColor(color:Color) {
-        this.style.fontColor = color;
+        this.style.fillColor = color;
     }
 
     public set strokeColor(color:Color) {
