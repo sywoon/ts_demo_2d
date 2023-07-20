@@ -5,6 +5,9 @@ export class Timer {
     private _currTimer: number = Date.now();
     private _lastTimer: number = Date.now();
 
+    private _inLock:boolean = false;
+    private _handlersWait: TimerHandler[] = [];
+
     public constructor() {
     }
 
@@ -15,6 +18,7 @@ export class Timer {
         this._currTimer += dt;
         this._lastTimer = now;
 
+        this._inLock = true;
         let time = this._currTimer;
         for (let handler of this._handlers) {  
             if (handler.method == null)  //清楚后 未及时从队列中移除
@@ -38,23 +42,31 @@ export class Timer {
             }
         }
 
-        this._dealHandler();
+        this._inLock = false;
+        this._dealHandlers();
     }
 
-    private _dealHandler() {
-        let handlers = [];
+    private _dealHandlers() {
+        if (this._inLock) {
+            console.error("EventDispatcher._dealHandlers: this._inLock == true");
+            return;
+        }
 
-        for (let handler of this._handlers) {
-            if (handler.method == null)
-                continue;
+        let handlers = this._handlers;
+        for (let i = handlers.length - 1; i >= 0; i--) {
+            if (!handlers[i].method) {
+                handlers.splice(i, 1);
+            }
+        }
 
-            handlers.push(handler);
+        //将_handlersWait中的事件加入到事件队列中
+        for (let handler of this._handlersWait) {
+            this._create(handler.delay, handler.interval, handler.repeat, handler.caller, handler.method, handler.args, handler.coverBefore);
         }
 
         handlers.sort((a, b) => {
             return a.exeTime - b.exeTime;
         });
-        this._handlers = handlers;
     }
 
     once(delay: number, caller: any, method: Function, args: any[] = null, coverBefore: boolean = true): void {
@@ -73,7 +85,21 @@ export class Timer {
         }
     }
 
-    private _create(delay: number, interval:number, repeat: number, caller: any, method: Function, args: any[], coverBefore: boolean): TimerHandler {
+    private _create(delay: number, interval:number, repeat: number, caller: any, method: Function, args: any[], coverBefore: boolean): void {
+        if (this._inLock) {
+            let handler = TimerHandler.create();
+            handler.delay = delay;
+            handler.interval = interval;
+            handler.repeat = repeat;
+            handler.caller = caller;
+            handler.method = method;
+            handler.args = args;
+            handler.exeTime = delay + this._currTimer;
+            handler.coverBefore = coverBefore;
+            this._handlersWait.push(handler);
+            return;
+        }
+
         //如果延迟为0，则立即执行
         if (delay <= 0) {
             method.apply(caller, args);
@@ -97,7 +123,6 @@ export class Timer {
         handler.exeTime = delay + this._currTimer;
 
         this._handlers.push(handler);
-        return handler;
     }
 
     private _getHandler(caller: any, method: any): TimerHandler {
@@ -127,6 +152,7 @@ class TimerHandler {
     public interval: number;
     public repeat: number;
     public exeTime: number;
+    public coverBefore: boolean;
 
     run(): void {
         this.method.apply(this.caller, this.args);
@@ -140,6 +166,7 @@ class TimerHandler {
         this.interval = 0;
         this.repeat = 1;
         this.exeTime = 0;
+        this.coverBefore = false;
     }
 
     recycle() {

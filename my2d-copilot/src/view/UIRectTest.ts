@@ -1,4 +1,4 @@
-import { ViewBase } from "../base/mvc/ViewBase";
+import { ViewBase } from "../base/ui/ViewBase";
 import { UIGeometry } from "../base/ui/ctrl/UIGeometry";
 import { Color } from "../base/math/Color";
 

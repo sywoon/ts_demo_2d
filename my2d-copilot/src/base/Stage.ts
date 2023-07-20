@@ -21,6 +21,13 @@ export class Stage extends UINode {
         super();
         this.canvas2d = canvas2d;
         this.timerUI = new Timer();
+        this.width = canvas2d.size.width;
+        this.height = canvas2d.size.height;
+    }
+
+    public resize(width: number, height: number): void {
+        this.width = width;
+        this.height = height;
     }
 
     public update(): void {

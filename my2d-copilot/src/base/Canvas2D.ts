@@ -1,4 +1,4 @@
-import { GameEvent, MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
+import { MKEvent, MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
 import { Color } from "./math/Color";
 import { Size } from "./math/Size";
 import { Vec2 } from "./math/Vec2";
@@ -75,6 +75,13 @@ export class Canvas2D {
         status["font"] ? ctx.font = status["font"] : null;  //"20px sans-serif"
         status["textBaseline"] ? ctx.textBaseline = status["textBaseline"] : null;  //top middle bottom
         status["textAlign"] ? ctx.textAlign = status["textAlign"] : null;  //left center right
+    }
+
+    public resize(width: number, height: number): void {
+        this.size.width = width;
+        this.size.height = height;
+        this.canvas.width = width;
+        this.canvas.height = height;
     }
 
     public clear(): void {
@@ -207,7 +214,7 @@ export class Canvas2D {
             let cssColor = colorStroke.toCssColor();
             ctx.strokeStyle = cssColor;
         }
-        
+
         ctx.beginPath();
         ctx.arc(x, y, radius, startAngle, endAngle, antiClockWise);
         this._drawByMode(mode);
@@ -219,13 +226,13 @@ export class Canvas2D {
         let mouseEvt = new MyMouseEvent();
         switch (evt.type) {
             case "mousedown":
-                mouseEvt.type = GameEvent.MOUSE_DOWN;
+                mouseEvt.type = MKEvent.MOUSE_DOWN;
                 break;
             case "mouseup":
-                mouseEvt.type = GameEvent.MOUSE_UP;
+                mouseEvt.type = MKEvent.MOUSE_UP;
                 break;
             case "mousemove":
-                mouseEvt.type = GameEvent.MOUSE_MOVE;
+                mouseEvt.type = MKEvent.MOUSE_MOVE;
                 break;
             default:
                 console.error("evt type error:", evt.type);
@@ -252,10 +259,10 @@ export class Canvas2D {
         let keyboardEvt = new MyKeyboardEvent();
         switch (evt.type) {
             case "keydown":
-                keyboardEvt.type = GameEvent.KEY_DOWN;
+                keyboardEvt.type = MKEvent.KEY_DOWN;
                 break;
             case "keyup":
-                keyboardEvt.type = GameEvent.KEY_UP;
+                keyboardEvt.type = MKEvent.KEY_UP;
                 break;
             default:
                 console.error("evt type error:", evt.type);
