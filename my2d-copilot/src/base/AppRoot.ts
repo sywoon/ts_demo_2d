@@ -1,13 +1,15 @@
 import { Canvas2D } from "./Canvas2D";
 import { MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
 import { Graphic } from "./Graphic";
+import { Stage } from "./Stage";
 import { Timer } from "./Timer";
 import { Size } from "./math/Size";
-import { UIMgr } from "./ui/UIMgr";
+import { UIMgr } from "./mvc/UIMgr";
 
 export class AppRoot implements EventListenerObject {
     canvas2d: Canvas2D;
     graphic: Graphic;
+    stage: Stage;
     uimgr: UIMgr;
     timer: Timer;
 
@@ -23,8 +25,9 @@ export class AppRoot implements EventListenerObject {
         this.canvas2d = new Canvas2D(canvas);
 
         this.graphic = new Graphic(this.canvas2d);
-        this.uimgr = new UIMgr();
+        this.stage = new Stage(this.canvas2d);
         this.timer = new Timer();
+        this.uimgr = new UIMgr();
 
         canvas.addEventListener("mousedown", this, false);
         canvas.addEventListener("mouseup", this, false);
@@ -60,11 +63,11 @@ export class AppRoot implements EventListenerObject {
     }
 
     protected dispatchMouseEvent(evt: MyMouseEvent): void {
-        return;
+        this.stage.onTouchEvent(evt);
     }
 
     protected dispatchKeyEvent(evt: MyKeyboardEvent): void {
-        return;
+        this.stage.onKeyEvent(evt);
     }
 
     run() {
@@ -79,11 +82,11 @@ export class AppRoot implements EventListenerObject {
 
     update(timestamp: number) {
         this.timer.update();
-        this.uimgr.updateUI();
+        this.stage.update();
     }
 
     render() {
         this.graphic.clear();
-        this.uimgr.renderUI();
+        this.stage.render();
     }
 }

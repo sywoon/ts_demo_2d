@@ -17,6 +17,9 @@ export class Timer {
 
         let time = this._currTimer;
         for (let handler of this._handlers) {  
+            if (handler.method == null)  //清楚后 未及时从队列中移除
+                continue;
+
             if (handler.exeTime > time)  //之前按执行时间排序过
                 break;
 
@@ -61,6 +64,13 @@ export class Timer {
     //repeat:0无限
     loop(delay: number, interval:number, repeat:number, caller: any, method: Function, args: any[] = null, coverBefore: boolean = true): void {
         this._create(delay, interval, repeat, caller, method, args, coverBefore);
+    }
+
+    clear(caller: any, method: Function): void {
+        let handler = this._getHandler(caller, method);
+        if (handler) {
+            handler.clear();
+        }
     }
 
     private _create(delay: number, interval:number, repeat: number, caller: any, method: Function, args: any[], coverBefore: boolean): TimerHandler {

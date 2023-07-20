@@ -1,5 +1,5 @@
 import { AppRoot } from "../AppRoot";
-import { UINode } from "./ctrl/UINode";
+import { UINode } from "../ui/ctrl/UINode";
 
 export class ViewBase extends UINode {
     uiName:string;

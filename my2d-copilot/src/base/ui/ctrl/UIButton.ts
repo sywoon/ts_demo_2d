@@ -1,12 +1,16 @@
 import { UINode } from "./UINode";
 import { UILabel } from "./UILabel";
 import { Color } from "../../math/Color";
+import { MyMouseEvent } from "../../EventDefine";
+import { Vec2 } from "../../math/Vec2";
 
 export class UIButton extends UINode {
     label:UILabel;
 
     public constructor() {
         super();
+        this.width = 100;
+        this.height = 50;
         this.label = new UILabel();
         this.setInteractAble(true);
     }
@@ -26,6 +30,13 @@ export class UIButton extends UINode {
         
         //先画自己 再画子节点
         super.onRender(x, y);
+    }
+
+    public onTouchEvent(evt: MyMouseEvent): boolean {
+        if (!this.hitTest(evt.x, evt.y))
+            return false;
+
+        return true; 
     }
 }
 

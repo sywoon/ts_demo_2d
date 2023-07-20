@@ -1,34 +1,40 @@
-import { ViewBase } from "../base/ui/ViewBase";
+import { ViewBase } from "../base/mvc/ViewBase";
+import { UIGeometry } from "../base/ui/ctrl/UIGeometry";
+import { Color } from "../base/math/Color";
 
 export class UIRectTest extends ViewBase {
+    geo: UIGeometry;
 
     onCreate() {
         super.onCreate();
+
+        {
+            let geo = new UIGeometry();
+            this.addChild(geo);
+            this.geo = geo;
+
+            geo.fillColor = Color.FromHex(0xff8765);
+            geo.strokeColor = Color.FromHex(0x00ff00);
+            geo.x = 0;
+            geo.y = 100;
+        }
     }
 
     onRender(x: number, y: number): void {
-        let graphic = this.graphic;
-        graphic.saveStyle();
+        let geo = this.geo;
 
-        graphic.setStyle({
-            fillStyle: "rgb(200,0,0)",}
-        );
+        geo.fillRect(25, 25, 100, 100);
+        geo.clearRect(45, 45, 60, 60);
+        geo.strokeRect(50, 50, 50, 50);
 
-        let offx = 0;
-        let offy = 0;
-        graphic.fillRect(10, 10, 55, 50);
+        geo.drawLine(25, 25, 125, 125, "stroke", Color.Green);  //1像素 若水平/垂直 竟然看不见
+        geo.drawTriangle(75, 50, 100, 75, 100, 25, "fill", Color.Blue); //1像素 若水平/垂直 竟然看不见
 
-        graphic.setStyle({
-            fillStyle: "rgba(0, 0, 200, 0.5)",
-        });
-        graphic.fillRect(30, 30, 55, 50);
+        geo.drawArc(175, 75, 50, 0, Math.PI * 2, true); // 绘制
+        geo.drawArc(160, 65, 5, 0, Math.PI * 2, true, "fill");
+        geo.drawArc(190, 65, 5, 0, Math.PI * 2, true, "fill");
+        geo.drawArc(175, 75, 35, 0, Math.PI, false);
 
-        //挖空案例 可看到背后的canvas背景色
-        offx += 70;
-        graphic.fillRect(25 + offx, 25, 100, 100);
-        graphic.clearRect(45 + offx, 45, 60, 60);
-        graphic.strokeRect(50 + offx, 50, 50, 50);
-
-        graphic.restoreStyle();
+        super.onRender(x, y);
     }
 }

@@ -1,6 +1,7 @@
 import { ClassUtils } from "../ClassUtils";
-import { Timer } from "../Timer";
 import { ViewBase } from "./ViewBase";
+import { AppRoot } from "../AppRoot";
+import { Stage } from "../Stage";
 
 export class UIMgr {
     public static instance: UIMgr = null;
@@ -12,15 +13,17 @@ export class UIMgr {
     }
 
     private _uiList: Array<ViewBase> = new Array<ViewBase>();
-    public timer: Timer = new Timer();  //ui自己特有的定时器 
+
+    get stage(): Stage {
+        return  AppRoot.getInstance().stage;
+    }
     
     public constructor() {
-
     }
 
     public init(): void {
-
     }
+
     public openUI(uiName:string): void {
         let cfg = ClassUtils.getRegClass(uiName);
         if (!cfg) {
@@ -33,6 +36,7 @@ export class UIMgr {
         ui.config = cfg;
         ui.onCreate();
         this._uiList.push(ui);
+        this.stage.addChild(ui);
     }
 
     public closeUI(uiName: string): void {
@@ -42,32 +46,6 @@ export class UIMgr {
                 this._uiList.splice(this._uiList.indexOf(ui), 1);
                 break;
             }
-        }
-    }
-
-    public updateUI(): void {
-        this.timer.update();
-    }
-
-    public renderUI(): void {
-        for (let ui of this._uiList) {
-            ui.onRender(0, 0);
-            if (ui.config.isFullScreen)
-                break;
-        }
-    }
-
-    public onTouchEvent(): void {
-        for (let ui of this._uiList) {
-            if (ui.onTouchEvent())
-                break;
-        }
-    }
-
-    public onKeyEvent(): void {
-        for (let ui of this._uiList) {
-            if (ui.onKeyEvent())
-                break;
         }
     }
 }
