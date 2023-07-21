@@ -123,11 +123,11 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
     }
 
     protected dispatchMouseEvent(evt: MyMouseEvent): void {
-        this.stage.onTouchEvent(evt);
+        this.stage.dispatchTouchEvent(evt);
     }
 
     protected dispatchKeyEvent(evt: MyKeyboardEvent): void {
-        this.stage.onKeyEvent(evt);
+        this.stage.dispatchKeyEvent(evt);
     }
 
     run() {

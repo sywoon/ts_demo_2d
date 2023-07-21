@@ -18,12 +18,13 @@ import { Vec2 } from "../../math/Vec2";
 import { MyMouseEvent, MyKeyboardEvent } from "../../EventDefine";
 import { Timer } from "../../Timer";
 import { EventDispatcher } from "../../EventDispatcher";
+import { Color } from "../../math/Color";
 
 
-export enum PropertyType {
-    Visible = 2 ^ 0,
-    Awake = 2 ^ 1,      //是否已经创建
-    InteractAble = 2 ^ 2,  //是否可交互
+export class PropertyType {
+    static Visible      = 2 ** 0;
+    static Awake        = 2 ** 1;      //是否已经创建
+    static InteractAble = 2 ** 2;  //是否可交互
 }
 
 
@@ -124,40 +125,66 @@ export class UINode extends EventDispatcher {
     }
 
     public onRender(x:number, y:number): void {
-        for (let child of this._children) {
-            child.onRender(x+this.x, y+this.y);
+        let _x = x + this.x;  //不能修改x的值 需要上传
+        let _y = y + this.y;
+
+        if (this.debug) {
+            this.graphic.drawArc(_x, _y, 3, 0, Math.PI * 2, true, "fill", Color.Red);
         }
+
+        for (let child of this._children) {
+            child.onRender(_x, _y);
+        }
+    }
+
+    public dispatchTouchEvent(evt: MyMouseEvent): boolean {
+        for (let child of this._children) {
+            if (child.dispatchTouchEvent(evt)) {
+                return true;
+            }
+        }
+
+        if (!this.isInteractAble())
+            return false;
+
+        return this.onTouchEvent(evt);
     }
 
     public onTouchEvent(evt: MyMouseEvent): boolean {  //返回true表示事件被处理了
-        for (let child of this._children) {
-            if (child.isInteractAble() && child.onTouchEvent(evt)) {
-                return true;
-            }
-        }
+        //子类实现
         return false; 
     }  
 
-    public onKeyEvent(evt: MyKeyboardEvent): boolean { 
+    public dispatchKeyEvent(evt: MyKeyboardEvent): boolean { 
         for (let child of this._children) {
-            if (child.isInteractAble() && child.onKeyEvent(evt)) {
+            if (child.dispatchKeyEvent(evt)) {
                 return true;
             }
         }
+        return this.onKeyEvent(evt);
+    }
+
+    public onKeyEvent(evt: MyKeyboardEvent): boolean { 
+        //子类实现
         return false; 
     }
 
-    public onCtrlEvent(): boolean { 
+    public dispatchCtrlEvent(): boolean { 
         for (let child of this._children) {
-            if (child.onCtrlEvent()) {
+            if (child.dispatchCtrlEvent()) {
                 return true;
             }
         }
+        return this.onCtrlEvent();
+    }
+
+    public onCtrlEvent(): boolean { 
+        //子类实现
         return false; 
     }
 
     public globalToLocal(x:number, y:number): Vec2 {
-        let pos = new Vec2(x, y);
+        let pos = new Vec2(x-this.x, y-this.y);
         let parent = this._parent;
         while (parent) {
             pos.x -= parent.x;
@@ -168,7 +195,7 @@ export class UINode extends EventDispatcher {
     }
 
     public localToGlobal(x:number, y:number): Vec2 {
-        let pos = new Vec2(x, y);
+        let pos = new Vec2(x+this.x, y+this.y);
         let parent = this._parent;
         while (parent) {
             pos.x += parent.x;
@@ -178,23 +205,18 @@ export class UINode extends EventDispatcher {
         return pos;
     }
 
-    public hitTest(x:number, y:number, includeChild:boolean=false): boolean {
+    //本地局部坐标
+    public hitTest(x:number, y:number): boolean {
         if (!this.isVisible()) {
             return false;
         }
-        if (x < this.x || x > this.x + this.width || y < this.y || y > this.y + this.height) {
-            return false;
-        }
-        if (!includeChild) {
+
+        //后期加入锚点运算
+        if (x < 0 || x > this.width || y < 0 || y > this.height) {
             return false;
         }
 
-        for (let child of this._children) {
-            if (child.hitTest(x, y)) {
-                return true;
-            }
-        }
-        return false;
+        return true;
     }
 
 

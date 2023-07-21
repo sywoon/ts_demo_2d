@@ -13,6 +13,7 @@ export class UIButton extends UINode {
         this.setInteractAble(true);
 
         this.label = new UILabel();
+        this.addChild(this.label);
         this.label.hAlign = "center";
         this.label.onEvent(GameEvent.RESIZE, this._onLabelResize, this);
     }
@@ -38,16 +39,11 @@ export class UIButton extends UINode {
     }
 
     public onRender(x:number, y:number): void {
-        this.graphic.fillRect(this.x+x, this.y+y, this.width, this.height, Color.Gray);
-        this.graphic.strokeRect(this.x+x, this.y+y, this.width, this.height, Color.Black);
-        this.label.onRender(this.x+x, this.y+y);
+        let _x = x + this.x;  //不能修改x的值 需要上传
+        let _y = y + this.y;
+        this.graphic.fillRect(_x, _y, this.width, this.height, Color.Gray);
+        this.graphic.strokeRect(_x, _y, this.width, this.height, Color.Black);
 
-        if (this.debug) {
-            x = this.x+x;
-            y = this.y+y;
-            this.graphic.drawArc(x, y, 3, 0, Math.PI * 2, true, "fill", Color.Red);
-        }
-        
         //先画自己 再画子节点
         super.onRender(x, y);
     }
@@ -64,13 +60,11 @@ export class UIButton extends UINode {
             case GameEvent.MOUSE_UP:
                 this.label.fontColor = Color.Black;
                 break;
-            case GameEvent.MOUSE_MOVE:
-                this.label.fontColor = Color.Green;
-                break;
             default:
                 break;
         }
         this.sendEvent(evt.type, evt.x, evt.y);
+        console.log("UIButton.onTouchEvent", evt.type, evt.x, evt.y, pos.x, pos.y)
         
         if (evt.type == GameEvent.MOUSE_UP) {
             this.sendEvent(GameEvent.CLICK, evt.x, evt.y);

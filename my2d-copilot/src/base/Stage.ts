@@ -43,13 +43,13 @@ export class Stage extends UINode {
         this.onRender(this.x, this.y);
     }
 
-    public onTouchEvent(evt: MyMouseEvent): boolean {
-        super.onTouchEvent(evt);
+    public dispatchTouchEvent(evt: MyMouseEvent): boolean {
+        super.dispatchTouchEvent(evt);
         return true;
     }
 
-    public onKeyEvent(evt: MyKeyboardEvent): boolean {
-        super.onKeyEvent(evt);
+    public dispatchKeyEvent(evt: MyKeyboardEvent): boolean {
+        super.dispatchKeyEvent(evt);
         return true;
     }
 }

@@ -90,18 +90,18 @@ export class UILabel extends UINode {
     }
 
     public onRender(x:number, y:number): void {
+        let _x = x + this.x;  //不能修改x的值 需要上传
+        let _y = y + this.y;
+
         this.graphic.setStyle(this.style);
-        this.graphic.drawText(this.text, this.x+x, this.y+y);
+        this.graphic.drawText(this.text, _x, _y);
 
         if (this.debug) {
-            x = this.x+x;
-            y = this.y+y;
-            this.graphic.drawArc(x, y, 3, 0, Math.PI * 2, true, "fill", Color.Red);
-            
-            let pt = this.adjustByAlign(x, y);
+            let pt = this.adjustByAlign(_x, _y);
             this.graphic.strokeRect(pt.x, pt.y, this.width, this.height, Color.Green);
-            
         }
+
+        super.onRender(x, y);
     }
 }
 
