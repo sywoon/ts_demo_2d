@@ -34,17 +34,17 @@ class EventHandler {
         return result;
     }
 
-    runWith(data:any) {
+    runWith(...args: any[]) {
         if (!this.listener)
             return;
 
         let result: any = null;
         if (!this.args) {
-            result = this.listener.call(this.caller, data);
+            result = this.listener.call(this.caller, ...args);
         } else if (this.args.length == 1) {
-            result = this.listener.call(this.caller, this.args[0], data);
+            result = this.listener.call(this.caller, this.args[0], ...args);
         } else {
-            result = this.listener.apply(this.caller, this.args.concat(data));
+            result = this.listener.apply(this.caller, this.args.concat(args));
         }
         return result;
     }
@@ -68,7 +68,7 @@ export class EventDispatcher {
     private _inLock:boolean = false;
     private _handlersWait: EventHandler[] = [];
 
-    sendEvent(type: string, data: any=null): void {
+    sendEvent(type: string, ...args: any[]): void {
         //找到type对应的EventHandler执行内部函数
         let arr = this._events.get(type);
         if (!arr) {
@@ -76,12 +76,17 @@ export class EventDispatcher {
         }
 
         this._inLock = true;
-        for (let handler of arr) {
+        //执行过程中 不会插入新事件 保证本轮事件执行完毕
+        //方案2：倒叙执行数组 新的事件插入数组最后 本轮不会被执行
+        //  缺点：事件执行顺序和注册顺序相反
+        //方案3：先记录长度 正序遍历执行 尾巴处新增的事件 本轮也不会被执行
+        //但是会删除事件 通过clear方式 不会让数组留空 等后面统一处理
+        for (let handler of arr) {   //测试：遍历中新增元素 不会被执行
             if (!handler.listener)
                 continue;
 
-            if (data) {
-                handler.runWith(data);
+            if (args.length > 0) {
+                handler.runWith(...args);
             } else {
                 handler.run();
             }
@@ -103,8 +108,12 @@ export class EventDispatcher {
         for (let [type, arr] of this._events) {
             for (let i = arr.length - 1; i >= 0; i--) {
                 if (!arr[i].listener) {
+                    arr[i].recyle();
                     arr.splice(i, 1);
                 }
+            }
+            if (arr.length == 0) {
+                this._events.delete(type);
             }
         }
 
@@ -114,15 +123,16 @@ export class EventDispatcher {
         }
     }
 
-    onEvent(type:string, caller:any, listener:Function, args:any[] = null): void {
-        this._createListener(type, caller, listener, args, false);
+    //注意：args  如果要传的数是一个数组 也需要[]包一层 否则调用时会被解开
+    onEvent(type:string, listener:Function, caller:any=null, args:any[] = null): void {
+        this._createListener(type, listener, caller, args, false);
     }
 
-    onceEvent(type:string, caller:any, listener:Function, args:any[] = null): void {
-        this._createListener(type, caller, listener, args, true);
+    onceEvent(type:string, listener:Function, caller:any=null, args:any[] = null): void {
+        this._createListener(type, listener, caller, args, true);
     }
 
-    private _createListener(type:string, caller:any, listener:Function, args:any[], once:boolean): void {
+    private _createListener(type:string, listener:Function, caller:any, args:any[], once:boolean): void {
         if (this._inLock) {
             let handler = EventHandler.create(type, caller, listener, args, once);
             this._handlersWait.push(handler);
@@ -150,8 +160,7 @@ export class EventDispatcher {
         for (let i = 0; i < arr.length; i++) {
             let evt = arr[i];
             if (evt.caller == caller && evt.listener == listener) {
-                evt.recyle();
-                arr.splice(i, 1);
+                evt.clear();  //先不移除 防止影响执行  即：执行过程中 运行删除事件
                 return;
             }
         }
@@ -166,7 +175,7 @@ export class EventDispatcher {
 
         for (let i = 0; i < arr.length; i++) {
             let evt = arr[i];
-            evt.recyle();
+            evt.clear();
         }
     }
 
@@ -176,18 +185,18 @@ export class EventDispatcher {
             for (let i = 0; i < arr.length; i++) {
                 let evt = arr[i];
                 if (evt.caller == caller) {
-                    evt.recyle();
-                    arr.splice(i, 1);
-                    i--;
+                    evt.clear();
                 }
             }
         }
+    }
 
-        for (let key of this._events.keys()) {
-            let arr = this._events.get(key);
-            if (arr.length == 0) {
-                this._events.delete(key);
+    offAll() {
+        for (let [type, arr] of this._events) {
+            for (let handler of arr) {
+                handler.recyle();
             }
         }
+        this._events.clear();
     }
 }

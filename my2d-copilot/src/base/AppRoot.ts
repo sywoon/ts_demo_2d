@@ -132,6 +132,7 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
 
     run() {
         let step = (timestamp: number) => {
+
             this.update(timestamp);
             this.render();
             requestAnimationFrame(step);
@@ -141,6 +142,7 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
     }
 
     update(timestamp: number) {
+        this.timer.runCallLater();  //上一帧积累的回调
         this.timer.update();
         this.stage.update();
     }

@@ -1,7 +1,6 @@
-import { MKEvent, MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
+import { GameEvent, MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
 import { Color } from "./math/Color";
 import { Size } from "./math/Size";
-import { Vec2 } from "./math/Vec2";
 
 export class Canvas2D {
     //声明public访问级别的成员变量
@@ -98,6 +97,15 @@ export class Canvas2D {
     public restore(): void {
         if (this.context === null) return;
         this.context.restore();
+    }
+
+    //只能拿到宽度 怎么拿高度？
+    public measureText(text:string): Size {
+        let obj:TextMetrics  = this.context.measureText(text);
+        let size:Size = new Size();
+        size.width = obj.width;
+        size.height = parseInt(this.context.font.match(/\d+/g)[0]);  //"24px sans-serif"
+        return size;
     }
 
     // public访问级别的成员函数
@@ -226,13 +234,13 @@ export class Canvas2D {
         let mouseEvt = new MyMouseEvent();
         switch (evt.type) {
             case "mousedown":
-                mouseEvt.type = MKEvent.MOUSE_DOWN;
+                mouseEvt.type = GameEvent.MOUSE_DOWN;
                 break;
             case "mouseup":
-                mouseEvt.type = MKEvent.MOUSE_UP;
+                mouseEvt.type = GameEvent.MOUSE_UP;
                 break;
             case "mousemove":
-                mouseEvt.type = MKEvent.MOUSE_MOVE;
+                mouseEvt.type = GameEvent.MOUSE_MOVE;
                 break;
             default:
                 console.error("evt type error:", evt.type);
@@ -259,10 +267,10 @@ export class Canvas2D {
         let keyboardEvt = new MyKeyboardEvent();
         switch (evt.type) {
             case "keydown":
-                keyboardEvt.type = MKEvent.KEY_DOWN;
+                keyboardEvt.type = GameEvent.KEY_DOWN;
                 break;
             case "keyup":
-                keyboardEvt.type = MKEvent.KEY_UP;
+                keyboardEvt.type = GameEvent.KEY_UP;
                 break;
             default:
                 console.error("evt type error:", evt.type);

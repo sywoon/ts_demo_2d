@@ -2,6 +2,7 @@ import { Canvas2D } from "./Canvas2D";
 import { IGraphic } from "./IGraphic";
 import { Color } from "./math/Color";
 import { UIStyle } from "./ui/ctrl/UIStyle";
+import { Size } from "./math/Size";
 
 export class Graphic implements IGraphic {
     canvas2d:Canvas2D;
@@ -24,6 +25,10 @@ export class Graphic implements IGraphic {
 
     setStyle(style:UIStyle): void {
         this.canvas2d.setStyle(style.toCssStyle());
+    }
+
+    measureText(text:string): Size {
+        return this.canvas2d.measureText(text);
     }
 
     drawText(text:string, x:number, y:number, color:Color = null) {

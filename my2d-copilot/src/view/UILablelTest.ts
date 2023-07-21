@@ -1,5 +1,6 @@
 import { ViewBase } from "../base/ui/ViewBase";
 import { UILabel } from "../base/ui/ctrl/UILabel";
+import { UIButton } from "../base/ui/ctrl/UIButton";
 import { Color } from "../base/math/Color";
 
 
@@ -23,7 +24,14 @@ export class UILabelTest extends ViewBase {
             lable.vAlign = "bottom";
         }
 
-        
+        {
+            let btn = new UIButton();
+            this.addChild(btn);
+
+            btn.text = "按钮";
+            btn.x = 100;
+            btn.y = 100;
+        }
         
     }
 

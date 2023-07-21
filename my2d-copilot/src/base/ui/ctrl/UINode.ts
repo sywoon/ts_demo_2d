@@ -17,6 +17,7 @@ import { IGraphic } from "../../IGraphic";
 import { Vec2 } from "../../math/Vec2";
 import { MyMouseEvent, MyKeyboardEvent } from "../../EventDefine";
 import { Timer } from "../../Timer";
+import { EventDispatcher } from "../../EventDispatcher";
 
 
 export enum PropertyType {
@@ -35,7 +36,7 @@ export enum PropertyType {
 // |-创建和释放  create destory
 // |-渲染 onRender 
 // |-鼠标和键盘 控件事件(焦点 大小改变)  onTouchEvent onKeyEvent onCtrlEvent
-export class UINode {
+export class UINode extends EventDispatcher {
     static create(): UINode {
         return new UINode();
     }
@@ -49,20 +50,42 @@ export class UINode {
         return AppRoot.getInstance().stage.timerUI;
     }
 
+    public debug: boolean = true;
     public x: number = 0;
     public y: number = 0;
-    public width: number = 100;
-    public height: number = 100;
+    private _width: number = 100;
+    private _height: number = 100;
     public anchor: Vec2 = new Vec2(0.5, 0.5);
     private _parent: UINode = null;
     private _children: Array<UINode> = new Array<UINode>();
 
-    public constructor() {}
+    get width(): number {
+        return this._width;
+    }
+    get height(): number {
+        return this._height;
+    }
+    set width(w: number) {
+        this._width = w;
+        this.timer.callLater(this.onSizeChanged, this);
+    }
+    set height(h: number) {
+        this._height = h;
+        this.onSizeChanged();
+    }
+
+    public constructor() {
+        super();
+    }
+
     public destory() {
         for (let child of this._children) {
             child.destory();
         }
         this.onDestroy();
+    }
+
+    protected onSizeChanged(): void {
     }
 
     //创建节点  和构造函数一样 为了统一好看些
@@ -97,6 +120,7 @@ export class UINode {
         for (let child of this._children) {
             child.onDestroy();
         }
+        this.offAll();
     }
 
     public onRender(x:number, y:number): void {
@@ -130,6 +154,28 @@ export class UINode {
             }
         }
         return false; 
+    }
+
+    public globalToLocal(x:number, y:number): Vec2 {
+        let pos = new Vec2(x, y);
+        let parent = this._parent;
+        while (parent) {
+            pos.x -= parent.x;
+            pos.y -= parent.y;
+            parent = parent._parent;
+        }
+        return pos;
+    }
+
+    public localToGlobal(x:number, y:number): Vec2 {
+        let pos = new Vec2(x, y);
+        let parent = this._parent;
+        while (parent) {
+            pos.x += parent.x;
+            pos.y += parent.y;
+            parent = parent._parent;
+        }
+        return pos;
     }
 
     public hitTest(x:number, y:number, includeChild:boolean=false): boolean {

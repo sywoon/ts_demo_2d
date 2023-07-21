@@ -21,8 +21,11 @@ export class Stage extends UINode {
         super();
         this.canvas2d = canvas2d;
         this.timerUI = new Timer();
-        this.width = canvas2d.size.width;
-        this.height = canvas2d.size.height;
+    }
+
+    init() {
+        this.width = this.canvas2d.size.width;
+        this.height = this.canvas2d.size.height;
     }
 
     public resize(width: number, height: number): void {
@@ -31,6 +34,7 @@ export class Stage extends UINode {
     }
 
     public update(): void {
+        this.timerUI.runCallLater();  //上一帧积累的回调
         this.timerUI.update();
     }
 

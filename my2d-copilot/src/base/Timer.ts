@@ -5,8 +5,11 @@ export class Timer {
     private _currTimer: number = Date.now();
     private _lastTimer: number = Date.now();
 
+    //解决执行过程中添加和删除事件问题
     private _inLock:boolean = false;
     private _handlersWait: TimerHandler[] = [];
+
+    private _laterHandlers: TimerHandler[] = [];
 
     public constructor() {
     }
@@ -134,6 +137,26 @@ export class Timer {
        return null;
     }
 
+
+    //===================================
+    // call later
+    callLater(method:Function, caller:any=null, args:any[] = null):void {
+        let handler = TimerHandler.create();
+        handler.caller = caller;
+        handler.method = method;
+        handler.args = args;
+        this._laterHandlers.push(handler);
+    }
+
+    runCallLater():void {
+        let handlers = this._laterHandlers;
+        for (let handler of handlers) {
+            handler.run();
+            handler.recycle();
+        }
+        handlers.length = 0;
+    }
+    //===================================
 }
 
 class TimerHandler {
