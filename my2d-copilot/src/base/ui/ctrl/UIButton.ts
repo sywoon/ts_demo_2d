@@ -56,6 +56,7 @@ export class UIButton extends UINode {
         let pos = this.globalToLocal(evt.x, evt.y);
         //只有down才做命中测试 捕获控件
         //后续事件move up都只发给它 直到up后才释放控件 或移出浏览器导致up事件丢失
+        let hit = undefined;
         if (this.mouseDown && evt.type != GameEvent.MOUSE_DOWN) {
             //当前已经捕获中
         } else {
@@ -71,6 +72,9 @@ export class UIButton extends UINode {
                 // this.label.fontColor = Color.Red;
                 break;
             case GameEvent.MOUSE_UP:
+                if (hit == undefined) {
+                    hit = this.hitTest(pos.x, pos.y);
+                }
                 this.mouseDown = false;
                 // this.label.fontColor = Color.Black;
                 break;
@@ -80,8 +84,9 @@ export class UIButton extends UINode {
                 break;
         }
         this.sendEvent(evt.type, evt.x, evt.y);
+        // console.log("UIButton.Touch", hit, evt.type, evt.x, evt.y, pos.x, pos.y)
         
-        if (evt.type == GameEvent.MOUSE_UP) {
+        if (hit && evt.type == GameEvent.MOUSE_UP) {
             console.log("UIButton.CLICK", evt.type, evt.x, evt.y, pos.x, pos.y)
             this.sendEvent(GameEvent.CLICK, evt.x, evt.y);
         }
