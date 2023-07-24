@@ -19,6 +19,7 @@ import { MyMouseEvent, MyKeyboardEvent } from "../../EventDefine";
 import { Timer } from "../../Timer";
 import { EventDispatcher } from "../../EventDispatcher";
 import { Color } from "../../math/Color";
+import { GameEvent } from "../../EventDefine";
 
 
 export class PropertyType {
@@ -44,6 +45,10 @@ export class UINode extends EventDispatcher {
 
     get graphic(): IGraphic {
         return AppRoot.getInstance().graphic;
+    }
+
+    get stage(): any {
+        return AppRoot.getInstance().stage;
     }
 
     //所有ui共享独立的uitimer
@@ -147,7 +152,11 @@ export class UINode extends EventDispatcher {
         if (!this.isInteractAble())
             return false;
 
-        return this.onTouchEvent(evt);
+        let rtn = this.onTouchEvent(evt);
+        if (rtn && evt.type == GameEvent.MOUSE_DOWN) {
+            this.stage.mouseTarget = this;
+        }
+        return rtn;
     }
 
     public onTouchEvent(evt: MyMouseEvent): boolean {  //返回true表示事件被处理了

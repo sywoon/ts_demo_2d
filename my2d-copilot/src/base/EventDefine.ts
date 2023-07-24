@@ -7,6 +7,7 @@ export class GameEvent {
     static MOUSE_DOWN = "mouse_down";
     static MOUSE_UP = "mouse_up";
     static MOUSE_MOVE = "mouse_move";
+    static MOUSE_OUT = "mouse_out";  //自己扩展的事件
     static CLICK = "click";
 
     static KEY_DOWN = "key_down";

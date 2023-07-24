@@ -11,10 +11,12 @@ import { UINode } from "./ui/ctrl/UINode";
 import { Canvas2D } from "./Canvas2D";
 import { MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
 import { Timer } from "./Timer";
+import { GameEvent } from "./EventDefine";
 
 export class Stage extends UINode {
     canvas2d: Canvas2D
     timerUI: Timer;
+    mouseTarget:UINode;  //当前捕获的鼠标对象 down时设置 up时清空 即使移出外部 依然能得到鼠标事件
     
 
     constructor(canvas2d: Canvas2D) {
@@ -44,6 +46,19 @@ export class Stage extends UINode {
     }
 
     public dispatchTouchEvent(evt: MyMouseEvent): boolean {
+        if (this.mouseTarget) {
+            if (evt.type == GameEvent.MOUSE_DOWN) {
+                this.mouseTarget = null;  //清楚上一个记录 重新捕获
+            } else if (evt.type == GameEvent.MOUSE_MOVE) {
+                this.mouseTarget.onTouchEvent(evt);  //直接发给捕获的对象
+                return;
+            } else if (evt.type == GameEvent.MOUSE_UP) {
+                this.mouseTarget.onTouchEvent(evt);
+                this.mouseTarget = null;   //本次捕获结束
+                return;
+            }
+        }
+
         super.dispatchTouchEvent(evt);
         return true;
     }

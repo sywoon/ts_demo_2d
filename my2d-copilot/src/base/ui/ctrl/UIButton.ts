@@ -5,6 +5,8 @@ import { GameEvent, MyMouseEvent } from "../../EventDefine";
 
 export class UIButton extends UINode {
     label:UILabel;
+    strokeColors:Color[] = [Color.Black, Color.Red];
+    mouseDown:boolean = false;
 
     public constructor() {
         super();
@@ -41,8 +43,10 @@ export class UIButton extends UINode {
     public onRender(x:number, y:number): void {
         let _x = x + this.x;  //不能修改x的值 需要上传
         let _y = y + this.y;
+
         this.graphic.fillRect(_x, _y, this.width, this.height, Color.Gray);
-        this.graphic.strokeRect(_x, _y, this.width, this.height, Color.Black);
+        let color = this.mouseDown ? this.strokeColors[1] : this.strokeColors[0];
+        this.graphic.strokeRect(_x, _y, this.width, this.height, color);
 
         //先画自己 再画子节点
         super.onRender(x, y);
@@ -50,23 +54,35 @@ export class UIButton extends UINode {
 
     public onTouchEvent(evt: MyMouseEvent): boolean {
         let pos = this.globalToLocal(evt.x, evt.y);
-        if (!this.hitTest(pos.x, pos.y))
-            return false;
+        //只有down才做命中测试 捕获控件
+        //后续事件move up都只发给它 直到up后才释放控件 或移出浏览器导致up事件丢失
+        if (this.mouseDown && evt.type != GameEvent.MOUSE_DOWN) {
+            //当前已经捕获中
+        } else {
+            if (!this.hitTest(pos.x, pos.y)) {
+                this.mouseDown = false;
+                return false;
+            }
+        }
 
         switch (evt.type) {
             case GameEvent.MOUSE_DOWN:
-                this.label.fontColor = Color.Red;
+                this.mouseDown = true;
+                // this.label.fontColor = Color.Red;
                 break;
             case GameEvent.MOUSE_UP:
-                this.label.fontColor = Color.Black;
+                this.mouseDown = false;
+                // this.label.fontColor = Color.Black;
+                break;
+            case GameEvent.MOUSE_MOVE:
                 break;
             default:
                 break;
         }
         this.sendEvent(evt.type, evt.x, evt.y);
-        console.log("UIButton.onTouchEvent", evt.type, evt.x, evt.y, pos.x, pos.y)
         
         if (evt.type == GameEvent.MOUSE_UP) {
+            console.log("UIButton.CLICK", evt.type, evt.x, evt.y, pos.x, pos.y)
             this.sendEvent(GameEvent.CLICK, evt.x, evt.y);
         }
         return true; 
