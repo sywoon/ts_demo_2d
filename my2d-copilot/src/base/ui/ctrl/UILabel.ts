@@ -4,6 +4,7 @@ import { UIFontStyle } from "./UIStyle";
 import { Size } from "../../math/Size";
 import { GameEvent } from "../../EventDefine";
 import { Vec2 } from "../../math/Vec2";
+import { DebugType } from "../UIDefine";
 
 
 export class UILabel extends UINode {
@@ -13,6 +14,7 @@ export class UILabel extends UINode {
 
     public constructor() {
         super();
+        this.setDebugType(DebugType.LabelRect);
         this.width = 100;
         this.height = 50;
     }
@@ -96,9 +98,11 @@ export class UILabel extends UINode {
         this.graphic.setStyle(this.style);
         this.graphic.drawText(this.text, _x, _y);
 
-        if (this.debug) {
-            let pt = this.adjustByAlign(_x, _y);
-            this.graphic.strokeRect(pt.x, pt.y, this.width, this.height, Color.Green);
+        if (this.debug > 0) {
+            if (this.isDebugType(DebugType.LabelRect)) {
+                let pt = this.adjustByAlign(_x, _y);
+                this.graphic.strokeRect(pt.x, pt.y, this.width, this.height, Color.Green);
+            }
         }
 
         super.onRender(x, y);

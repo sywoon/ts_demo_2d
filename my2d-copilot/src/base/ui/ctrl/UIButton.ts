@@ -2,6 +2,7 @@ import { UINode } from "./UINode";
 import { UILabel } from "./UILabel";
 import { Color } from "../../math/Color";
 import { GameEvent, MyMouseEvent } from "../../EventDefine";
+import { PropertyType, DebugType } from "../UIDefine";
 
 export class UIButton extends UINode {
     label:UILabel;
@@ -10,6 +11,8 @@ export class UIButton extends UINode {
 
     public constructor() {
         super();
+        this.debug = DebugType.Origin;
+
         this.width = 100;
         this.height = 50;
         this.setInteractAble(true);

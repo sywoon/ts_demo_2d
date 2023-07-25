@@ -148,8 +148,22 @@ export class Canvas2D {
         this.context.clearRect(x, y, width, height);
     }
 
-    private _drawByMode(mode:string) {
+    private _drawByMode(mode:string, colorFill:Color = null, colorStroke:Color = null) {
         let ctx = this.context;
+        let oldFillStyle;
+        if (colorFill) {
+            let cssColor = colorFill.toCssColor();
+            oldFillStyle = ctx.fillStyle;
+            ctx.fillStyle = cssColor;
+        }
+
+        let oldStrokeStyle;
+        if (colorStroke) {
+            let cssColor = colorStroke.toCssColor();
+            oldStrokeStyle = ctx.strokeStyle;
+            ctx.strokeStyle = cssColor;
+        }
+
         if (mode === "fill") {
             ctx.fill();
         } else if (mode === "stroke") {
@@ -157,6 +171,13 @@ export class Canvas2D {
         } else if (mode === "all") {
             ctx.fill();
             ctx.stroke();
+        }
+
+        if (oldFillStyle) {
+            ctx.fillStyle = oldFillStyle;
+        }
+        if (oldStrokeStyle)    {
+            ctx.strokeStyle = oldStrokeStyle;
         }
     }
 
@@ -166,21 +187,11 @@ export class Canvas2D {
                     colorFill:Color = null, colorStroke:Color = null): void {
         if (this.context === null) return;
         let ctx = this.context;
-        if (colorFill) {
-            let cssColor = colorFill.toCssColor();
-            ctx.fillStyle = cssColor;
-        }
-
-        if (colorStroke) {
-            let cssColor = colorStroke.toCssColor();
-            ctx.strokeStyle = cssColor;
-        }
-
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
 
-        this._drawByMode(mode);
+        this._drawByMode(mode, colorFill, colorStroke);
         ctx.closePath();
     }
 
@@ -189,22 +200,12 @@ export class Canvas2D {
                         colorFill:Color = null, colorStroke:Color = null) {
         if (this.context === null) return;
         let ctx = this.context;
-        if (colorFill) {
-            let cssColor = colorFill.toCssColor();
-            ctx.fillStyle = cssColor;
-        }
-
-        if (colorStroke) {
-            let cssColor = colorStroke.toCssColor();
-            ctx.strokeStyle = cssColor;
-        }
-
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
         ctx.lineTo(x3, y3);
 
-        this._drawByMode(mode);
+        this._drawByMode(mode, colorFill, colorStroke);
         ctx.closePath();
     }
 
@@ -213,19 +214,77 @@ export class Canvas2D {
             colorFill:Color = null, colorStroke:Color = null) {
         if (this.context === null) return;
         let ctx = this.context;
-        if (colorFill) {
-            let cssColor = colorFill.toCssColor();
-            ctx.fillStyle = cssColor;
-        }
-
-        if (colorStroke) {
-            let cssColor = colorStroke.toCssColor();
-            ctx.strokeStyle = cssColor;
-        }
-
         ctx.beginPath();
         ctx.arc(x, y, radius, startAngle, endAngle, antiClockWise);
-        this._drawByMode(mode);
+        this._drawByMode(mode, colorFill, colorStroke);
+        ctx.closePath();
+    }
+
+    //二次曲线 起点、终点、控制点
+    drawQuadraticCurve(x1:number, y1:number, x2:number, y2:number, 
+            xcp1:number, ycp1:number,
+            mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
+        if (this.context === null) return;
+        let ctx = this.context;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.quadraticCurveTo(xcp1, ycp1, x2, y2);
+        this._drawByMode(mode, colorFill, colorStroke);
+        ctx.closePath();
+    }
+
+    //二次曲线 支持多组点  一次画一个闭环
+    drawQuadraticCurveEx(xFrom:number, yFrom:number, 
+        arrPoints:Array<Array<number>>,  //[[xcp1,ycp1,x1,y1],[],...]
+        mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
+        if (this.context === null) return;
+        let ctx = this.context;
+        ctx.beginPath();
+        ctx.moveTo(xFrom, yFrom);
+
+        for (let arr of arrPoints) {
+            let xcp1 = arr[0];
+            let ycp1 = arr[1];
+            let x1 = arr[2];
+            let y1 = arr[3];
+            ctx.quadraticCurveTo(xcp1, ycp1, x1, y1);
+        }
+
+        this._drawByMode(mode, colorFill, colorStroke);
+        ctx.closePath();
+    }
+
+    //三次曲线 起点、终点、控制点1 控制点2
+    drawCubicCurve(x1:number, y1:number, x2:number, y2:number, 
+            xcp1:number, ycp1:number, xcp2:number, ycp2:number,
+            mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
+        if (this.context === null) return;
+        let ctx = this.context;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.bezierCurveTo(xcp1, ycp1, xcp2, ycp2, x2, y2);
+        this._drawByMode(mode, colorFill, colorStroke);
+        ctx.closePath();
+    }
+
+    //三次曲线 支持多组点
+    drawCubicCurveEx(xFrom:number, yFrom:number, 
+        arrPoints:Array<Array<number>>,  //[[xcp1,ycp1,xcp2,ycp2,x1,y1],[],...]
+        mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
+        if (this.context === null) return;
+        let ctx = this.context;
+        ctx.beginPath();
+        ctx.moveTo(xFrom, yFrom);
+        for (let arr of arrPoints) {
+            let xcp1 = arr[0];
+            let ycp1 = arr[1];
+            let xcp2 = arr[2];
+            let ycp2 = arr[3];
+            let x1 = arr[4];
+            let y1 = arr[5];
+            ctx.bezierCurveTo(xcp1, ycp1, xcp2, ycp2, x1, y1);
+        }
+        this._drawByMode(mode, colorFill, colorStroke);
         ctx.closePath();
     }
 

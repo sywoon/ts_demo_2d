@@ -20,13 +20,7 @@ import { Timer } from "../../Timer";
 import { EventDispatcher } from "../../EventDispatcher";
 import { Color } from "../../math/Color";
 import { GameEvent } from "../../EventDefine";
-
-
-export class PropertyType {
-    static Visible      = 2 ** 0;
-    static Awake        = 2 ** 1;      //是否已经创建
-    static InteractAble = 2 ** 2;  //是否可交互
-}
+import { PropertyType, DebugType } from "../UIDefine";
 
 
 //坐标系：采用opengl坐标系  左下角为原点 同cocos creator
@@ -56,7 +50,7 @@ export class UINode extends EventDispatcher {
         return AppRoot.getInstance().stage.timerUI;
     }
 
-    public debug: boolean = true;
+    public debug: number = 0;
     public x: number = 0;
     public y: number = 0;
     private _width: number = 100;
@@ -135,8 +129,11 @@ export class UINode extends EventDispatcher {
         let _x = x + this.x;  //不能修改x的值 需要上传
         let _y = y + this.y;
 
-        if (this.debug) {
-            this.graphic.drawArc(_x, _y, 3, 0, Math.PI * 2, true, "fill", Color.Red);
+        if (this.debug > 0) {
+            //原点位置
+            if (this.isDebugType(DebugType.Origin)) {
+                this.graphic.drawArc(_x, _y, 3, 0, Math.PI * 2, true, "fill", Color.Red);
+            }
         }
 
         for (let child of this._children) {
@@ -234,6 +231,13 @@ export class UINode extends EventDispatcher {
         return true;
     }
 
+    public setDebugType(flag:number): void {
+        this.debug = this.debug | flag;
+    }
+
+    public isDebugType(flag:number): boolean {
+        return (this.debug & flag) > 0;
+    }
 
     //-------------------------------------------
     // 属性部分
