@@ -21,6 +21,8 @@ export class UIRectTest extends ViewBase {
     }
 
     onRender(x: number, y: number): void {
+        super.onRender(x, y);
+
         let geo = this.geo;
 
         geo.fillRect(25, 25, 100, 100);
@@ -34,7 +36,5 @@ export class UIRectTest extends ViewBase {
         geo.drawArc(160, 65, 5, 0, Math.PI * 2, true, "fill");
         geo.drawArc(190, 65, 5, 0, Math.PI * 2, true, "fill");
         geo.drawArc(175, 75, 35, 0, Math.PI, false);
-
-        super.onRender(x, y);
     }
 }

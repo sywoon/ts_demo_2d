@@ -12,7 +12,7 @@ export class GameApp extends AppRoot {
         super.run();
         GameConfig.init();
         
-        this.uimgr.openUI("ui_labelTest");
+        this.uimgr.openUI("ui_main");
     }
 }
 

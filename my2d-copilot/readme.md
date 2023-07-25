@@ -28,5 +28,9 @@ npx parcel index.html
 ```
 
 ## 项目内容
+[canvas教程](https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API/Tutorial)
+
+
+
 
 

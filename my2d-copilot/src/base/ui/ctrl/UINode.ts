@@ -62,6 +62,7 @@ export class UINode extends EventDispatcher {
     private _width: number = 100;
     private _height: number = 100;
     public anchor: Vec2 = new Vec2(0.5, 0.5);
+    private _property:number = 1;
     private _parent: UINode = null;
     private _children: Array<UINode> = new Array<UINode>();
 
@@ -127,6 +128,7 @@ export class UINode extends EventDispatcher {
             child.onDestroy();
         }
         this.offAll();
+        this.removeFromParent();
     }
 
     public onRender(x:number, y:number): void {
@@ -143,7 +145,9 @@ export class UINode extends EventDispatcher {
     }
 
     public dispatchTouchEvent(evt: MyMouseEvent): boolean {
-        for (let child of this._children) {
+        //从上层到下层 从子节点到自己
+        for (let i = this._children.length-1; i>=0; i--) {
+            let child = this._children[i];
             if (child.dispatchTouchEvent(evt)) {
                 return true;
             }
@@ -165,7 +169,8 @@ export class UINode extends EventDispatcher {
     }  
 
     public dispatchKeyEvent(evt: MyKeyboardEvent): boolean { 
-        for (let child of this._children) {
+        for (let i = this._children.length-1; i>=0; i--) {
+            let child = this._children[i];
             if (child.dispatchKeyEvent(evt)) {
                 return true;
             }
@@ -179,7 +184,8 @@ export class UINode extends EventDispatcher {
     }
 
     public dispatchCtrlEvent(): boolean { 
-        for (let child of this._children) {
+        for (let i = this._children.length-1; i>=0; i--) {
+            let child = this._children[i];
             if (child.dispatchCtrlEvent()) {
                 return true;
             }
@@ -231,7 +237,6 @@ export class UINode extends EventDispatcher {
 
     //-------------------------------------------
     // 属性部分
-    private _property:number = 1;
     public setVisible(v:boolean): void {
         if (v) {
             this._property = this._property | PropertyType.Visible;

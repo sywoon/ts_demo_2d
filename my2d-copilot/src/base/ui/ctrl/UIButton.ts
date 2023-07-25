@@ -88,7 +88,7 @@ export class UIButton extends UINode {
         
         if (hit && evt.type == GameEvent.MOUSE_UP) {
             console.log("UIButton.CLICK", evt.type, evt.x, evt.y, pos.x, pos.y)
-            this.sendEvent(GameEvent.CLICK, evt.x, evt.y);
+            this.sendEvent(GameEvent.CLICK, evt.x, evt.y, this);
         }
         return true; 
     }
