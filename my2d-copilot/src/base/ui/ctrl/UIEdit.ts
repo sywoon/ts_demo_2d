@@ -11,13 +11,12 @@ export class UIEdit extends UINode {
     label: UILabel;
     strokeColors:Color[] = [Color.Black, Color.Red];
 
-    private _inputEvents: any = {};
     private _focus: boolean = false;
 
     public constructor() {
         super();
-        this.width = 100;
-        this.height = 50;
+        this.width = 120;
+        this.height = 40;
         this.setInteractAble(true);
 
         let label = new UILabel();
@@ -26,6 +25,7 @@ export class UIEdit extends UINode {
         label.debug = 0;
         label.hAlign = "left";
         label.vAlign = "top";
+        label.onEvent(GameEvent.RESIZE, this._onLabelResize, this);
     }
 
     set text(v: string) {
@@ -41,40 +41,24 @@ export class UIEdit extends UINode {
         this.input.type = v;
     }
 
+    private _onLabelResize(width:number, height:number):void {
+        let x = (this.width - width) / 2;
+        let y = (this.height - height) / 2;
+
+        //单行居中
+        if (!this.style.mutiLine) {
+            let pt = this.label.adjustByAlign(0, 0);
+            // this.label.x = x - pt.x;
+            this.label.y = y - pt.y;
+        }
+    }
+
     public onCreate(): void {
         super.onCreate();
-        this._inputEvents = {
-            'change' : (v:InputEvent) => {
-                console.log('The input has changed', v);
-            },
-            'input' : (v:InputEvent) => {
-                console.log('The input is being changed', v);
-                this.text = this.input.value;
-            },
-            'focus' : () => {
-                console.log('The input got focus');
-            },
-            'blur' : () => {
-                console.log('The input lost focus');
-            },
-            'keydown' : (v:KeyboardEvent) => {
-                console.log('A key was pressed down', v);
-                if (v.key == 'Enter') {
-                    this.appRoot.inputBlur(this);
-                }
-            },
-            'select' : (v:any) => {
-                console.log('Some text was selected', v);
-            },
-        };
-
-        
     }
 
     public onDestroy(): void {
         super.onDestroy();
-        this._unregisterEvent();
-        this._inputEvents = {};
     }
 
     public onTouchEvent(evt: MyMouseEvent): boolean {
@@ -101,61 +85,40 @@ export class UIEdit extends UINode {
 
     public onFocus(): void {
         this._focus = true;
-        this.input.focus();
         this.input.type = this.style.type;
         this.input.maxLength = this.style.maxLength;
         this.input.value = this.text;
-        this._registerEvent();
+        this.input.focus();
     }
 
     public onBlur(): void {
         this._focus = false;
         this.input.blur();
-        this._unregisterEvent();
     }
 
-    private _registerEvent(): void {
-        let input = this.input;
-        let events = this._inputEvents;
-        // 当输入框的内容改变，并且失去焦点时，会触发这个事件
-        input.addEventListener('change', events['change']);
-
-        // 当输入框的内容改变时，无论是否失去焦点，都会触发这个事件
-        input.addEventListener('input', events['input']);
-
-        // 当输入框获得焦点时，会触发这个事件
-        input.addEventListener('focus', events['focus']);
-
-        // 当输入框失去焦点时，会触发这个事件
-        input.addEventListener('blur', events['blur']);
-
-        // 当用户在输入框中按下一个键时，会触发这个事件
-        input.addEventListener('keydown', events['keydown']);
-
-        // 当用户在输入框中选择一段文本时，会触发这个事件
-        input.addEventListener('select', events['select']);
-    }
-
-    private _unregisterEvent(): void {
-        let input = this.input;
-        let events = this._inputEvents;
-        // 当输入框的内容改变，并且失去焦点时，会触发这个事件
-        input.removeEventListener('change', events['change']);
-
-        // 当输入框的内容改变时，无论是否失去焦点，都会触发这个事件
-        input.removeEventListener('input', events['input']);
-
-        // 当输入框获得焦点时，会触发这个事件
-        input.removeEventListener('focus', events['focus']);
-
-        // 当输入框失去焦点时，会触发这个事件
-        input.removeEventListener('blur', events['blur']);
-
-        // 当用户在输入框中按下一个键时，会触发这个事件
-        input.removeEventListener('keydown', events['keydown']);
-
-        // 当用户在输入框中选择一段文本时，会触发这个事件
-        input.removeEventListener('select', events['select']);
+    public onInputEvent(type:string, evt:Event) {
+        switch (type) {
+            case "change":
+                this.text = this.input.value;
+                break;
+            case "input":
+                this.text = this.input.value;
+                break;
+            case "focus":
+                break;
+            case "blur":
+                break;
+            case "keydown":
+                {
+                    let e = evt as KeyboardEvent;
+                    if (e.code == "Enter") {
+                        this.appRoot.inputFocus(this);
+                    }
+                }
+                break;
+            case "select":
+                break;
+        }
     }
 
     public onRender(x:number, y:number): void {

@@ -129,6 +129,32 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
             input.focus();
             document.body.appendChild(input);
             this.inputElement = input;
+
+            input.addEventListener('change', (evt: Event) => {  //InputEvent
+                console.log('The input has changed', evt);
+                this.inputUI && this.inputUI.onInputEvent('change', evt);
+            },);
+            input.addEventListener('input', (evt: Event) => {
+                console.log('The input has input', evt);
+                this.inputUI && this.inputUI.onInputEvent('change', evt);
+            });
+            input.addEventListener('focus', () => {
+                console.log('The input got focus');
+                this.inputUI && this.inputUI.onInputEvent('change', null);
+            });
+            input.addEventListener('blur', () => {
+                console.log('The input got blur');
+                this.inputUI && this.inputUI.onInputEvent('change', null);
+            });
+            input.addEventListener('keydown', (evt:KeyboardEvent) => {
+                console.log('A key was pressed down', evt);
+                this.inputUI && this.inputUI.onInputEvent('change', evt);
+            });
+            input.addEventListener('select', (v:any) => {
+                console.log('Some text was selected', v);
+                this.inputUI && this.inputUI.onInputEvent('select', null);
+            });
+    
         }
     }
 
@@ -173,13 +199,14 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
 
     protected dispatchMouseEvent(evt: MyMouseEvent): void {
         if (this.inputUI && evt.type == GameEvent.MOUSE_DOWN) {
-            let pos = this.inputUI.globalToLocal(evt.x, evt.y);
-            if (this.inputUI.hitTest(pos.x, pos.y)) {
-                return;
-            } else {  //点击游戏输入框外部 结束本次输入
+            //就算点击到输入框内 也会触发input element的blur事件
+            // let pos = this.inputUI.globalToLocal(evt.x, evt.y);
+            // if (this.inputUI.hitTest(pos.x, pos.y)) {
+            //     return;
+            // } else {  //点击游戏输入框外部 结束本次输入
                 this.inputUI.onBlur();
                 this.inputUI = null;
-            }
+            // }
         }
 
         this.stage.dispatchTouchEvent(evt);
