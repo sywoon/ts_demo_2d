@@ -20,9 +20,10 @@ export class ViewBase extends UINode {
 
     public constructor() {
         super();
+        this.setInteractAble(true);  //接收鼠标事件  防止透到下一层
     }
 
-    public onCreate(): void {
+    public onCreate(...args:any[]): void {
         let size = this.gameApp.getCanvasSize();
         this.width = size.width;
         this.height = size.height;

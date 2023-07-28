@@ -37,6 +37,10 @@ export class UINode extends EventDispatcher {
         return new UINode();
     }
 
+    get appRoot(): AppRoot {
+        return AppRoot.getInstance();
+    }
+
     get graphic(): IGraphic {
         return AppRoot.getInstance().graphic;
     }

@@ -14,7 +14,9 @@ export class UIStyle {
     }
 }
 
-export class UIFontStyle extends UIStyle {
+//css3 color: https://www.w3.org/TR/css-color-3/
+//颜色工具：https://tool.oschina.net/commons?type=3
+export class UILabelStyle extends UIStyle {
     constructor() {
         super();
         this.font = "sans-serif";
@@ -36,6 +38,11 @@ export class UIFontStyle extends UIStyle {
     }
 }
 
+export class UIInputStyle extends UILabelStyle {
+    type: string = "text"; //text password
+    mutiLine: boolean = false;
+    maxLength: number = 999;
+}
 
 export class UIGeometryStyle extends UIStyle {
     constructor() {

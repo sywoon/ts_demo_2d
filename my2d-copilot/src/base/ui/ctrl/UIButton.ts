@@ -47,9 +47,12 @@ export class UIButton extends UINode {
         let _x = x + this.x;  //不能修改x的值 需要上传
         let _y = y + this.y;
 
-        this.graphic.fillRect(_x, _y, this.width, this.height, Color.Gray);
+        this.graphic.roundRect(_x, _y, this.width, this.height, 10, "fill", Color.Gray);
+        // this.graphic.fillRect(_x, _y, this.width, this.height, Color.Gray);
+
         let color = this.mouseDown ? this.strokeColors[1] : this.strokeColors[0];
-        this.graphic.strokeRect(_x, _y, this.width, this.height, color);
+        this.graphic.roundRect(_x, _y, this.width, this.height, 10, "stroke", null, color);
+        // this.graphic.strokeRect(_x, _y, this.width, this.height, color);
 
         //先画自己 再画子节点
         super.onRender(x, y);

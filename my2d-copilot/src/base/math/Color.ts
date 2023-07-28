@@ -1,11 +1,21 @@
 export class Color {
     static Black: Color = new Color(0, 0, 0, 1);
+    static Gray: Color = new Color(0.5, 0.5, 0.5, 1);
+    static Silver: Color = new Color(0.75, 0.75, 0.75, 1);
     static White: Color = new Color(1, 1, 1, 1);
     static Red: Color = new Color(1, 0, 0, 1);
+    static Maroon: Color = new Color(0.5, 0, 0, 1);  //栗色
     static Green: Color = new Color(0, 1, 0, 1);
-    static Blue: Color = new Color(0, 0, 1, 1);
+    static Lime: Color = new Color(0, 0.5, 0, 1);  //绿黄色
+    static Olive: Color = new Color(0.5, 0.5, 0, 1);  //橄榄色
     static Yellow: Color = new Color(1, 1, 0, 1);
-    static Gray: Color = new Color(0.5, 0.5, 0.5, 1);
+    static Purple: Color = new Color(0.5, 0, 0.5, 1);  //紫色
+    static Cyan: Color = new Color(0, 1, 1, 1);  //青色
+    static Orange: Color = new Color(1, 0.5, 0, 1);  //橙色
+    static Teal: Color = new Color(0, 0.5, 0.5, 1);  //蓝绿色
+    static Aqua: Color = new Color(0, 1, 1, 1);  //水绿色
+    static Navy: Color = new Color(0, 0, 0.5, 1);  //海军蓝
+    static Blue: Color = new Color(0, 0, 1, 1);
 
     static Create(r: number = 0, g: number = 0, b: number = 0, a: number = 1): Color {
         return new Color(r, g, b, a);
@@ -37,7 +47,7 @@ export class Color {
         this.a = a;
     }
 
-    // #ff0000 or #ff0000ff
+    // 0xff0000 or 0xff0000ff
     public fromHex(hex: number): Color {
         if (hex < 0) {
             console.error("Color.fromHex error: hex < 0");
@@ -60,7 +70,7 @@ export class Color {
         return this;
     }
 
-    //#ff0000
+    //0xff0000
     public fromHex2(hex: number, alpha: number = 1): Color {
         let r = (hex >> 16) & 0xFF;
         let g = (hex >> 8) & 0xFF;

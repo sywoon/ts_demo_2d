@@ -2,6 +2,7 @@ import { ClassUtils } from "./base/ClassUtils";
 import { UILabelTest } from "./view/UILablelTest";
 import { UIRectTest } from "./view/UIRectTest";
 import { UIMain } from "./view/UIMain";
+import { UIColorPalette } from "./view/UIColorPalette";
 
 export let ViewConfig:any = {
     ui_main: {
@@ -12,7 +13,10 @@ export let ViewConfig:any = {
     },
     ui_rectTest: {
         cls: UIRectTest, desc: "测试矩形", isFullScreen: true,
-    }
+    },
+    ui_colorPalette: {
+        cls: UIColorPalette, desc: "调色板", isFullScreen: true,
+    },
 };
 
 export class GameConfig {

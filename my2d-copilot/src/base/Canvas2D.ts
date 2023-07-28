@@ -143,9 +143,29 @@ export class Canvas2D {
         ctx.strokeRect(x, y, width, height);
     }
 
-    clearRect(x:number, y:number, width:number, height:number) {
+    public clearRect(x:number, y:number, width:number, height:number) {
         if (this.context === null) return;
         this.context.clearRect(x, y, width, height);
+    }
+
+    //圆角矩形
+    public roundRect(x:number, y:number, width:number, height:number, radius:number, 
+            mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
+        if (this.context === null) return;
+
+        let ctx = this.context;
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.arc(x + width - radius, y + radius, radius, Math.PI * 3 / 2, Math.PI * 2);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.arc(x + width - radius, y + height - radius, radius, 0, Math.PI / 2);
+        ctx.lineTo(x + radius, y + height);
+        ctx.arc(x + radius, y + height - radius, radius, Math.PI / 2, Math.PI);
+        ctx.lineTo(x, y + radius);
+        ctx.arc(x + radius, y + radius, radius, Math.PI, Math.PI * 3 / 2);
+
+        this._drawByMode(mode, colorFill, colorStroke);
     }
 
     private _drawByMode(mode:string, colorFill:Color = null, colorStroke:Color = null) {
@@ -330,6 +350,9 @@ export class Canvas2D {
                 break;
             case "keyup":
                 keyboardEvt.type = GameEvent.KEY_UP;
+                break;
+            case "keypress":  //只对能够输入可打印字符的键有效  输入内容时会触发
+                return;
                 break;
             default:
                 console.error("evt type error:", evt.type);

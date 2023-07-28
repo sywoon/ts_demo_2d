@@ -47,6 +47,11 @@ export class Graphic implements IGraphic {
         this.canvas2d.clearRect(x, y, width, height);
     }
 
+    roundRect(x:number, y:number, width:number, height:number, radius:number, 
+        mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
+        this.canvas2d.roundRect(x, y, width, height, radius, mode, colorFill, colorStroke);
+    }
+
     //mode:fill stroke all
     drawLine(x1:number, y1:number, x2:number, y2:number, mode:string="stroke", 
             colorFill:Color = null, colorStroke:Color = null) {

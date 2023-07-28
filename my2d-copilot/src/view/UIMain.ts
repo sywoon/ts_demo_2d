@@ -21,19 +21,35 @@ export class UIMain extends ViewBase {
         nodeRoot.x = 10;
         nodeRoot.y = 10;
 
+        let x = 0;
+        let y = 0;
         {
             let btn = new UIButton();
             nodeRoot.addChild(btn);
+            btn.x = x;
+            btn.y = y;
             btn.text = "文字测试";
             btn.onEvent(GameEvent.CLICK, this._onBtnText, this);
         }
 
         {
+            x += 120;
             let btn = new UIButton();
             nodeRoot.addChild(btn);
+            btn.x = x;
+            btn.y = y;
             btn.text = "矩形测试";
-            btn.x = 120;
             btn.onEvent(GameEvent.CLICK, this._onBtnRect, this);
+        }
+
+        {
+            x += 120;
+            let btn = new UIButton();
+            nodeRoot.addChild(btn);
+            btn.x = x;
+            btn.y = y;
+            btn.text = "调色板";
+            btn.onEvent(GameEvent.CLICK, this._onBtnColor, this);
         }
     }
 
@@ -47,5 +63,9 @@ export class UIMain extends ViewBase {
 
     private _onBtnRect(x:number, y:number, btn:UIButton) {
         this.uimgr.openUI("ui_rectTest");
+    }
+
+    private _onBtnColor(x:number, y:number, btn:UIButton) {
+        this.uimgr.openUI("ui_colorPalette");
     }
 }

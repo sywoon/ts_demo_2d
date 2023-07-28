@@ -1,6 +1,6 @@
 import { UINode } from "./UINode";
 import { Color } from "../../math/Color";
-import { UIFontStyle } from "./UIStyle";
+import { UILabelStyle } from "./UIStyle";
 import { Size } from "../../math/Size";
 import { GameEvent } from "../../EventDefine";
 import { Vec2 } from "../../math/Vec2";
@@ -9,7 +9,7 @@ import { DebugType } from "../UIDefine";
 
 export class UILabel extends UINode {
     private _text: string = "";
-    style: UIFontStyle = new UIFontStyle();
+    style: UILabelStyle = new UILabelStyle();
     autoResize: boolean = true;  //根据文字内容 自动计算大小
 
     public constructor() {

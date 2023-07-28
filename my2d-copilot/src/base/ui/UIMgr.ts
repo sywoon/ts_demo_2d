@@ -24,7 +24,7 @@ export class UIMgr {
     public init(): void {
     }
 
-    public openUI(uiName:string): void {
+    public openUI(uiName:string, ...args:any[]): void {
         let cfg = ClassUtils.getRegClass(uiName);
         if (!cfg) {
             console.error("openUI error: uiName not found", uiName);
@@ -34,7 +34,7 @@ export class UIMgr {
         let ui: ViewBase = new cfg.cls();
         ui.uiName = uiName;
         ui.config = cfg;
-        ui.onCreate();
+        ui.onCreate(...args);
         this._uiList.push(ui);
         this.stage.addChild(ui);
     }

@@ -7,6 +7,7 @@ import { Timer } from "./Timer";
 import { Size } from "./math/Size";
 import { UIMgr } from "./ui/UIMgr";
 import { GameEvent } from "./EventDefine";
+import { UIEdit } from "./ui/ctrl/UIEdit";
 
 
 //EventListenerObject dom中注册的addEventListener回调监听
@@ -17,6 +18,8 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
     uimgr: UIMgr;
     timer: Timer;
     visible: boolean = true;
+    inputElement: HTMLInputElement = null;
+    inputUI: UIEdit = null;
 
     public static instance: AppRoot = null; //基类中实例化
     public static getInstance(): AppRoot {
@@ -36,6 +39,7 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
         this.uimgr = new UIMgr();
 
         this._registerCanvasEvent();
+        this._createInput();
     }
 
     public getCanvasSize(): Size {
@@ -99,6 +103,49 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
                 this.onResize();
             });
         }
+
+        
+    }
+
+    private _createInput(): void {
+        {
+            let input = document.createElement("input");
+            input.type = "text";  //text password
+            input.style.position = "absolute";
+            input.style.right = "0px";
+            input.style.top = "20px";
+            // input.style.opacity = "0";
+            input.style.width = "100px";
+            input.style.height = "20px";
+            // input.style.border = "none";
+            // input.style.outline = "none";
+            // input.style.zIndex = "-100";
+            // input.style.background = "none";
+            // input.style.resize = "none";
+            // input.style.overflow = "hidden";
+            input.maxLength = 99;
+            input.placeholder = "place holder";
+            input.value = "input test";
+            input.focus();
+            document.body.appendChild(input);
+            this.inputElement = input;
+        }
+    }
+
+    //游戏控件主动调用 UIEdit -> input element
+    inputFocus(ui:UIEdit) {
+        if (this.inputUI) {
+            this.inputUI.onBlur();
+        }
+        this.inputUI = ui;
+        ui.onFocus();
+    }
+
+    inputBlur(ui:UIEdit) {
+        if (this.inputUI == ui) {
+            ui.onBlur();
+            this.inputUI = null;
+        }
     }
 
     public handleEvent(evt: Event): void {
@@ -123,10 +170,28 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
     }
 
     protected dispatchMouseEvent(evt: MyMouseEvent): void {
+        if (this.inputUI && evt.type == GameEvent.MOUSE_DOWN) {
+            let pos = this.inputUI.globalToLocal(evt.x, evt.y);
+            if (this.inputUI.hitTest(pos.x, pos.y)) {
+                return;
+            } else {  //点击游戏输入框外部 结束本次输入
+                this.inputUI.onBlur();
+                this.inputUI = null;
+            }
+        }
+
         this.stage.dispatchTouchEvent(evt);
     }
 
     protected dispatchKeyEvent(evt: MyKeyboardEvent): void {
+        if (this.inputUI && evt.type == GameEvent.KEY_DOWN) {
+            if (evt.key == "Enter") {
+                this.inputUI.onBlur();
+                this.inputUI = null;
+                return;
+            }
+        }
+
         this.stage.dispatchKeyEvent(evt);
     }
 
