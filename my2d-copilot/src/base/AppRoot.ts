@@ -134,6 +134,8 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
 
     //游戏控件主动调用 UIEdit -> input element
     inputFocus(ui:UIEdit) {
+        if (this.inputUI == ui)
+            return;
         if (this.inputUI) {
             this.inputUI.onBlur();
         }

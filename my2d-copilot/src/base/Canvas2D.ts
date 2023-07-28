@@ -352,15 +352,15 @@ export class Canvas2D {
                 keyboardEvt.type = GameEvent.KEY_UP;
                 break;
             case "keypress":  //只对能够输入可打印字符的键有效  输入内容时会触发
-                return;
+                keyboardEvt.type = GameEvent.KEY_PRESS;
                 break;
             default:
                 console.error("evt type error:", evt.type);
                 break;
         }
 
-        keyboardEvt.key = evt.key;
-        keyboardEvt.keyCode = evt.keyCode;
+        keyboardEvt.key = evt.key;   //键的字符
+        keyboardEvt.code = evt.code;  //键盘事件的键的物理代码
         keyboardEvt.repeat = evt.repeat;
         keyboardEvt.altKey = evt.altKey;
         keyboardEvt.ctrlKey = evt.ctrlKey;

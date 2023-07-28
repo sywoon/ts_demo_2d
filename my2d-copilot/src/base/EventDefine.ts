@@ -11,6 +11,7 @@ export class GameEvent {
 
     static KEY_DOWN = "key_down";
     static KEY_UP = "key_up";
+    static KEY_PRESS = "key_press";  //只对能够输入可打印字符的键有效
 
     static RESIZE = "resize";
 }
@@ -29,6 +30,6 @@ export class MyKeyboardEvent {
     public shiftKey: boolean = false;
 
     public key: string;
-    public keyCode: number;
+    public code: string;
     public repeat: boolean;
 }
