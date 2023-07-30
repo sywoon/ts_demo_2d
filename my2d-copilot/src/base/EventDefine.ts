@@ -14,6 +14,10 @@ export class GameEvent {
     static KEY_PRESS = "key_press";  //只对能够输入可打印字符的键有效
 
     static RESIZE = "resize";
+
+
+    //自定义事件 UI扩展
+    static COLOR_SELECTED = "color_selected";  //颜色选择器颜色改变
 }
 
 //避免和dom的MouseEvent冲突 换个名字

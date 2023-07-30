@@ -17,6 +17,8 @@ export class Color {
     static Navy: Color = new Color(0, 0, 0.5, 1);  //海军蓝
     static Blue: Color = new Color(0, 0, 1, 1);
 
+    static temp: Color = new Color();
+
     static Create(r: number = 0, g: number = 0, b: number = 0, a: number = 1): Color {
         return new Color(r, g, b, a);
     }
@@ -32,6 +34,22 @@ export class Color {
         let color = new Color();
         color.fromString(str);
         return color;
+    }
+
+    static Lerp(colorFrom: Color, colorTo: Color, t: number, outColor: Color = null): Color {
+        // 计算颜色值
+        var r = colorFrom.r + (colorTo.r - colorFrom.r) * t;
+        var g = colorFrom.g + (colorTo.g - colorFrom.g) * t;
+        var b = colorFrom.b + (colorTo.b - colorFrom.b) * t;
+
+        if (outColor == null) {
+            outColor = new Color();
+        }
+        outColor.r = r;
+        outColor.g = g;
+        outColor.b = b;
+        outColor.a = 1;
+        return outColor;
     }
 
     r: number = 0;
@@ -161,5 +179,13 @@ export class Color {
         let b = Math.floor(this.b * 255);
         let a = this.a;
         return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+    }
+
+    public lerp(color: Color, t: number): Color {
+        let r = this.r + (color.r - this.r) * t;
+        let g = this.g + (color.g - this.g) * t;
+        let b = this.b + (color.b - this.b) * t;
+        let a = this.a + (color.a - this.a) * t;
+        return new Color(r, g, b, a);
     }
 }

@@ -57,9 +57,12 @@ export class UINode extends EventDispatcher {
     public debug: number = 0;
     public x: number = 0;
     public y: number = 0;
+    public isMouseDown:boolean = false;
+    public isMouseIn:boolean = false;  //down后 就算移出控件外部 也可以接收move事件
+    public anchor: Vec2 = new Vec2(0.5, 0.5);
+
     private _width: number = 100;
     private _height: number = 100;
-    public anchor: Vec2 = new Vec2(0.5, 0.5);
     private _property:number = 1;
     private _parent: UINode = null;
     private _children: Array<UINode> = new Array<UINode>();
@@ -159,8 +162,50 @@ export class UINode extends EventDispatcher {
     }
 
     public onTouchEvent(evt: MyMouseEvent): boolean {  //返回true表示事件被处理了
-        //子类实现
-        return false; 
+        if (!this.isInteractAble())
+            return false;
+
+        let pos = this.globalToLocal(evt.x, evt.y);
+        //只有down才做命中测试 捕获控件
+        //后续事件move up都只发给它 直到up后才释放控件 或移出浏览器导致up事件丢失
+        let hit = this.hitTest(pos.x, pos.y);
+        this.isMouseIn = hit;
+
+        if (this.isMouseDown) {
+            //异常情况 上次被down 但没up 又down了 可能鼠标移出浏览器导致up事件丢失
+            if (evt.type == GameEvent.MOUSE_DOWN) {
+                if (!hit) {
+                    this.isMouseDown = false;
+                    return false;
+                }
+            } else {
+                //其他情况 无需做hit测试
+            }
+        } else {
+            if (!hit)
+                return false;
+        }
+
+        switch (evt.type) {
+            case GameEvent.MOUSE_DOWN:
+                this.isMouseDown = true;
+                break;
+            case GameEvent.MOUSE_UP:
+                this.isMouseDown = false;
+                break;
+            case GameEvent.MOUSE_MOVE:
+                break;
+            default:
+                break;
+        }
+        this.sendEvent(evt.type, evt.x, evt.y, this);
+        // console.log("Touch", hit, evt.type, evt.x, evt.y, pos.x, pos.y)
+        
+        if (hit && evt.type == GameEvent.MOUSE_UP) {
+            // console.log("CLICK", evt.type, evt.x, evt.y, pos.x, pos.y)
+            this.sendEvent(GameEvent.CLICK, evt.x, evt.y, this);
+        }
+        return true; 
     }  
 
     public dispatchKeyEvent(evt: MyKeyboardEvent): boolean { 
@@ -193,8 +238,11 @@ export class UINode extends EventDispatcher {
         return false; 
     }
 
-    public globalToLocal(x:number, y:number): Vec2 {
-        let pos = new Vec2(x-this.x, y-this.y);
+    public globalToLocal(x:number, y:number, out:Vec2=null): Vec2 {
+        let pos = out || new Vec2();
+        pos.x = x-this.x;
+        pos.y = y-this.y;
+
         let parent = this._parent;
         while (parent) {
             pos.x -= parent.x;
@@ -204,8 +252,11 @@ export class UINode extends EventDispatcher {
         return pos;
     }
 
-    public localToGlobal(x:number, y:number): Vec2 {
-        let pos = new Vec2(x+this.x, y+this.y);
+    public localToGlobal(x:number, y:number, out:Vec2=null): Vec2 {
+        let pos = new Vec2();
+        pos.x = x+this.x;
+        pos.y = y+this.y;
+
         let parent = this._parent;
         while (parent) {
             pos.x += parent.x;

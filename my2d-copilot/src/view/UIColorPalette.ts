@@ -6,6 +6,7 @@ import { Size } from "../base/math/Size";
 import { UIGeometry } from "../base/ui/ctrl/UIGeometry";
 import { UIEdit } from "../base/ui/ctrl/UIEdit";
 import { UIColorGradient } from "../base/ui/ctrl/UIColorGradient";
+import { GameEvent } from "../base/EventDefine";
 
 
 export class UIColorPalette extends ViewBase {
@@ -15,6 +16,9 @@ export class UIColorPalette extends ViewBase {
     geoPlette: UIGeometry;
     geoEdit: UIGeometry;
     colorEdit: Color;
+
+    private _colorFrom: Color = new Color(1, 0, 0, 1);
+    private _colorTo: Color = new Color(1, 1, 1, 1);
 
     // 主题颜色：
     // 深蓝（主要）: #0D47A1
@@ -118,9 +122,15 @@ export class UIColorPalette extends ViewBase {
             colorGrd.x = 10;
             colorGrd.y = 330;
             this.addChild(colorGrd);
+            colorGrd.onEvent(GameEvent.COLOR_SELECTED, this._onColorGrdSelected, this);
         }
     }
 
+    private _onColorGrdSelected(colorGrd:UIColorGradient) {
+        let color = colorGrd.selectedColor;
+        this._colorFrom.copyFrom(color);
+    }
+    
     onRender(x: number, y: number): void {
         super.onRender(x, y);
 
@@ -134,9 +144,9 @@ export class UIColorPalette extends ViewBase {
             let h = this._cellSize.height;
             let cw = this._cellCount.width;
             let ch = this._cellCount.height;
-            let colorFrom = new Color(1, 0, 0, 1);
-            let colorTo = new Color(1, 1, 1, 1);
-            let color = new Color(0, 0, 0, 1);
+            let colorFrom = this._colorFrom;
+            let colorTo = this._colorTo;
+            let color = Color.temp;
             for (var i = 0; i < cw; i++) {
                 for (var j = 0; j < ch; j++) {
                     _x = i * w;
