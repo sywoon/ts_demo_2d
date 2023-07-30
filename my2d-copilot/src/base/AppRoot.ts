@@ -113,7 +113,7 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
             input.type = "text";  //text password
             input.style.position = "absolute";
             input.style.right = "0px";
-            input.style.top = "20px";
+            input.style.top = "-20px";
             // input.style.opacity = "0";
             input.style.width = "100px";
             input.style.height = "20px";

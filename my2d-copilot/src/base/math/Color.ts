@@ -140,25 +140,25 @@ export class Color {
     }
 
     public toRGB(): number {
-        let r = this.r * 255;
-        let g = this.g * 255;
-        let b = this.b * 255;
+        let r = Math.floor(this.r * 255);
+        let g = Math.floor(this.g * 255);
+        let b = Math.floor(this.b * 255);
         return (r << 16) | (g << 8) | b;
     }
 
     public toRGBA(): number {
-        let r = this.r * 255;
-        let g = this.g * 255;
-        let b = this.b * 255;
-        let a = this.a * 255;
+        let r = Math.floor(this.r * 255);
+        let g = Math.floor(this.g * 255);
+        let b = Math.floor(this.b * 255);
+        let a = Math.floor(this.a * 255);
         return (r << 24) | (g << 16) | (b << 8) | a;
     }
 
     public toString(): string {
-        let r = this.r * 255;
-        let g = this.g * 255;
-        let b = this.b * 255;
-        let a = this.a * 255;
+        let r = Math.floor(this.r * 255);
+        let g = Math.floor(this.g * 255);
+        let b = Math.floor(this.b * 255);
+        let a = Math.floor(this.a * 255);
         return "#" + r.toString(16) + g.toString(16) + b.toString(16) + a.toString(16);
     }
 
@@ -181,11 +181,17 @@ export class Color {
         return "rgba(" + r + "," + g + "," + b + "," + a + ")";
     }
 
-    public lerp(color: Color, t: number): Color {
+    public lerp(color: Color, t: number, out:Color=null): Color {
         let r = this.r + (color.r - this.r) * t;
         let g = this.g + (color.g - this.g) * t;
         let b = this.b + (color.b - this.b) * t;
         let a = this.a + (color.a - this.a) * t;
-        return new Color(r, g, b, a);
+
+        out = out || new Color();
+        out.r = r;
+        out.g = g;
+        out.b = b;
+        out.a = a;
+        return out;
     }
 }

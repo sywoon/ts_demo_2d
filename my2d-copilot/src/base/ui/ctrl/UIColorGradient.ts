@@ -30,8 +30,8 @@ export class UIColorGradient extends UIGeometry {
 
         let lable = new UILabel();
         lable.text = "选择的颜色";
-        lable.x = this.ptSelColor.x + 40;
-        lable.y = this.ptSelColor.y;
+        lable.x = this.ptSelColor.x + 30;
+        lable.y = this.ptSelColor.y + 3;
         lable.style.vAlign = "top";
         lable.fontSize = 18;
         lable.debug = 0;
@@ -78,8 +78,19 @@ export class UIColorGradient extends UIGeometry {
     }
 
     private _onMouseMove(x:number, y:number) {
-        if (!this.isMouseDown || !this.isMouseIn)
+        if (!this.isMouseDown)
             return;
+        if (!this.isMouseIn) {
+            if (x < this.x || x > this.x + this.width)
+                return;
+
+            if (y < this.y) {
+                y = this.y;
+            } else if (y > this.y + this.height) {
+                y = this.y + this.height;
+            }
+        }
+
         let pt = this.globalToLocal(x, y, this._curSelPt);
         this._setSelPt(pt);
     }
@@ -110,7 +121,7 @@ export class UIColorGradient extends UIGeometry {
 
         let color = out || new Color();
         color.copyFrom(from[1]);
-        color.lerp(to[1], percent2);
+        color.lerp(to[1], percent2, color);
         return color;
     }
 }
