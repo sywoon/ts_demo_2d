@@ -93,12 +93,6 @@ export class UINode extends EventDispatcher {
     protected onSizeChanged(): void {
     }
 
-    //创建节点  和构造函数一样 为了统一好看些
-    public onCreate(): void {
-        for (let child of this._children) {
-            child.onCreate();
-        }
-    }
     //第一次加入节点
     public onAwake(): void {
         for (let child of this._children) {

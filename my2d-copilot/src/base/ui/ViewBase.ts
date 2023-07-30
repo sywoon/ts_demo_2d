@@ -23,6 +23,8 @@ export class ViewBase extends UINode {
         this.setInteractAble(true);  //接收鼠标事件  防止透到下一层
     }
 
+    
+    //创建时调用 此时子控件和ui配置还未加载
     public onCreate(...args:any[]): void {
         let size = this.gameApp.getCanvasSize();
         this.width = size.width;

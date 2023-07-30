@@ -5,6 +5,7 @@ import { Color } from "../base/math/Color";
 import { Size } from "../base/math/Size";
 import { UIGeometry } from "../base/ui/ctrl/UIGeometry";
 import { UIEdit } from "../base/ui/ctrl/UIEdit";
+import { UIColorGradient } from "../base/ui/ctrl/UIColorGradient";
 
 
 export class UIColorPalette extends ViewBase {
@@ -110,6 +111,13 @@ export class UIColorPalette extends ViewBase {
             edit.x = 400;
             edit.y = 400;
             this.addChild(edit);
+        }
+
+        {
+            let colorGrd = new UIColorGradient();
+            colorGrd.x = 10;
+            colorGrd.y = 330;
+            this.addChild(colorGrd);
         }
     }
 

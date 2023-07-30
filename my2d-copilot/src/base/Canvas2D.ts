@@ -27,7 +27,6 @@ export class Canvas2D {
             font: "24px sans-serif",
             textBaseline: "middle",
             textAlign: "left"
-
         })
 
         this._initBorderSize();
@@ -69,6 +68,7 @@ export class Canvas2D {
         if (this.context === null) return;
 
         let ctx = this.context;
+        //除了color外 还可以是色带ctx.createLinearGradient()
         status["fillStyle"] ? ctx.fillStyle = status["fillStyle"] : null;  //red rgb(200,0,0) 填充文字 矩形
         status["strokeStyle"] ? ctx.strokeStyle = status["strokeStyle"] : null;  //red rgb(200,0,0) 画文字 矩形边框
         status["font"] ? ctx.font = status["font"] : null;  //"20px sans-serif"

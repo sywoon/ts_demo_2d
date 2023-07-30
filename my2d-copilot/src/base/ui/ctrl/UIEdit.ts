@@ -53,10 +53,6 @@ export class UIEdit extends UINode {
         }
     }
 
-    public onCreate(): void {
-        super.onCreate();
-    }
-
     public onDestroy(): void {
         super.onDestroy();
     }
