@@ -9,7 +9,8 @@ import { UIEdit } from "../base/ui/ctrl/UIEdit";
 
 export class UIColorPalette extends ViewBase {
     private _cbk: Function;
-    private _cellSize: Size = new Size(60, 60);
+    private _cellSize: Size = new Size(30, 30);
+    private _cellCount:Size = new Size(10, 10);
     geoPlette: UIGeometry;
     geoEdit: UIGeometry;
     colorEdit: Color;
@@ -62,6 +63,25 @@ export class UIColorPalette extends ViewBase {
         "#9E9E9E", "#1A237E", "#8C9EFF"
     ];
 
+    calculateColor(x:number, y:number, w:number, h:number, colorFrom:Color, colorTo:Color, outColor:Color=null):Color {
+        // 计算t
+        var t = Math.sqrt(x*x + y*y) / Math.sqrt(w*w + h*h);
+    
+        // 计算颜色值
+        var r = colorFrom.r + (colorTo.r - colorFrom.r) * t;
+        var g = colorFrom.g + (colorTo.g - colorFrom.g) * t;
+        var b = colorFrom.b + (colorTo.b - colorFrom.b) * t;
+    
+        if (outColor == null) {
+            outColor = new Color();
+        }
+        outColor.r = r;
+        outColor.g = g;
+        outColor.b = b;
+        outColor.a = 1;
+        return outColor;
+    }
+
     onCreate(cbk: Function) {
         super.onCreate();
         this._cbk = cbk;
@@ -104,13 +124,18 @@ export class UIColorPalette extends ViewBase {
             let _y = 0;
             let w = this._cellSize.width;
             let h = this._cellSize.height;
+            let cw = this._cellCount.width;
+            let ch = this._cellCount.height;
+            let colorFrom = new Color(1, 0, 0, 1);
+            let colorTo = new Color(1, 1, 1, 1);
             let color = new Color(0, 0, 0, 1);
-            for (var i = 0; i < 6; i++) {
-                for (var j = 0; j < 6; j++) {
-                    _x = i * this._cellSize.width;
-                    _y = j * this._cellSize.height;
+            for (var i = 0; i < cw; i++) {
+                for (var j = 0; j < ch; j++) {
+                    _x = i * w;
+                    _y = j * h;
 
-                    color.fromRGB(Math.floor(255 - 42.5 * i), Math.floor(255 - 42.5 * j), 0);
+                    this.calculateColor(i, j, cw-1, ch-1, colorFrom, colorTo, color);
+                    //color.fromRGB(Math.floor(255 - 42.5 * i), Math.floor(255 - 42.5 * j), 0);
                     geo.fillRect(_x, _y, w, h, color);
                 }
             }
