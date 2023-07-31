@@ -7,15 +7,19 @@ import { UIGeometry } from "../base/ui/ctrl/UIGeometry";
 import { UIEdit } from "../base/ui/ctrl/UIEdit";
 import { UIColorGradient } from "../base/ui/ctrl/UIColorGradient";
 import { GameEvent } from "../base/EventDefine";
+import { UIColorUnit } from "../base/ui/ctrl/UIColorUnit";
 
 
-export class UIColorPalette extends ViewBase {
+export class ViewColorPalette extends ViewBase {
     private _cbk: Function;
     private _cellSize: Size = new Size(30, 30);
     private _cellCount:Size = new Size(10, 10);
+    private _curSelColor: Color = new Color();
+
     geoPlette: UIGeometry;
     geoEdit: UIGeometry;
     colorEdit: Color;
+    colorUnit: UIColorUnit;
 
     private _colorFrom: Color = new Color(1, 0, 0, 1);
     private _colorTo: Color = new Color(1, 1, 1, 1);
@@ -95,8 +99,12 @@ export class UIColorPalette extends ViewBase {
             let geo = new UIGeometry();
             geo.x = 10;
             geo.y = 10;
+            geo.width = this._cellSize.width * this._cellCount.width;
+            geo.height = this._cellSize.height * this._cellCount.height;
             this.addChild(geo);
             this.geoPlette = geo;
+            geo.setInteractAble(true);
+            geo.onEvent(GameEvent.CLICK, this._onGeoPaletteClicked, this);
         }
         
         {
@@ -124,6 +132,20 @@ export class UIColorPalette extends ViewBase {
             this.addChild(colorGrd);
             colorGrd.onEvent(GameEvent.COLOR_SELECTED, this._onColorGrdSelected, this);
         }
+
+        {
+            let colorUnit = new UIColorUnit();
+            this.addChild(colorUnit);
+            this.colorUnit = colorUnit;
+            colorUnit.x = 330;
+            colorUnit.y = 30;
+            colorUnit.setColor(this._curSelColor);
+        }
+        
+    }
+
+    private _onGeoPaletteClicked(x:number, y:number) {
+        console.log("_onGeoPaletteClicked", x, y)
     }
 
     private _onColorGrdSelected(colorGrd:UIColorGradient) {

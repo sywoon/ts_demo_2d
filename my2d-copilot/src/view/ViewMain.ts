@@ -5,7 +5,7 @@ import { UIButton } from "../base/ui/ctrl/UIButton";
 import { UINode } from "../base/ui/ctrl/UINode";
 import { GameEvent } from "../base/EventDefine";
 
-export class UIMain extends ViewBase {
+export class ViewMain extends ViewBase {
     geo: UIGeometry;
 
     constructor() {

@@ -2,7 +2,7 @@ import { ViewBase } from "../base/ui/ViewBase";
 import { UIGeometry } from "../base/ui/ctrl/UIGeometry";
 import { Color } from "../base/math/Color";
 
-export class UIRectTest extends ViewBase {
+export class ViewRectTest extends ViewBase {
     geo: UIGeometry;
 
     onCreate() {

@@ -4,8 +4,7 @@ import { UIButton } from "../base/ui/ctrl/UIButton";
 import { Color } from "../base/math/Color";
 
 
-export class UILabelTest extends ViewBase {
-    
+export class ViewLabelTest extends ViewBase {
 
     onCreate() {
         super.onCreate();
