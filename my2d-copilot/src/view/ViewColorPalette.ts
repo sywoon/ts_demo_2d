@@ -145,7 +145,14 @@ export class ViewColorPalette extends ViewBase {
     }
 
     private _onGeoPaletteClicked(x:number, y:number) {
-        console.log("_onGeoPaletteClicked", x, y)
+        let i = Math.floor(x / this._cellSize.width);
+        let j = Math.floor(y / this._cellSize.height);
+
+        let color = Color.temp;
+        let cw = this._cellCount.width;
+        let ch = this._cellCount.height;
+        this.calculateColor(i, j, cw-1, ch-1, this._colorFrom, this._colorTo, color);
+        this.colorUnit.setColor(color);
     }
 
     private _onColorGrdSelected(colorGrd:UIColorGradient) {

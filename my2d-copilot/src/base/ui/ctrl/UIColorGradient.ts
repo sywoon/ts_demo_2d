@@ -11,7 +11,7 @@ export class UIColorGradient extends UIGeometry {
     colorUnit: UIColorUnit;
 
     private _curSelPt: Vec2 = new Vec2();
-    private _curSelColor: Color = new Color();
+    private _curSelColor: Color = new Color(1,0,0);
     private _colorGrd: any[] = [];
 
     constructor() {
