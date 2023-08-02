@@ -45,6 +45,10 @@ export class UIInputStyle extends UILabelStyle {
 }
 
 export class UIGeometryStyle extends UIStyle {
+    lineWidth: number = 1;
+    lineCap: string = "butt"; //butt round square
+    lineJoin: string = "miter"; //bevel round miter
+
     constructor() {
         super();
         this.fillColor = Color.Black; //独立文字颜色 虽然canvas实现时 还是转换为fillStyle

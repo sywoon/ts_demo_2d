@@ -154,12 +154,16 @@ export class Color {
         return (r << 24) | (g << 16) | (b << 8) | a;
     }
 
-    public toString(): string {
+    public toString(showA:boolean=true): string {
         let r = Math.floor(this.r * 255);
         let g = Math.floor(this.g * 255);
         let b = Math.floor(this.b * 255);
         let a = Math.floor(this.a * 255);
-        return "#" + r.toString(16) + g.toString(16) + b.toString(16) + a.toString(16);
+        if (showA) {
+            return "#" + r.toString(16) + g.toString(16) + b.toString(16) + a.toString(16);
+        } else {
+            return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+        }
     }
 
     public toRGBString(): string {

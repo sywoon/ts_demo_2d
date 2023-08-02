@@ -20,6 +20,7 @@ export class Canvas2D {
         this.size.height = canvas.height;
 
         this.context.imageSmoothingEnabled = true; //启用平滑处理，以减少锯齿效果 实践没区别
+        this.context.globalAlpha = 1.0; //全局透明度
 
         this.setStyle({
             fillStyle: "white",
@@ -74,6 +75,10 @@ export class Canvas2D {
         status["font"] ? ctx.font = status["font"] : null;  //"20px sans-serif"
         status["textBaseline"] ? ctx.textBaseline = status["textBaseline"] : null;  //top middle bottom
         status["textAlign"] ? ctx.textAlign = status["textAlign"] : null;  //left center right
+
+        status["lineWidth"] ? ctx.lineWidth = status["lineWidth"] : null;  //left center right
+        status["lineCap"] ? ctx.lineCap = status["lineCap"] : null;  //butt round square
+        status["lineJoin"] ? ctx.lineJoin = status["lineJoin"] : null;  //bevel round miter
     }
 
     public resize(width: number, height: number): void {
@@ -199,6 +204,16 @@ export class Canvas2D {
         if (oldStrokeStyle)    {
             ctx.strokeStyle = oldStrokeStyle;
         }
+    }
+
+    public setLineDash(segments:number[]): void {
+        if (this.context === null) return;
+        this.context.setLineDash(segments);
+    }
+
+    public getLineDash(): number[] {
+        if (this.context === null) return null;
+        return this.context.getLineDash();
     }
 
     //mode:fill stroke all
