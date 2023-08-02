@@ -25,7 +25,7 @@ export class UIColorUnit extends UIGeometry {
 
     setColor(v:Color) {
         this.color.copyFrom(v);
-        this.label.text = v.toString();
+        this.label.text = v.toString() + " " + v.toRGBString();
     }
 
     public onRender(x: number, y: number): void {

@@ -162,6 +162,13 @@ export class Color {
         return "#" + r.toString(16) + g.toString(16) + b.toString(16) + a.toString(16);
     }
 
+    public toRGBString(): string {
+        let r = Math.floor(this.r * 255);
+        let g = Math.floor(this.g * 255);
+        let b = Math.floor(this.b * 255);
+        return "(" + r + "," + g + "," + b + ")";
+    }
+
     public clone(): Color {
         return new Color(this.r, this.g, this.b, this.a);
     }
