@@ -1,6 +1,7 @@
 import { GameEvent } from "../../EventDefine";
 import { Color } from "../../math/Color";
 import { Size } from "../../math/Size";
+import { Vec2 } from "../../math/Vec2";
 import { UIGeometry } from "./UIGeometry";
 
 
@@ -19,8 +20,16 @@ export class UIColorGrid extends UIGeometry {
     colorTo: Color = new Color(1, 1, 1, 1);
     selectedColor: Color = new Color(1, 1, 1, 1);
 
+    colorMode: number = 0; // 0:梯度颜色, 1: 外部函数控制
+    private _calculateColor: Function = null;
+
     constructor() {
         super();
+    }
+
+    public setCalculateColor(func: Function) {
+        this._calculateColor = func;
+        this.colorMode = 1;
     }
 
     public onCreate(w:number, h:number, cw:number, ch:number): void {
@@ -31,27 +40,36 @@ export class UIColorGrid extends UIGeometry {
         this.cellCount.height = ch;
         this.width = w * cw;
         this.height = h * ch;
-        
+
         this.setInteractAble(true);
         this.onEvent(GameEvent.CLICK, this._onClicked, this);
     }
 
     private _onClicked(x:number, y:number) {
-        let i = Math.floor(x / this.cellSize.width);
-        let j = Math.floor(y / this.cellSize.height);
+        let pt = this.globalToLocal(x, y, Vec2.temp);
+
+        let i = Math.floor(pt.x / this.cellSize.width);
+        let j = Math.floor(pt.y / this.cellSize.height);
 
         let cw = this.cellCount.width;
         let ch = this.cellCount.height;
-        this.calculateColor(i, j, cw-1, ch-1, this.colorFrom, this.colorTo, this.selectedColor);
+
+        let showColor;
+        if (this.colorMode == 0) {
+            showColor = this.calculateColor(i, j, cw, ch, this.colorFrom, this.colorTo, this.selectedColor);
+        } else {
+            showColor = this._calculateColor(i, j, cw, ch, this.selectedColor);
+        }
+
+        if (!showColor)
+            return;
 
         this.sendEvent(GameEvent.COLOR_SELECTED, this.selectedColor, this);
-        console.log(this.selectedColor.toString())
+        console.log(this.selectedColor.toString());
     }
 
     public onRender(x: number, y: number): void {
         super.onRender(x, y);
-
-        this.fillRect(25, 25, 100, 100);
 
         let _x = 0;
         let _y = 0;
@@ -62,13 +80,19 @@ export class UIColorGrid extends UIGeometry {
         let colorFrom = this.colorFrom;
         let colorTo = this.colorTo;
         let color = Color.temp;
-        for (var i = 0; i < cw; i++) {
-            for (var j = 0; j < ch; j++) {
+        let showColor;
+
+        for (var j = 0; j < ch; j++) {
+            for (var i = 0; i < cw; i++) {
                 _x = i * w;
                 _y = j * h;
 
-                this.calculateColor(i, j, cw-1, ch-1, colorFrom, colorTo, color);
-                this.fillRect(_x, _y, w, h, color);
+                if (this.colorMode == 0) {
+                    showColor = this.calculateColor(i, j, cw, ch, colorFrom, colorTo, color);
+                } else {
+                    showColor = this._calculateColor(i, j, cw, ch, color);
+                }
+                showColor && this.fillRect(_x, _y, w, h, color);
             }
         }
     }

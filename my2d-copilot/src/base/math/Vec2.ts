@@ -1,4 +1,5 @@
 export class Vec2 {
+    static temp = new Vec2();
     static Create(x: number = 0, y: number = 0): Vec2 {
         return new Vec2(x, y);
     }

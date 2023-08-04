@@ -18,8 +18,6 @@ export class ViewColorPalette extends ViewBase {
     private _curSelColor: Color = new Color();
 
     colorGrid: UIColorGrid;
-    geoEdit: UIGeometry;
-    colorEdit: Color;
     colorUnit: UIColorUnit;
 
     private _colorFrom: Color = new Color(1, 0, 0, 1);
@@ -97,30 +95,19 @@ export class ViewColorPalette extends ViewBase {
         this._cbk = cbk;
 
         {
+            let edit = new UIEdit();
+            edit.x = 330;
+            edit.y = 80;
+            this.addChild(edit);
+        }
+
+        {
             let colorGrid = UIColorGrid.Create(15, 15, 20, 20);
             colorGrid.x = 10;
             colorGrid.y = 10;
             this.addChild(colorGrid);
             colorGrid.onEvent(GameEvent.COLOR_SELECTED, this._onColorGridSelected, this);
             this.colorGrid = colorGrid;
-        }
-        
-        {
-            let geo = new UIGeometry();
-            geo.x = 10;
-            geo.y = 400;
-            this.addChild(geo);
-            this.geoEdit = geo;
-
-            let color = new Color(0, 255, 100, 1);
-            this.colorEdit = color;
-        }
-
-        {
-            let edit = new UIEdit();
-            edit.x = 400;
-            edit.y = 400;
-            this.addChild(edit);
         }
 
         {
@@ -129,6 +116,7 @@ export class ViewColorPalette extends ViewBase {
             colorGrd.y = 330;
             this.addChild(colorGrd);
             colorGrd.onEvent(GameEvent.COLOR_SELECTED, this._onColorGradSelected, this);
+            
         }
 
         {
@@ -140,6 +128,39 @@ export class ViewColorPalette extends ViewBase {
             colorUnit.setColor(this._curSelColor);
         }
         
+        {
+            let colorGrid = UIColorGrid.Create(60, 60, 6, 6);
+            colorGrid.x = 10;
+            colorGrid.y = 400;
+            this.addChild(colorGrid);
+
+            colorGrid.onEvent(GameEvent.COLOR_SELECTED, this._onColorGridSelected, this);
+            colorGrid.setCalculateColor((i:number, j:number, w:number, h:number, color:Color)=> {
+                let idx = i + j*w;
+                if (idx >= 0 && idx < this.colorSkins.length) {
+                    color.fromString(this.colorSkins[idx]);
+                    return color;
+                }
+                return null;
+            });
+        }
+
+        {
+            let colorGrid = UIColorGrid.Create(60, 60, 6, 6);
+            colorGrid.x = 10;
+            colorGrid.y = 550;
+            this.addChild(colorGrid);
+
+            colorGrid.onEvent(GameEvent.COLOR_SELECTED, this._onColorGridSelected, this);
+            colorGrid.setCalculateColor((i:number, j:number, w:number, h:number, color:Color)=> {
+                let idx = i + j*w;
+                if (idx >= 0 && idx < this.colorSkins.length) {
+                    color.fromString(this.colorSkins2[idx]);
+                    return color;
+                }
+                return null;
+            });
+        }
     }
 
     private _onColorGridSelected(color:Color, colorGrid:UIColorGrid) {
@@ -152,31 +173,5 @@ export class ViewColorPalette extends ViewBase {
     
     onRender(x: number, y: number): void {
         super.onRender(x, y);
-
-        {
-            let geo = this.geoEdit;
-            geo.y = 400;
-            let i = 0;
-            let j = 0;
-            for (let idx = 0; idx < this.colorSkins.length; idx++) {
-                i = idx % 6;
-                j = Math.floor(idx / 6);
-                this.colorEdit.fromString(this.colorSkins[idx]);
-                geo.fillRect(i * 60, j * 60, 60, 60, this.colorEdit);
-            }
-        }
-
-        {
-            let geo = this.geoEdit;
-            geo.y = 550;
-            let i = 0;
-            let j = 0;
-            for (let idx = 0; idx < this.colorSkins2.length; idx++) {
-                i = idx % 6;
-                j = Math.floor(idx / 6);
-                this.colorEdit.fromString(this.colorSkins2[idx]);
-                geo.fillRect(i * 60, j * 60, 60, 60, this.colorEdit);
-            }
-        }
     }
 }
