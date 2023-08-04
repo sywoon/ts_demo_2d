@@ -7,6 +7,12 @@ import { UILabel } from "./UILabel";
 
 
 export class UIColorGradient extends UIGeometry {
+    static Create(...args:any[]): UIColorGradient {
+        let ui = new UIColorGradient();
+        ui.onCreate(...args);
+        return ui;
+    }
+
     grd: CanvasGradient;
     colorUnit: UIColorUnit;
 
@@ -93,7 +99,7 @@ export class UIColorGradient extends UIGeometry {
         this._curSelPt = pt;
         this._parseSelectedColor(this._curSelColor)
         this.colorUnit.setColor(this._curSelColor);
-        this.sendEvent(GameEvent.COLOR_SELECTED, this);
+        this.sendEvent(GameEvent.COLOR_SELECTED, this._curSelColor, this);
     }
 
     private _parseSelectedColor(out:Color): Color {

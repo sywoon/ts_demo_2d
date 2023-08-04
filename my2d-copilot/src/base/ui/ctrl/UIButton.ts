@@ -5,6 +5,12 @@ import { GameEvent, MyMouseEvent } from "../../EventDefine";
 import { PropertyType, DebugType } from "../UIDefine";
 
 export class UIButton extends UINode {
+    static Create(...args:any[]): UIButton {
+        let ui = new UIButton();
+        ui.onCreate(...args);
+        return ui;
+    }
+
     label:UILabel;
     strokeColors:Color[] = [Color.Black, Color.Red];
     isMouseDown:boolean = false;

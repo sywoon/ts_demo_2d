@@ -8,6 +8,12 @@ import { DebugType } from "../UIDefine";
 
 
 export class UILabel extends UINode {
+    static Create(...args:any[]): UILabel {
+        let ui = new UILabel();
+        ui.onCreate(...args);
+        return ui;
+    }
+
     private _text: string = "";
     style: UILabelStyle = new UILabelStyle();
     autoResize: boolean = true;  //根据文字内容 自动计算大小

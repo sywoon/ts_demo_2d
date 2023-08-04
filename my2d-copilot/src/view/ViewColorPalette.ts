@@ -8,6 +8,7 @@ import { UIEdit } from "../base/ui/ctrl/UIEdit";
 import { UIColorGradient } from "../base/ui/ctrl/UIColorGradient";
 import { GameEvent } from "../base/EventDefine";
 import { UIColorUnit } from "../base/ui/ctrl/UIColorUnit";
+import { UIColorGrid } from "../base/ui/ctrl/UIColorGrid";
 
 
 export class ViewColorPalette extends ViewBase {
@@ -16,7 +17,7 @@ export class ViewColorPalette extends ViewBase {
     private _cellCount:Size = new Size(10, 10);
     private _curSelColor: Color = new Color();
 
-    geoPlette: UIGeometry;
+    colorGrid: UIColorGrid;
     geoEdit: UIGeometry;
     colorEdit: Color;
     colorUnit: UIColorUnit;
@@ -96,15 +97,12 @@ export class ViewColorPalette extends ViewBase {
         this._cbk = cbk;
 
         {
-            let geo = new UIGeometry();
-            geo.x = 10;
-            geo.y = 10;
-            geo.width = this._cellSize.width * this._cellCount.width;
-            geo.height = this._cellSize.height * this._cellCount.height;
-            this.addChild(geo);
-            this.geoPlette = geo;
-            geo.setInteractAble(true);
-            geo.onEvent(GameEvent.CLICK, this._onGeoPaletteClicked, this);
+            let colorGrid = UIColorGrid.Create(15, 15, 20, 20);
+            colorGrid.x = 10;
+            colorGrid.y = 10;
+            this.addChild(colorGrid);
+            colorGrid.onEvent(GameEvent.COLOR_SELECTED, this._onColorGridSelected, this);
+            this.colorGrid = colorGrid;
         }
         
         {
@@ -130,7 +128,7 @@ export class ViewColorPalette extends ViewBase {
             colorGrd.x = 10;
             colorGrd.y = 330;
             this.addChild(colorGrd);
-            colorGrd.onEvent(GameEvent.COLOR_SELECTED, this._onColorGrdSelected, this);
+            colorGrd.onEvent(GameEvent.COLOR_SELECTED, this._onColorGradSelected, this);
         }
 
         {
@@ -144,49 +142,16 @@ export class ViewColorPalette extends ViewBase {
         
     }
 
-    private _onGeoPaletteClicked(x:number, y:number) {
-        let i = Math.floor(x / this._cellSize.width);
-        let j = Math.floor(y / this._cellSize.height);
-
-        let color = Color.temp;
-        let cw = this._cellCount.width;
-        let ch = this._cellCount.height;
-        this.calculateColor(i, j, cw-1, ch-1, this._colorFrom, this._colorTo, color);
+    private _onColorGridSelected(color:Color, colorGrid:UIColorGrid) {
         this.colorUnit.setColor(color);
     }
 
-    private _onColorGrdSelected(colorGrd:UIColorGradient) {
-        let color = colorGrd.selectedColor;
-        this._colorFrom.copyFrom(color);
+    private _onColorGradSelected(color:Color, colorGrd:UIColorGradient) {
+        this.colorGrid.colorFrom.copyFrom(color);
     }
     
     onRender(x: number, y: number): void {
         super.onRender(x, y);
-
-        {
-            let geo = this.geoPlette;
-            geo.fillRect(25, 25, 100, 100);
-
-            let _x = 0;
-            let _y = 0;
-            let w = this._cellSize.width;
-            let h = this._cellSize.height;
-            let cw = this._cellCount.width;
-            let ch = this._cellCount.height;
-            let colorFrom = this._colorFrom;
-            let colorTo = this._colorTo;
-            let color = Color.temp;
-            for (var i = 0; i < cw; i++) {
-                for (var j = 0; j < ch; j++) {
-                    _x = i * w;
-                    _y = j * h;
-
-                    this.calculateColor(i, j, cw-1, ch-1, colorFrom, colorTo, color);
-                    //color.fromRGB(Math.floor(255 - 42.5 * i), Math.floor(255 - 42.5 * j), 0);
-                    geo.fillRect(_x, _y, w, h, color);
-                }
-            }
-        }
 
         {
             let geo = this.geoEdit;

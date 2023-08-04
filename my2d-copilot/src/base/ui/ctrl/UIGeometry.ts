@@ -4,6 +4,12 @@ import { UIGeometryStyle } from "./UIStyle";
 import { DebugType } from "../UIDefine";
 
 export class UIGeometry extends UINode {
+    static Create(...args:any[]): UIGeometry {
+        let ui = new UIGeometry();
+        ui.onCreate(...args);
+        return ui;
+    }
+
     style: UIGeometryStyle = new UIGeometryStyle();
 
     public set fillColor(color:Color) {

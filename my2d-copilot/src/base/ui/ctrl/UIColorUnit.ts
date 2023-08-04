@@ -6,6 +6,12 @@ import { UILabel } from "./UILabel";
 
 
 export class UIColorUnit extends UIGeometry {
+    static Create(...args:any[]): UIColorUnit {
+        let ui = new UIColorUnit();
+        ui.onCreate(...args);
+        return ui;
+    }
+
     label: UILabel;
     color: Color = new Color();
 

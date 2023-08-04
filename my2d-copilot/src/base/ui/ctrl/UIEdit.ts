@@ -6,6 +6,12 @@ import { UINode } from "./UINode";
 import { UIInputStyle } from "./UIStyle";
 
 export class UIEdit extends UINode {
+    static Create(...args:any[]): UIEdit {
+        let ui = new UIEdit();
+        ui.onCreate(...args);
+        return ui;
+    }
+
     input: HTMLInputElement = AppRoot.getInstance().inputElement;
     style: UIInputStyle = new UIInputStyle();
     label: UILabel;

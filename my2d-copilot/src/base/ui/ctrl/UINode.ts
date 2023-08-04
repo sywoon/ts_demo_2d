@@ -33,8 +33,10 @@ import { PropertyType, DebugType } from "../UIDefine";
 // |-渲染 onRender 
 // |-鼠标和键盘 控件事件(焦点 大小改变)  onTouchEvent onKeyEvent onCtrlEvent
 export class UINode extends EventDispatcher {
-    static create(): UINode {
-        return new UINode();
+    static Create(...args:any[]): UINode {
+        let ui = new UINode();
+        ui.onCreate(...args);
+        return ui;
     }
 
     get appRoot(): AppRoot {
@@ -94,6 +96,10 @@ export class UINode extends EventDispatcher {
     }
 
     protected onSizeChanged(): void {
+    }
+
+    //创建时调用 还未加入节点树
+    public onCreate(...args:any[]): void {
     }
 
     //第一次加入节点
