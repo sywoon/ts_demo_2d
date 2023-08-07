@@ -33,12 +33,6 @@ import { PropertyType, DebugType } from "../UIDefine";
 // |-渲染 onRender 
 // |-鼠标和键盘 控件事件(焦点 大小改变)  onTouchEvent onKeyEvent onCtrlEvent
 export class UINode extends EventDispatcher {
-    static Create(...args:any[]): UINode {
-        let ui = new UINode();
-        ui.onCreate(...args);
-        return ui;
-    }
-
     get appRoot(): AppRoot {
         return AppRoot.getInstance();
     }
@@ -81,7 +75,11 @@ export class UINode extends EventDispatcher {
     }
     set height(h: number) {
         this._height = h;
-        this.onSizeChanged();
+        this.timer.callLater(this.onSizeChanged, this);
+    }
+
+    get parent(): UINode {
+        return this._parent;
     }
 
     public constructor() {
@@ -96,10 +94,7 @@ export class UINode extends EventDispatcher {
     }
 
     protected onSizeChanged(): void {
-    }
-
-    //创建时调用 还未加入节点树
-    public onCreate(...args:any[]): void {
+        this.sendEvent(GameEvent.RESIZE, this.width, this.height);
     }
 
     //第一次加入节点
@@ -133,6 +128,9 @@ export class UINode extends EventDispatcher {
     }
 
     public onRender(x:number, y:number): void {
+        if (!this.isVisible())
+            return;
+            
         let _x = x + this.x;  //不能修改x的值 需要上传
         let _y = y + this.y;
 
@@ -140,6 +138,10 @@ export class UINode extends EventDispatcher {
             //原点位置
             if (this.isDebugType(DebugType.Origin)) {
                 this.graphic.drawArc(_x, _y, 3, 0, Math.PI * 2, true, "fill", Color.Red);
+            }
+
+            if (this.isDebugType(DebugType.UIRect)) {
+                this.graphic.strokeRect(_x, _y, this.width, this.height, Color.Yellow);
             }
         }
 
@@ -338,13 +340,26 @@ export class UINode extends EventDispatcher {
     // 子节点
     public addChild(node: UINode): void {
         node._parent = this;
+        this._children.push(node);
+
         if (!node.isAwake()) {
             node.setAwake(true);
             node.onAwake();
         }
         node.onEnable();
-        this._children.push(node);
     }
+
+    public addChildAt(node: UINode, idx:number): void {
+        node._parent = this;
+        this._children.splice(idx, 0, node);
+
+        if (!node.isAwake()) {
+            node.setAwake(true);
+            node.onAwake();
+        }
+        node.onEnable();
+    }
+
     public removeChild(node: UINode): void {
         node.onDisable();
         let index = this._children.indexOf(node);

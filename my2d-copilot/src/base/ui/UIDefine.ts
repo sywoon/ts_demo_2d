@@ -11,7 +11,13 @@ export class DebugType {
     static Origin      = 2 ** 0;  //圆点位置
     static LabelRect   = 2 ** 1;  //显示label的rect
     static Geometry    = 2 ** 2;  //显示几何体辅助线
+    static UIRect    = 2 ** 3;    //显示UI的rect
 }
 
-
+export let Scroll_Dir = {
+    None: 0,
+    Horizontal: 1,
+    Vertical: 2,
+    Both: 3,
+}
 

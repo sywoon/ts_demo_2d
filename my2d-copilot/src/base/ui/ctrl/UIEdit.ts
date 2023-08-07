@@ -6,12 +6,6 @@ import { UINode } from "./UINode";
 import { UIInputStyle } from "./UIStyle";
 
 export class UIEdit extends UINode {
-    static Create(...args:any[]): UIEdit {
-        let ui = new UIEdit();
-        ui.onCreate(...args);
-        return ui;
-    }
-
     input: HTMLInputElement = AppRoot.getInstance().inputElement;
     style: UIInputStyle = new UIInputStyle();
     label: UILabel;
@@ -124,6 +118,9 @@ export class UIEdit extends UINode {
     }
 
     public onRender(x:number, y:number): void {
+        if (!this.isVisible())
+            return;
+            
         let _x = x + this.x;  //不能修改x的值 需要上传
         let _y = y + this.y;
 

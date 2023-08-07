@@ -2,6 +2,7 @@ export class Size {
     static Create(width: number = 0, height: number = 0): Size {
         return new Size(width, height);
     }
+    static temp = new Size();
 
     public width: number;
     public height: number;

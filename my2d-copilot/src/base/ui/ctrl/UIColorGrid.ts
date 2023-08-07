@@ -6,13 +6,6 @@ import { UIGeometry } from "./UIGeometry";
 
 
 export class UIColorGrid extends UIGeometry {
-    // w h 格式大小  cw ch格子数量
-    static Create(w: number, h: number, cw: number, ch: number): UIColorGrid {
-        let ui = new UIColorGrid();
-        ui.onCreate(w, h, cw, ch);
-        return ui;
-    }
-
     cellSize: Size = new Size(30, 30);
     cellCount:Size = new Size(10, 10);
 
@@ -23,17 +16,9 @@ export class UIColorGrid extends UIGeometry {
     colorMode: number = 0; // 0:梯度颜色, 1: 外部函数控制
     private _calculateColor: Function = null;
 
-    constructor() {
+    constructor(w:number, h:number, cw:number, ch:number) {
         super();
-    }
 
-    public setCalculateColor(func: Function) {
-        this._calculateColor = func;
-        this.colorMode = 1;
-    }
-
-    public onCreate(w:number, h:number, cw:number, ch:number): void {
-        super.onCreate();
         this.cellSize.width = w;
         this.cellSize.height = h;
         this.cellCount.width = cw;
@@ -43,6 +28,11 @@ export class UIColorGrid extends UIGeometry {
 
         this.setInteractAble(true);
         this.onEvent(GameEvent.CLICK, this._onClicked, this);
+    }
+
+    public setCalculateColor(func: Function) {
+        this._calculateColor = func;
+        this.colorMode = 1;
     }
 
     private _onClicked(x:number, y:number) {
@@ -69,6 +59,9 @@ export class UIColorGrid extends UIGeometry {
     }
 
     public onRender(x: number, y: number): void {
+        if (!this.isVisible())
+            return;
+            
         super.onRender(x, y);
 
         let _x = 0;

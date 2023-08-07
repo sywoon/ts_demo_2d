@@ -102,7 +102,7 @@ export class ViewColorPalette extends ViewBase {
         }
 
         {
-            let colorGrid = UIColorGrid.Create(15, 15, 20, 20);
+            let colorGrid = new UIColorGrid(15, 15, 20, 20);
             colorGrid.x = 10;
             colorGrid.y = 10;
             this.addChild(colorGrid);
@@ -129,7 +129,7 @@ export class ViewColorPalette extends ViewBase {
         }
         
         {
-            let colorGrid = UIColorGrid.Create(60, 60, 6, 6);
+            let colorGrid = new UIColorGrid(60, 60, 6, 6);
             colorGrid.x = 10;
             colorGrid.y = 400;
             this.addChild(colorGrid);
@@ -146,7 +146,7 @@ export class ViewColorPalette extends ViewBase {
         }
 
         {
-            let colorGrid = UIColorGrid.Create(60, 60, 6, 6);
+            let colorGrid = new UIColorGrid(60, 60, 6, 6);
             colorGrid.x = 10;
             colorGrid.y = 550;
             this.addChild(colorGrid);

@@ -5,15 +5,10 @@ import { GameEvent, MyMouseEvent } from "../../EventDefine";
 import { PropertyType, DebugType } from "../UIDefine";
 
 export class UIButton extends UINode {
-    static Create(...args:any[]): UIButton {
-        let ui = new UIButton();
-        ui.onCreate(...args);
-        return ui;
-    }
-
     label:UILabel;
     strokeColors:Color[] = [Color.Black, Color.Red];
     isMouseDown:boolean = false;
+    roundCorner:boolean = true;
 
     public constructor() {
         super();
@@ -46,19 +41,21 @@ export class UIButton extends UINode {
         this.label.y = y - pt.y;
     }
 
-    protected onSizeChanged(): void {
-    }
-
     public onRender(x:number, y:number): void {
+        if (!this.isVisible())
+            return;
+            
         let _x = x + this.x;  //不能修改x的值 需要上传
         let _y = y + this.y;
 
-        this.graphic.roundRect(_x, _y, this.width, this.height, 10, "fill", Color.Gray);
-        // this.graphic.fillRect(_x, _y, this.width, this.height, Color.Gray);
-
         let color = this.isMouseDown ? this.strokeColors[1] : this.strokeColors[0];
-        this.graphic.roundRect(_x, _y, this.width, this.height, 10, "stroke", null, color);
-        // this.graphic.strokeRect(_x, _y, this.width, this.height, color);
+        if (this.roundCorner) {
+            this.graphic.roundRect(_x, _y, this.width, this.height, 10, "fill", Color.Gray);
+            this.graphic.roundRect(_x, _y, this.width, this.height, 10, "stroke", null, color);
+        } else {
+            this.graphic.fillRect(_x, _y, this.width, this.height, Color.Gray);
+            this.graphic.strokeRect(_x, _y, this.width, this.height, color);
+        }
 
         //先画自己 再画子节点
         super.onRender(x, y);

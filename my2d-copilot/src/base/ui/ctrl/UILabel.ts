@@ -8,23 +8,11 @@ import { DebugType } from "../UIDefine";
 
 
 export class UILabel extends UINode {
-    static Create(...args:any[]): UILabel {
-        let ui = new UILabel();
-        ui.onCreate(...args);
-        return ui;
-    }
-
     private _text: string = "";
     style: UILabelStyle = new UILabelStyle();
     autoResize: boolean = true;  //根据文字内容 自动计算大小
 
-    public constructor() {
-        super();
-        this.setDebugType(DebugType.LabelRect);
-        this.width = 100;
-        this.height = 50;
-    }
-
+    
     set text(v:string) {
         this._text = v;
 
@@ -32,7 +20,6 @@ export class UILabel extends UINode {
             let size = this.measureText();
             this.width = size.width;
             this.height = this.style.fontSize;  //采用自己的字体大小
-            this.timer.callLater(this.onResize, this);
         }
     }
 
@@ -64,12 +51,19 @@ export class UILabel extends UINode {
         this.style.vAlign = align;
     }
 
-    protected measureText(): Size {
-        return this.graphic.measureText(this.text);
+    public constructor() {
+        super();
+        this.setDebugType(DebugType.LabelRect);
     }
 
-    protected onResize(): void {
-        this.sendEvent(GameEvent.RESIZE, this.width, this.height)
+    protected measureText(): Size {
+        if (this._text == "") {
+            let temp = Size.temp;
+            temp.width = 0;
+            temp.height = 0;
+            return temp;
+        }
+        return this.graphic.measureText(this._text);
     }
 
     public adjustByAlign(x:number, y:number): Vec2 {
@@ -98,6 +92,8 @@ export class UILabel extends UINode {
     }
 
     public onRender(x:number, y:number): void {
+        if (!this.isVisible() || this._text == "")
+            return;
         let _x = x + this.x;  //不能修改x的值 需要上传
         let _y = y + this.y;
 

@@ -6,12 +6,6 @@ import { UILabel } from "./UILabel";
 
 
 export class UIColorUnit extends UIGeometry {
-    static Create(...args:any[]): UIColorUnit {
-        let ui = new UIColorUnit();
-        ui.onCreate(...args);
-        return ui;
-    }
-
     label: UILabel;
     color: Color = new Color();
 
@@ -35,6 +29,9 @@ export class UIColorUnit extends UIGeometry {
     }
 
     public onRender(x: number, y: number): void {
+        if (!this.isVisible())
+            return;
+            
         super.onRender(x, y);
         this.fillRect(x, y, 20, 20, this.color);
     }

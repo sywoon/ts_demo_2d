@@ -2,6 +2,9 @@ import { ViewBase } from "../base/ui/ViewBase";
 import { UILabel } from "../base/ui/ctrl/UILabel";
 import { UIButton } from "../base/ui/ctrl/UIButton";
 import { Color } from "../base/math/Color";
+import { UIPanel } from "../base/ui/ctrl/UIPanel";
+import { Scroll_Dir } from "../base/ui/UIDefine";
+import { UINode } from "../base/ui/ctrl/UINode";
 
 
 export class ViewLabelTest extends ViewBase {
@@ -30,6 +33,35 @@ export class ViewLabelTest extends ViewBase {
             btn.text = "按钮";
             btn.x = 100;
             btn.y = 100;
+        }
+
+        {
+            let panel = new UIPanel();
+            this.addChild(panel);
+            panel.scrollDir = Scroll_Dir.Horizontal;
+            panel.x = 50;
+            panel.y = 150;
+
+            let content = new UINode();
+            content.width = 500;
+            content.height = 150;
+            panel.content = content;
+
+            {
+                let label = new UILabel();
+                label.text = "你好，世界！ Hello World!";
+                label.x = 10;
+                label.y = 10;
+                content.addChild(label);
+            }
+
+            {
+                let label = new UILabel();
+                label.text = "你好，世界！ Hello World!";
+                label.x = 300;
+                label.y = 120;
+                content.addChild(label);
+            }
         }
         
     }

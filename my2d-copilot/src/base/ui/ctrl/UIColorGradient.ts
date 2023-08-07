@@ -7,12 +7,6 @@ import { UILabel } from "./UILabel";
 
 
 export class UIColorGradient extends UIGeometry {
-    static Create(...args:any[]): UIColorGradient {
-        let ui = new UIColorGradient();
-        ui.onCreate(...args);
-        return ui;
-    }
-
     grd: CanvasGradient;
     colorUnit: UIColorUnit;
 
@@ -50,6 +44,7 @@ export class UIColorGradient extends UIGeometry {
     }
     
     protected onSizeChanged() {
+        super.onSizeChanged();
         let pt = this.localToGlobal(0, 0);
 
         let grd = this.appRoot.canvas2d.context.createLinearGradient(pt.x, pt.y, this.width+pt.x, this.height+pt.y);
@@ -60,6 +55,9 @@ export class UIColorGradient extends UIGeometry {
     }
 
     public onRender(x: number, y: number): void {
+        if (!this.isVisible())
+            return;
+            
         super.onRender(x, y);
 
         if (!this.grd)
