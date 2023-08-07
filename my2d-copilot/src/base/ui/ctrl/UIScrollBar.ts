@@ -20,7 +20,25 @@ export class UIScrollBar extends UINode {
     block:UIButton = null;  //滑块
     slider:UIButton = null; //滑动区域
 
-    percent: number = 0.5;
+    private _percent: number = 0;
+
+    get percent(): number {
+        return this._percent;
+    }
+
+    set percent(v: number) {
+        if (v < 0) {
+            if (this._percent == 0)
+                return;
+            v = 0;
+        } else if (v > 1) {
+            if (this._percent == 1)
+                return;
+            v = 1;
+        }
+        this._percent = v;
+        this.timer.callLater(this.onScrollChanged, this);
+    }
 
     constructor(dir: number) {
         super();
@@ -29,16 +47,24 @@ export class UIScrollBar extends UINode {
 
         this.slider = new UIButton();
         this.slider.roundCorner = false;
+
         this.begin = new UIButton();
         this.begin.roundCorner = false;
+        this.begin.onEvent(GameEvent.CLICK, this._onBtnBegin, this);
         this.end = new UIButton();
         this.end.roundCorner = false;
+        this.end.onEvent(GameEvent.CLICK, this._onBtnEnd, this);
+
         this.block = new UIButton();
         
         this.addChild(this.slider);
         this.slider.addChild(this.begin);
         this.slider.addChild(this.end);
         this.slider.addChild(this.block);
+    }
+
+    scrollTo(v:number) {
+        this.percent = v;
     }
 
     public onAwake(): void {
@@ -57,11 +83,43 @@ export class UIScrollBar extends UINode {
         } else if (this.dir == Scroll_Dir.Vertical) {
             this._refrshSize_Vertical();
         }
-        this.updateBlock();
+        this._updateBlock();
+    }
+
+    private _onBtnBegin() {
+        this.percent -= 0.1;
+    }
+
+    private _onBtnEnd() {
+        this.percent += 0.1;
+    }
+
+    public onScrollChanged() {
+        this._syncScollContentPos();
+        this._updateBlock();
+    }
+
+    //根据滑动位置 同步内容位置
+    private _syncScollContentPos() {
+        let w = this.parent.width;
+        let h = this.parent.height;
+        let scrollAble = this.parent as UIPanel;
+        let cw = scrollAble.getScrollContent().width;
+        let ch = scrollAble.getScrollContent().height;
+
+        if (this.dir == Scroll_Dir.Horizontal) {
+            let scrollDis = cw - w;
+            let contentX = scrollDis * this._percent;
+            scrollAble.getScrollContent().x = -contentX;
+        } else if (this.dir == Scroll_Dir.Vertical) {
+            let scrollDis = ch - h;
+            let contentY = scrollDis * this._percent;
+            scrollAble.getScrollContent().y = -contentY;
+        }
     }
 
     //滑动区域 或 大小改变 滑块的位置和大小会跟随变化
-    private updateBlock() {
+    private _updateBlock() {
         let w = this.parent.width;
         let h = this.parent.height;
         let scrollAble = this.parent as UIPanel;
@@ -87,7 +145,7 @@ export class UIScrollBar extends UINode {
                 let scrollDis = scrollPercent * (w - fixSize*2);
                 let blockWidth = w - fixSize*2 - scrollDis;
                 this.block.width = blockWidth;
-                this.block.x = fixSize + scrollDis * this.percent;
+                this.block.x = fixSize + scrollDis * this._percent;
             }
         } else if (this.dir == Scroll_Dir.Vertical) {
             if (ch <= h) {
@@ -106,7 +164,7 @@ export class UIScrollBar extends UINode {
                 let scrollDis = scrollPercent * (h - fixSize*2);
                 let blockHeight = h - fixSize*2 - scrollDis;
                 this.block.height = blockHeight;
-                this.block.y = fixSize + scrollDis * this.percent;
+                this.block.y = fixSize + scrollDis * this._percent;
             }
         }
     }

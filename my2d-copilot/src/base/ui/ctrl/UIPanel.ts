@@ -48,6 +48,17 @@ export class UIPanel extends UINode implements IUIScrollAble {
         return this._content;
     }
 
+    scrollTo(v1:number, v2:number=0) {
+        if (this.dir == Scroll_Dir.Horizontal) {
+            this.hscroll.scrollTo(v1);
+        } else if (this.dir == Scroll_Dir.Vertical) {
+            this.vscroll.scrollTo(v1);
+        } else if (this.dir == Scroll_Dir.Both) {
+            this.hscroll.scrollTo(v1);
+            this.vscroll.scrollTo(v2);
+        }
+    }
+
     private _createScrollH() {
         let scroll = new UIScrollBar(this.dir);
         this.addChild(scroll);

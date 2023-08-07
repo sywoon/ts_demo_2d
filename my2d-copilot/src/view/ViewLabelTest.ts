@@ -50,18 +50,24 @@ export class ViewLabelTest extends ViewBase {
             {
                 let label = new UILabel();
                 label.text = "你好，世界！ Hello World!";
-                label.x = 10;
-                label.y = 10;
+                label.style.hAlign = "left";
+                label.style.vAlign = "top";
+                label.x = 0;
+                label.y = 0;
                 content.addChild(label);
             }
 
             {
                 let label = new UILabel();
                 label.text = "你好，世界！ Hello World!";
-                label.x = 300;
-                label.y = 120;
+                label.style.hAlign = "right";
+                label.style.vAlign = "bottom";
+                label.x = content.width;
+                label.y = content.height;
                 content.addChild(label);
             }
+
+            panel.scrollTo(0.6);
         }
         
     }
