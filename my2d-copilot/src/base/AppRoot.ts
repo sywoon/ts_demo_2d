@@ -1,5 +1,5 @@
 import { Canvas2D } from "./Canvas2D";
-import { MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
+import { MyKeyboardEvent, MyMouseEvent, MyWheelEvent } from "./EventDefine";
 import { EventDispatcher } from "./EventDispatcher";
 import { Graphic } from "./Graphic";
 import { Stage } from "./Stage";
@@ -54,6 +54,7 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
         window.addEventListener("keydown", this, false);
         window.addEventListener("keyup", this, false);
         window.addEventListener("keypress", this, false);
+        window.addEventListener("wheel", this, false);
 
         window.addEventListener("focus", ()=>{
 			this.sendEvent(GameEvent.FOCUS);
@@ -194,7 +195,19 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
                 );
                 this.dispatchKeyEvent(keboardEvt);
                 break;
+            case "wheel":
+                let wheelEvt: MyWheelEvent = new MyWheelEvent();
+                wheelEvt.type = GameEvent.MOUSE_WHEEL;
+                wheelEvt.deltaY = (evt as WheelEvent).deltaY;
+                this.dispatchWheelEvent(wheelEvt);
+                break;
+            default:
+                break;
         }
+    }
+
+    protected dispatchWheelEvent(wheelEvt: MyWheelEvent) {
+        this.stage.dispatchWheelEvent(wheelEvt);
     }
 
     protected dispatchMouseEvent(evt: MyMouseEvent): void {

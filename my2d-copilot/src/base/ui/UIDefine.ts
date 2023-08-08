@@ -21,3 +21,4 @@ export let Scroll_Dir = {
     Both: 3,
 }
 
+export let Scroll_Move_Style = 1;  //1滑动方向和滑块方向一致 2滑动方向和滑块方向相反

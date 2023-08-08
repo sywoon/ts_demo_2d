@@ -9,7 +9,7 @@
 
 import { UINode } from "./ui/ctrl/UINode";
 import { Canvas2D } from "./Canvas2D";
-import { MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
+import { MyKeyboardEvent, MyMouseEvent, MyWheelEvent } from "./EventDefine";
 import { Timer } from "./Timer";
 import { GameEvent } from "./EventDefine";
 import { Vec2 } from "./math/Vec2";
@@ -46,6 +46,16 @@ export class Stage extends UINode {
     public render(): void {
         //所有ui节点都挂在它下面
         this.onRender(this.x, this.y);
+    }
+
+    public dispatchWheelEvent(evt: MyWheelEvent): boolean {
+        if (this.mouseTarget) {
+            this.mouseTarget.onWheelEvent(evt); 
+            return;
+        }
+
+        super.dispatchWheelEvent(evt);
+        return true;
     }
 
     public dispatchTouchEvent(evt: MyMouseEvent): boolean {

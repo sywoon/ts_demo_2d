@@ -27,7 +27,13 @@ export class MyMouseEvent {
     x: number = 0;
     y: number = 0;
     mouseDown:Vec2;
+    mouseDownTime:number;
     mouseLast:Vec2;
+}
+
+export class MyWheelEvent {
+    public type: string;
+    public deltaY: number;
 }
 
 export class MyKeyboardEvent {

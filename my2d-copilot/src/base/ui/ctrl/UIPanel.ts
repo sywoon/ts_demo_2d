@@ -1,4 +1,4 @@
-import { GameEvent, MyMouseEvent } from "../../EventDefine";
+import { GameEvent, MyMouseEvent, MyWheelEvent } from "../../EventDefine";
 import { DebugType, Scroll_Dir } from "../UIDefine";
 import { UINode } from "./UINode";
 import { IUIScrollAble, UIScrollBar } from "./UIScrollBar";
@@ -22,6 +22,7 @@ export class UIPanel extends UINode implements IUIScrollAble {
         this._content.setInteractAble(true);
         this._content.onEvent(GameEvent.MOUSE_MOVE, this._onContentMouseMove, this);
         this._content.onEvent(GameEvent.MOUSE_UP, this._onContentMouseUp, this);
+        this._content.onEvent(GameEvent.MOUSE_WHEEL, this._onContentMouseWheel, this);
     }
 
     set scrollDir(v:number) {
@@ -94,8 +95,6 @@ export class UIPanel extends UINode implements IUIScrollAble {
         let diffx = e.x - e.mouseDown.x;
         let diffy = e.y - e.mouseDown.y;
         let time = Date.now() - e.mouseDownTime;
-        if (time > 1000)
-            return;
 
         if (this.dir == Scroll_Dir.Horizontal) {
             let speed = diffx / time;
@@ -112,14 +111,26 @@ export class UIPanel extends UINode implements IUIScrollAble {
         }
     }
 
+    private _onContentMouseWheel(e: MyWheelEvent) {
+        let factor = 0.002;
+        if (this.dir == Scroll_Dir.Horizontal) {
+            this.hscroll.percent = this.hscroll.percent + e.deltaY * factor;
+        } else if (this.dir == Scroll_Dir.Vertical) {
+            this.vscroll.percent = this.vscroll.percent + e.deltaY * factor;
+        } else if (this.dir == Scroll_Dir.Both) {
+            // this.hscroll.percent = this.hscroll.percent + e.deltaY * factor;
+            this.vscroll.percent = this.vscroll.percent + e.deltaY * factor;
+        }
+    }
+
     private _createScrollH() {
-        let scroll = new UIScrollBar(this.dir);
+        let scroll = new UIScrollBar(Scroll_Dir.Horizontal);
         this.addChild(scroll);
         this.hscroll = scroll;
     }
 
     private _createScrollV() {
-        let scroll = new UIScrollBar(this.dir);
+        let scroll = new UIScrollBar(Scroll_Dir.Vertical);
         this.addChild(scroll);
         this.vscroll = scroll;
     }

@@ -52,15 +52,15 @@ export class ViewLabelTest extends ViewBase {
         {
             let panel = new UIPanel();
             this.addChild(panel);
-            panel.scrollDir = Scroll_Dir.Vertical;
+            panel.scrollDir = Scroll_Dir.Both;
             panel.x = 50;
             panel.y = 150;
             panel.width = 200;
             panel.height = 200;
 
             let content = new UINode();
-            content.width = 500;
-            content.height = 4000;
+            content.width = 1000;
+            content.height = 1000;
             content.addDebugType(DebugType.UIRect);
             panel.content = content;
 
@@ -84,7 +84,7 @@ export class ViewLabelTest extends ViewBase {
                 content.addChild(label);
             }
 
-            panel.scrollTo(0.6);
+            panel.scrollTo(0.05);
         }
         
     }

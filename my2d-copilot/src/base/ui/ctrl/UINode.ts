@@ -15,7 +15,7 @@
 import { AppRoot } from "../../AppRoot";
 import { IGraphic } from "../../IGraphic";
 import { Vec2 } from "../../math/Vec2";
-import { MyMouseEvent, MyKeyboardEvent } from "../../EventDefine";
+import { MyMouseEvent, MyKeyboardEvent, MyWheelEvent } from "../../EventDefine";
 import { Timer } from "../../Timer";
 import { EventDispatcher } from "../../EventDispatcher";
 import { Color } from "../../math/Color";
@@ -150,6 +150,29 @@ export class UINode extends EventDispatcher {
         }
     }
 
+    public dispatchWheelEvent(evt: MyWheelEvent): boolean {
+        //从上层到下层 从子节点到自己
+        for (let i = this._children.length-1; i>=0; i--) {
+            let child = this._children[i];
+            if (child.dispatchWheelEvent(evt)) {
+                return true;
+            }
+        }
+
+        if (!this.isVisible() || !this.isInteractAble())
+            return false;
+
+        let rtn = this.onWheelEvent(evt);
+        return rtn;
+    }
+
+    public onWheelEvent(evt: MyWheelEvent): boolean {
+        if (!this.isMouseIn)
+            return false;
+        this.sendEvent(evt.type, evt, this);
+        return true;
+    }
+
     public dispatchTouchEvent(evt: MyMouseEvent): boolean {
         //从上层到下层 从子节点到自己
         for (let i = this._children.length-1; i>=0; i--) {
@@ -159,7 +182,7 @@ export class UINode extends EventDispatcher {
             }
         }
 
-        if (!this.isInteractAble())
+        if (!this.isVisible() || !this.isInteractAble())
             return false;
 
         let rtn = this.onTouchEvent(evt);
@@ -168,7 +191,7 @@ export class UINode extends EventDispatcher {
         }
         return rtn;
     }
-
+    
     public onTouchEvent(evt: MyMouseEvent): boolean {  //返回true表示事件被处理了
         if (!this.isInteractAble())
             return false;
@@ -223,6 +246,10 @@ export class UINode extends EventDispatcher {
                 return true;
             }
         }
+
+        if (!this.isVisible() || !this.isInteractAble())
+            return false;
+
         return this.onKeyEvent(evt);
     }
 

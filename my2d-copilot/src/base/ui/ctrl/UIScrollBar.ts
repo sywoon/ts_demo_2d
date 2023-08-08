@@ -45,7 +45,6 @@ export class UIScrollBar extends UINode {
 
     set speed(v: number) {
         this._speed = v;
-        console.log("speed:", v);
         if (v == 0) {
             this._inAutoMoving = false;
             this.timer.clear(this, this._onAutoMove);    
