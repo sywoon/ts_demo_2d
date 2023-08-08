@@ -130,17 +130,17 @@ export class UINode extends EventDispatcher {
     public onRender(x:number, y:number): void {
         if (!this.isVisible())
             return;
-            
+
         let _x = x + this.x;  //不能修改x的值 需要上传
         let _y = y + this.y;
 
         if (this.debug > 0) {
             //原点位置
-            if (this.isDebugType(DebugType.Origin)) {
+            if (this.hasDebugType(DebugType.Origin)) {
                 this.graphic.drawArc(_x, _y, 3, 0, Math.PI * 2, true, "fill", Color.Red);
             }
 
-            if (this.isDebugType(DebugType.UIRect)) {
+            if (this.hasDebugType(DebugType.UIRect)) {
                 this.graphic.strokeRect(_x, _y, this.width, this.height, Color.Yellow);
             }
         }
@@ -206,12 +206,12 @@ export class UINode extends EventDispatcher {
             default:
                 break;
         }
-        this.sendEvent(evt.type, evt.x, evt.y, this);
+        this.sendEvent(evt.type, evt, this);
         // console.log("Touch", hit, evt.type, evt.x, evt.y, pos.x, pos.y)
         
         if (hit && evt.type == GameEvent.MOUSE_UP) {
             // console.log("CLICK", evt.type, evt.x, evt.y, pos.x, pos.y)
-            this.sendEvent(GameEvent.CLICK, evt.x, evt.y, this);
+            this.sendEvent(GameEvent.CLICK, evt, this);
         }
         return true; 
     }  
@@ -288,11 +288,11 @@ export class UINode extends EventDispatcher {
         return true;
     }
 
-    public setDebugType(flag:number): void {
+    public addDebugType(flag:number): void {
         this.debug = this.debug | flag;
     }
 
-    public isDebugType(flag:number): boolean {
+    public hasDebugType(flag:number): boolean {
         return (this.debug & flag) > 0;
     }
 

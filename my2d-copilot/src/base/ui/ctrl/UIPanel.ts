@@ -6,7 +6,7 @@ import { IUIScrollAble, UIScrollBar } from "./UIScrollBar";
 //内容容器 带滑动功能
 export class UIPanel extends UINode implements IUIScrollAble {
     private _content: UINode = null;
-    dir: number = Scroll_Dir.Vertical;
+    dir: number = Scroll_Dir.None;
     hscroll: UIScrollBar = null;
     vscroll: UIScrollBar = null;
 

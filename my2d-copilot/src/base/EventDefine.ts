@@ -1,3 +1,4 @@
+import { Vec2 } from "./math/Vec2";
 
 export class GameEvent {
     static FOCUS = "focus";  //获得焦点
@@ -25,6 +26,8 @@ export class MyMouseEvent {
     type: string = "";
     x: number = 0;
     y: number = 0;
+    mouseDown:Vec2;
+    mouseLast:Vec2;
 }
 
 export class MyKeyboardEvent {

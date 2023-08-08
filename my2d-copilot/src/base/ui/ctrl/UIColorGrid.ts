@@ -1,4 +1,4 @@
-import { GameEvent } from "../../EventDefine";
+import { GameEvent, MyMouseEvent } from "../../EventDefine";
 import { Color } from "../../math/Color";
 import { Size } from "../../math/Size";
 import { Vec2 } from "../../math/Vec2";
@@ -35,8 +35,8 @@ export class UIColorGrid extends UIGeometry {
         this.colorMode = 1;
     }
 
-    private _onClicked(x:number, y:number) {
-        let pt = this.globalToLocal(x, y, Vec2.temp);
+    private _onClicked(evt: MyMouseEvent) {
+        let pt = this.globalToLocal(evt.x, evt.y, Vec2.temp);
 
         let i = Math.floor(pt.x / this.cellSize.width);
         let j = Math.floor(pt.y / this.cellSize.height);
@@ -61,7 +61,7 @@ export class UIColorGrid extends UIGeometry {
     public onRender(x: number, y: number): void {
         if (!this.isVisible())
             return;
-            
+
         super.onRender(x, y);
 
         let _x = 0;

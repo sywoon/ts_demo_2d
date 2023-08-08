@@ -12,12 +12,14 @@ import { Canvas2D } from "./Canvas2D";
 import { MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
 import { Timer } from "./Timer";
 import { GameEvent } from "./EventDefine";
+import { Vec2 } from "./math/Vec2";
 
 export class Stage extends UINode {
     canvas2d: Canvas2D
     timerUI: Timer;
     mouseTarget:UINode;  //当前捕获的鼠标对象 down时设置 up时清空 即使移出外部 依然能得到鼠标事件
-    
+    mouseDown: Vec2 = new Vec2();  //鼠标按下时的坐标
+    mouseLast: Vec2 = new Vec2();  //上一帧的坐标
 
     constructor(canvas2d: Canvas2D) {
         super();
@@ -59,7 +61,18 @@ export class Stage extends UINode {
             }
         }
 
+        if (evt.type == GameEvent.MOUSE_DOWN) {
+            this.mouseDown.x = evt.x;
+            this.mouseDown.y = evt.y;
+        }
+        evt.mouseDown = this.mouseDown;
+        evt.mouseLast = this.mouseLast;
+
         super.dispatchTouchEvent(evt);
+
+        this.mouseLast.x = evt.x;
+        this.mouseLast.y = evt.y;
+
         return true;
     }
 

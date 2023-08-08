@@ -53,7 +53,7 @@ export class UILabel extends UINode {
 
     public constructor() {
         super();
-        this.setDebugType(DebugType.LabelRect);
+        this.addDebugType(DebugType.LabelRect);
     }
 
     protected measureText(): Size {
@@ -101,7 +101,7 @@ export class UILabel extends UINode {
         this.graphic.drawText(this.text, _x, _y);
 
         if (this.debug > 0) {
-            if (this.isDebugType(DebugType.LabelRect)) {
+            if (this.hasDebugType(DebugType.LabelRect)) {
                 let pt = this.adjustByAlign(_x, _y);
                 this.graphic.strokeRect(pt.x, pt.y, this.width, this.height, Color.Green);
             }

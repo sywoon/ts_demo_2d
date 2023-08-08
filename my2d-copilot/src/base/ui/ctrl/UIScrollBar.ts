@@ -2,7 +2,8 @@ import { Scroll_Dir } from "../UIDefine";
 import { UINode } from "./UINode";
 import { UIButton } from "./UIButton";
 import { UIPanel } from "./UIPanel";
-import { GameEvent } from "../../EventDefine";
+import { GameEvent, MyMouseEvent } from "../../EventDefine";
+import { Vec2 } from "../../math/Vec2";
 
 export interface IUIScrollAble {
     getScrollContent(): UINode;
@@ -47,6 +48,7 @@ export class UIScrollBar extends UINode {
 
         this.slider = new UIButton();
         this.slider.roundCorner = false;
+        this.slider.onEvent(GameEvent.CLICK, this._onBtnSlider, this);
 
         this.begin = new UIButton();
         this.begin.roundCorner = false;
@@ -56,6 +58,7 @@ export class UIScrollBar extends UINode {
         this.end.onEvent(GameEvent.CLICK, this._onBtnEnd, this);
 
         this.block = new UIButton();
+        this.block.onEvent(GameEvent.MOUSE_MOVE, this._onBtnBlockMove, this);
         
         this.addChild(this.slider);
         this.slider.addChild(this.begin);
@@ -86,12 +89,41 @@ export class UIScrollBar extends UINode {
         this._updateBlock();
     }
 
+    private _onBtnSlider(evt:MyMouseEvent) {
+        let pt = this.slider.globalToLocal(evt.x, evt.y, Vec2.temp);
+        if (this.dir == Scroll_Dir.Horizontal) {
+            if (pt.x < this.block.x) {
+                this.percent -= 0.1;
+            } else {
+                this.percent += 0.1;
+            }
+        } else if (this.dir == Scroll_Dir.Vertical) {
+            if (pt.y < this.block.y) {
+                this.percent -= 0.1;
+            } else {
+                this.percent += 0.1;
+            }
+        }
+    }
+
     private _onBtnBegin() {
         this.percent -= 0.1;
     }
 
     private _onBtnEnd() {
         this.percent += 0.1;
+    }
+
+    private _onBtnBlockMove(evt:MyMouseEvent, btnBlock:UIButton) {
+        if (!btnBlock.isMouseDown)
+            return;
+        let pt = this.slider.globalToLocal(evt.x, evt.y, Vec2.temp);
+
+        if (this.dir == Scroll_Dir.Horizontal) {
+            this.percent = pt.x / this.slider.width;
+        } else if (this.dir == Scroll_Dir.Vertical) {
+            this.percent = pt.y / this.slider.height;
+        }
     }
 
     public onScrollChanged() {

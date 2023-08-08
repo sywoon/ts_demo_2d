@@ -3,7 +3,7 @@ import { UIGeometry } from "../base/ui/ctrl/UIGeometry";
 import { Color } from "../base/math/Color";
 import { UIButton } from "../base/ui/ctrl/UIButton";
 import { UINode } from "../base/ui/ctrl/UINode";
-import { GameEvent } from "../base/EventDefine";
+import { GameEvent, MyMouseEvent } from "../base/EventDefine";
 
 export class ViewMain extends ViewBase {
     geo: UIGeometry;
@@ -57,15 +57,15 @@ export class ViewMain extends ViewBase {
         super.onRender(x, y);
     }
 
-    private _onBtnText(x:number, y:number, btn:UIButton) {
+    private _onBtnText(evt: MyMouseEvent, btn:UIButton) {
         this.uimgr.openUI("ui_labelTest");
     }
 
-    private _onBtnRect(x:number, y:number, btn:UIButton) {
+    private _onBtnRect(evt: MyMouseEvent, btn:UIButton) {
         this.uimgr.openUI("ui_rectTest");
     }
 
-    private _onBtnColor(x:number, y:number, btn:UIButton) {
+    private _onBtnColor(evt: MyMouseEvent, btn:UIButton) {
         this.uimgr.openUI("ui_colorPalette");
     }
 }

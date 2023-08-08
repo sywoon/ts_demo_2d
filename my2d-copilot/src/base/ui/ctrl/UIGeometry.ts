@@ -16,7 +16,7 @@ export class UIGeometry extends UINode {
 
     constructor() {
         super();
-        this.setDebugType(DebugType.Geometry);
+        this.addDebugType(DebugType.Geometry);
     }
 
     public fillRect(x: number, y: number, width: number, height: number, color: Color = null): void {
@@ -79,7 +79,7 @@ export class UIGeometry extends UINode {
             this.x + xcp1, this.y + ycp1, mode, colorFill, colorStroke);
 
         if (this.debug) {
-            if (this.isDebugType(DebugType.Geometry)) {
+            if (this.hasDebugType(DebugType.Geometry)) {
                 this.graphic.drawLine(this.x + xcp1, this.y + ycp1, this.x + x1, this.y + y1, "stroke", null, Color.Green);
                 this.graphic.drawLine(this.x + xcp1, this.y + ycp1, this.x + x2, this.y + y2, "stroke", null, Color.Green);
 
@@ -118,7 +118,7 @@ export class UIGeometry extends UINode {
             this.x + xcp1, this.y + ycp1, this.x + xcp2, this.y + ycp2, mode, colorFill, colorStroke);
 
         if (this.debug) {
-            if (this.isDebugType(DebugType.Geometry)) {
+            if (this.hasDebugType(DebugType.Geometry)) {
                 this.graphic.drawLine(this.x + xcp1, this.y + ycp1, this.x + x1, this.y + y1, "stroke", null, Color.Green);
                 this.graphic.drawLine(this.x + xcp2, this.y + ycp2, this.x + x2, this.y + y2, "stroke", null, Color.Green);
 

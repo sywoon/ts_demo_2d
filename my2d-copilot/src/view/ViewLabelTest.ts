@@ -3,7 +3,7 @@ import { UILabel } from "../base/ui/ctrl/UILabel";
 import { UIButton } from "../base/ui/ctrl/UIButton";
 import { Color } from "../base/math/Color";
 import { UIPanel } from "../base/ui/ctrl/UIPanel";
-import { Scroll_Dir } from "../base/ui/UIDefine";
+import { DebugType, Scroll_Dir } from "../base/ui/UIDefine";
 import { UINode } from "../base/ui/ctrl/UINode";
 
 
@@ -41,10 +41,13 @@ export class ViewLabelTest extends ViewBase {
             panel.scrollDir = Scroll_Dir.Horizontal;
             panel.x = 50;
             panel.y = 150;
+            panel.width = 200;
+            panel.height = 200;
 
             let content = new UINode();
             content.width = 500;
-            content.height = 150;
+            content.height = 200;
+            content.addDebugType(DebugType.UIRect);
             panel.content = content;
 
             {

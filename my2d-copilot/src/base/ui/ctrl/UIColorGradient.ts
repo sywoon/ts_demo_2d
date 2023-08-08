@@ -1,4 +1,4 @@
-import { GameEvent } from "../../EventDefine";
+import { GameEvent, MyMouseEvent } from "../../EventDefine";
 import { Color } from "../../math/Color";
 import { Vec2 } from "../../math/Vec2";
 import { UIColorUnit } from "./UIColorUnit";
@@ -57,7 +57,7 @@ export class UIColorGradient extends UIGeometry {
     public onRender(x: number, y: number): void {
         if (!this.isVisible())
             return;
-            
+
         super.onRender(x, y);
 
         if (!this.grd)
@@ -70,14 +70,16 @@ export class UIColorGradient extends UIGeometry {
         this.drawArc(this._curSelPt.x, this._curSelPt.y, 5, 0, Math.PI * 2, true, "stroke", null, Color.Black)
     }
 
-    private _onClick(x:number, y:number) {
-        let pt = this.globalToLocal(x, y, this._curSelPt);
+    private _onClick(evt:MyMouseEvent) {
+        let pt = this.globalToLocal(evt.x, evt.y, this._curSelPt);
         this._setSelPt(pt);
     }
 
-    private _onMouseMove(x:number, y:number) {
+    private _onMouseMove(evt:MyMouseEvent) {
         if (!this.isMouseDown)
             return;
+        let x = evt.x;
+        let y = evt.y;
         if (!this.isMouseIn) {
             if (x < this.x || x > this.x + this.width)
                 return;

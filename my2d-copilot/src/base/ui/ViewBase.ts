@@ -1,7 +1,7 @@
 import { AppRoot } from "../AppRoot";
 import { UINode } from "./ctrl/UINode";
 import { UIButton } from "./ctrl/UIButton";
-import { GameEvent } from "../EventDefine";
+import { GameEvent, MyMouseEvent } from "../EventDefine";
 import { Color } from "../math/Color";
 
 export class ViewBase extends UINode {
@@ -51,7 +51,7 @@ export class ViewBase extends UINode {
         super.onRender(x, y);
     }
 
-    protected onBtnClose(x:number, y:number, btn:UIButton) {
+    protected onBtnClose(evt:MyMouseEvent, btn:UIButton) {
         this.uimgr.closeUI(this.uiName);
     }
 }
