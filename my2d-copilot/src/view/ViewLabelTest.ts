@@ -8,6 +8,7 @@ import { UINode } from "../base/ui/ctrl/UINode";
 
 
 export class ViewLabelTest extends ViewBase {
+    lblTime: UILabel;
 
     onCreate() {
         super.onCreate();
@@ -16,14 +17,27 @@ export class ViewLabelTest extends ViewBase {
             let lable;
             let text = "你好，世界！ Hello World!";
             lable = this._createLable(text, this.width * 0.5, this.height * 0.5);
+            lable.addDebugType(DebugType.LabelRect);
 
             lable = this._createLable(text, 0, 0);
             lable.hAlign = "left";
             lable.vAlign = "top";
+            lable.addDebugType(DebugType.LabelRect);
 
             lable = this._createLable(text, this.width, this.height);
             lable.hAlign = "right";
             lable.vAlign = "bottom";
+            lable.addDebugType(DebugType.LabelRect);
+        }
+
+        {
+            let text = "倒计时";
+            let lable = this._createLable(text, 0, this.height);
+            lable.hAlign = "left";
+            lable.vAlign = "bottom";
+            lable.addDebugType(DebugType.LabelRect);
+            this.lblTime = lable;
+            this.timer.loop(0, 100, 0, this, this._onTimeCount);
         }
 
         {
@@ -38,7 +52,7 @@ export class ViewLabelTest extends ViewBase {
         {
             let panel = new UIPanel();
             this.addChild(panel);
-            panel.scrollDir = Scroll_Dir.Horizontal;
+            panel.scrollDir = Scroll_Dir.Vertical;
             panel.x = 50;
             panel.y = 150;
             panel.width = 200;
@@ -46,7 +60,7 @@ export class ViewLabelTest extends ViewBase {
 
             let content = new UINode();
             content.width = 500;
-            content.height = 200;
+            content.height = 4000;
             content.addDebugType(DebugType.UIRect);
             panel.content = content;
 
@@ -94,5 +108,12 @@ export class ViewLabelTest extends ViewBase {
 
     public onRender(x:number, y:number): void {
         super.onRender(x, y);
+    }
+
+    private _onTimeCount() {
+        let time = Date.now();
+        let date = new Date(time);
+        let text = date.toLocaleTimeString();
+        this.lblTime.text = text;
     }
 }

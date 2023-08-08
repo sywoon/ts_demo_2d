@@ -53,7 +53,6 @@ export class UILabel extends UINode {
 
     public constructor() {
         super();
-        this.addDebugType(DebugType.LabelRect);
     }
 
     protected measureText(): Size {

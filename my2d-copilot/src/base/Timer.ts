@@ -104,7 +104,7 @@ export class Timer {
         }
 
         //如果延迟为0，则立即执行
-        if (delay <= 0) {
+        if (delay <= 0 && repeat != 0) {
             method.apply(caller, args);
             return null;
         }
@@ -113,7 +113,9 @@ export class Timer {
         let handler: TimerHandler;
         if (coverBefore) {
             handler = this._getHandler(caller, method);
-        } else {
+        } 
+        
+        if (!handler) {
             handler = TimerHandler.create();
         }
 

@@ -1,3 +1,4 @@
+import { GameEvent, MyMouseEvent } from "../../EventDefine";
 import { DebugType, Scroll_Dir } from "../UIDefine";
 import { UINode } from "./UINode";
 import { IUIScrollAble, UIScrollBar } from "./UIScrollBar";
@@ -17,6 +18,10 @@ export class UIPanel extends UINode implements IUIScrollAble {
 
         this.hscroll && this.hscroll.refreshSize();
         this.vscroll && this.vscroll.refreshSize();
+
+        this._content.setInteractAble(true);
+        this._content.onEvent(GameEvent.MOUSE_MOVE, this._onContentMouseMove, this);
+        this._content.onEvent(GameEvent.MOUSE_UP, this._onContentMouseUp, this);
     }
 
     set scrollDir(v:number) {
@@ -56,6 +61,54 @@ export class UIPanel extends UINode implements IUIScrollAble {
         } else if (this.dir == Scroll_Dir.Both) {
             this.hscroll.scrollTo(v1);
             this.vscroll.scrollTo(v2);
+        }
+    }
+
+    private _onContentMouseMove(e: MyMouseEvent, content:UINode) {
+        if (!content.isMouseDown)
+            return;
+
+        let diffx = (e.x - e.mouseLast.x);
+        let diffy = (e.y - e.mouseLast.y);
+        let scale = 0.2;
+
+        if (this.dir == Scroll_Dir.Horizontal) {
+            let percentx = diffx / (this._content.width - this.width) * scale;
+            this.hscroll.percent = this.hscroll.percent + percentx;
+        } else if (this.dir == Scroll_Dir.Vertical) {
+            let percenty = diffy / (this._content.height - this.height) * scale;
+            this.vscroll.percent = this.vscroll.percent + percenty;
+        } else if (this.dir == Scroll_Dir.Both) {
+            let percentx = diffx / (this._content.width - this.width) * scale;
+            this.hscroll.percent = this.hscroll.percent + percentx;
+
+            let percenty = diffy / (this._content.height - this.height) * scale;
+            this.vscroll.percent = this.vscroll.percent + percenty;
+        }
+    }
+
+    private _onContentMouseUp(e: MyMouseEvent, content:UINode) {
+        if (!content.isMouseIn)
+            return;
+
+        let diffx = e.x - e.mouseDown.x;
+        let diffy = e.y - e.mouseDown.y;
+        let time = Date.now() - e.mouseDownTime;
+        if (time > 1000)
+            return;
+
+        if (this.dir == Scroll_Dir.Horizontal) {
+            let speed = diffx / time;
+            this.hscroll.speed = speed;
+        } else if (this.dir == Scroll_Dir.Vertical) {
+            let speed = diffy / time;
+            this.vscroll.speed = speed;
+        } else if (this.dir == Scroll_Dir.Both) {
+            let speedx = diffx / time;
+            this.hscroll.speed = speedx;
+
+            let speedy = diffy / time;
+            this.vscroll.speed = speedy;
         }
     }
 

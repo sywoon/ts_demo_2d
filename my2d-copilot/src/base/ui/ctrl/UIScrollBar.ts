@@ -22,6 +22,8 @@ export class UIScrollBar extends UINode {
     slider:UIButton = null; //滑动区域
 
     private _percent: number = 0;
+    private _speed: number = 0;
+    private _inAutoMoving = false;
 
     get percent(): number {
         return this._percent;
@@ -39,6 +41,18 @@ export class UIScrollBar extends UINode {
         }
         this._percent = v;
         this.timer.callLater(this.onScrollChanged, this);
+    }
+
+    set speed(v: number) {
+        this._speed = v;
+        console.log("speed:", v);
+        if (v == 0) {
+            this._inAutoMoving = false;
+            this.timer.clear(this, this._onAutoMove);    
+        } else {
+            this._inAutoMoving = true;
+            this.timer.loop(0, 100, 0, this, this._onAutoMove);
+        }
     }
 
     constructor(dir: number) {
@@ -67,6 +81,7 @@ export class UIScrollBar extends UINode {
     }
 
     scrollTo(v:number) {
+        this.speed = 0;
         this.percent = v;
     }
 
@@ -129,6 +144,26 @@ export class UIScrollBar extends UINode {
     public onScrollChanged() {
         this._syncScollContentPos();
         this._updateBlock();
+    }
+
+
+    public stopMove() {
+        this.speed = 0;
+    }
+
+    private _onAutoMove() {
+        let dir = this._speed > 0 ? 1 : -1;
+        let newSpeed = this._speed * 0.9;
+        let diff = this._speed - newSpeed;
+        this._speed = newSpeed;
+
+        if (this._speed > -0.1 && this._speed < 0.1) {
+            this.speed = 0;
+            return;
+        }
+
+        let factor = 0.2;  //速度简单模拟转百分比值
+        this.percent += diff * factor;
     }
 
     //根据滑动位置 同步内容位置
@@ -264,7 +299,7 @@ export class UIScrollBar extends UINode {
         this.end.height = fixSize;
         this.end.x = 0;
         this.end.y = h - fixSize;
-        this.begin.text = "▼"
+        this.end.text = "▼"
 
         this.block.width = fixSize;
         this.block.height = fixSize;
