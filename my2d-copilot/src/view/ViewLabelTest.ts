@@ -75,6 +75,17 @@ export class ViewLabelTest extends ViewBase {
             }
 
             {
+                let btn = new UIButton();
+                btn.text = "你好，世界!";
+                btn.x = 100;
+                btn.y = 100;
+                content.addChild(btn);
+                btn.onEvent("click", ()=>{
+                    console.log("click")
+                });
+            }
+
+            {
                 let label = new UILabel();
                 label.text = "你好，世界！ Hello World!";
                 label.style.hAlign = "right";

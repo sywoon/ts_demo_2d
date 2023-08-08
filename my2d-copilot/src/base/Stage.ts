@@ -49,9 +49,15 @@ export class Stage extends UINode {
     }
 
     public dispatchWheelEvent(evt: MyWheelEvent): boolean {
+        evt.mouseDown = this.mouseDown;
+        evt.mouseLast = this.mouseLast;
+        evt.mouseDownTime = this.mouseDownTime;
+        
+        this.sendEvent(evt.type, evt, this);  //全局事件
+
         if (this.mouseTarget) {
             this.mouseTarget.onWheelEvent(evt); 
-            return;
+            return true;
         }
 
         super.dispatchWheelEvent(evt);
@@ -68,6 +74,8 @@ export class Stage extends UINode {
         evt.mouseLast = this.mouseLast;
         evt.mouseDownTime = this.mouseDownTime;
 
+        this.sendEvent(evt.type, evt, this);  //全局事件
+
         if (this.mouseTarget) {
             if (evt.type == GameEvent.MOUSE_DOWN) {
                 this.mouseTarget = null;  //清楚上一个记录 重新捕获
@@ -82,14 +90,13 @@ export class Stage extends UINode {
         }
 
         super.dispatchTouchEvent(evt);
-
         this.mouseLast.x = evt.x;
         this.mouseLast.y = evt.y;
-
         return true;
     }
 
     public dispatchKeyEvent(evt: MyKeyboardEvent): boolean {
+        this.sendEvent(evt.type, evt, this);  //全局事件
         super.dispatchKeyEvent(evt);
         return true;
     }

@@ -20,7 +20,7 @@ import { Timer } from "../../Timer";
 import { EventDispatcher } from "../../EventDispatcher";
 import { Color } from "../../math/Color";
 import { GameEvent } from "../../EventDefine";
-import { PropertyType, DebugType } from "../UIDefine";
+import { PropertyType, DebugType, BTN_CLICK_DIS_SQ } from "../UIDefine";
 
 
 //坐标系：采用opengl坐标系  左下角为原点 同cocos creator
@@ -56,6 +56,7 @@ export class UINode extends EventDispatcher {
     public isMouseDown:boolean = false;
     public isMouseIn:boolean = false;  //down后 就算移出控件外部 也可以接收move事件
     public anchor: Vec2 = new Vec2(0.5, 0.5);
+    public swallowEvent: boolean = true;  //是否吞噬事件
 
     private _width: number = 100;
     private _height: number = 100;
@@ -169,8 +170,9 @@ export class UINode extends EventDispatcher {
     public onWheelEvent(evt: MyWheelEvent): boolean {
         if (!this.isMouseIn)
             return false;
+
         this.sendEvent(evt.type, evt, this);
-        return true;
+        return this.swallowEvent;
     }
 
     public dispatchTouchEvent(evt: MyMouseEvent): boolean {
@@ -229,14 +231,24 @@ export class UINode extends EventDispatcher {
             default:
                 break;
         }
+
         this.sendEvent(evt.type, evt, this);
         // console.log("Touch", hit, evt.type, evt.x, evt.y, pos.x, pos.y)
         
         if (hit && evt.type == GameEvent.MOUSE_UP) {
-            // console.log("CLICK", evt.type, evt.x, evt.y, pos.x, pos.y)
-            this.sendEvent(GameEvent.CLICK, evt, this);
+            let temp1 = Vec2.temp;
+            temp1.x = evt.x;
+            temp1.y = evt.y;
+            let temp2 = Vec2.temp2;
+            temp2.x = evt.mouseDown.x;
+            temp2.y = evt.mouseDown.y;
+            let diff = Vec2.distanceSq(temp1, temp2);
+            if (diff < BTN_CLICK_DIS_SQ) {  //排除滑动点击
+                // console.log("CLICK", evt.type, evt.x, evt.y, pos.x, pos.y)
+                this.sendEvent(GameEvent.CLICK, evt, this);
+            }
         }
-        return true; 
+        return this.swallowEvent; 
     }  
 
     public dispatchKeyEvent(evt: MyKeyboardEvent): boolean { 
@@ -254,8 +266,8 @@ export class UINode extends EventDispatcher {
     }
 
     public onKeyEvent(evt: MyKeyboardEvent): boolean { 
-        //子类实现
-        return false; 
+        this.sendEvent(evt.type, evt, this);
+        return this.swallowEvent; 
     }
 
     public dispatchCtrlEvent(): boolean { 

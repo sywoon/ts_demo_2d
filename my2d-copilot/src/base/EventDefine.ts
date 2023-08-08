@@ -9,6 +9,7 @@ export class GameEvent {
     static MOUSE_UP = "mouse_up";
     static MOUSE_MOVE = "mouse_move";
     static CLICK = "click";
+    static MOUSE_WHEEL = "mouse_wheel";  //鼠标滚动 
 
     static KEY_DOWN = "key_down";
     static KEY_UP = "key_up";
@@ -34,6 +35,9 @@ export class MyMouseEvent {
 export class MyWheelEvent {
     public type: string;
     public deltaY: number;
+    mouseDown:Vec2;
+    mouseDownTime:number;
+    mouseLast:Vec2;
 }
 
 export class MyKeyboardEvent {
@@ -45,4 +49,6 @@ export class MyKeyboardEvent {
     public key: string;
     public code: string;
     public repeat: boolean;
+
+    target: any;
 }

@@ -22,3 +22,4 @@ export let Scroll_Dir = {
 }
 
 export let Scroll_Move_Style = 1;  //1滑动方向和滑块方向一致 2滑动方向和滑块方向相反
+export let BTN_CLICK_DIS_SQ = 20;  //鼠标滑动点击 最大距离的平方
