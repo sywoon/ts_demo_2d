@@ -37,5 +37,16 @@ export class ViewImageTest extends ViewBase {
             img.src = "res/ui/btn/btn01_normal.png";
             img.setCutRect(20, 20, 50, 50);
         }
+
+        {
+            let img = new UIImage();
+            this.addChild(img);
+            img.x = 10;
+            img.y = 340;
+            img.width = 200;  //如果不设置 默认按图片大小
+            img.height = 200;
+            img.src = "res/ui/btn/btn01_normal.png";
+            img.setNineRect(20, 10, 110, 30);
+        }
     }
 }
