@@ -110,19 +110,18 @@ export class Canvas2D {
         // beginPath()：此方法用于开始创建一个新的路径。当你调用此方法时，任何先前定义的路径都将被清除，开始定义一个新的路径
         // closePath()：此方法用于关闭当前路径，这样它可以形成一个闭合的形状。它实际上是将当前路径的最后一个点与其第一个点连接起来
         if (this.context === null) return;
+        this.save();
         let ctx = this.context;
         ctx.beginPath();
         ctx.rect(rect.x, rect.y, rect.width, rect.height);
-        ctx.clip();
-        // ctx.closePath();
+        ctx.clip();  //注意这个函数有叠加效果 并不能通过设置为canvas大小来还原 他们会叠加取相交区域
 
-        this.strokeRect(rect.x, rect.y, rect.width, rect.height, Color.Red);
+        //test
+        // this.strokeRect(rect.x, rect.y, rect.width, rect.height, Color.Red);
     }
 
     public resetClip() {
-        let rect = Rect.temp;
-        rect.set(0, 0, this.size.width, this.size.height);
-        this.clip(rect);
+        this.restore();
     }
 
     //只能拿到宽度 怎么拿高度？
