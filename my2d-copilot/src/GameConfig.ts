@@ -3,6 +3,7 @@ import { ViewLabelTest } from "./view/ViewLabelTest";
 import { ViewRectTest } from "./view/ViewRectTest";
 import { ViewMain } from "./view/ViewMain";
 import { ViewColorPalette } from "./view/ViewColorPalette";
+import { ViewImageTest } from "./view/ViewImageTest";
 
 export let ViewConfig:any = {
     ui_main: {
@@ -16,6 +17,9 @@ export let ViewConfig:any = {
     },
     ui_colorPalette: {
         cls: ViewColorPalette, desc: "调色板", isFullScreen: true,
+    },
+    ui_imageTest: {
+        cls: ViewImageTest, desc: "图片测试", isFullScreen: true,
     },
 };
 

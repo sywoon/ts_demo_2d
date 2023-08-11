@@ -36,5 +36,9 @@ export interface IGraphic {
     drawCubicCurveEx(xFrom:number, yFrom:number, 
         arrPoints:Array<Array<number>>,  //[[xcp1,ycp1,xcp2,ycp2x1,y1],[],...]
         mode?:string, colorFill?:Color, colorStroke?:Color): void;
+
+    drawImage(img: HTMLImageElement, x:number, y:number, destW?:number, destH?:number): void;
+    drawImageEx(img: HTMLImageElement, sx:number, sy:number, sw:number, sh:number,
+        dx:number, dy:number, dw:number, dh:number): void;
 }
 

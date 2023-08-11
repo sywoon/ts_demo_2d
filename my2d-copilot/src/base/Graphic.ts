@@ -72,26 +72,35 @@ export class Graphic implements IGraphic {
     }
 
     drawQuadraticCurve(x1:number, y1:number, x2:number, y2:number, 
-        xcp1:number, ycp1:number,
-        mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
+            xcp1:number, ycp1:number,
+            mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
         this.canvas2d.drawQuadraticCurve(x1, y1, x2, y2, xcp1, ycp1, mode, colorFill, colorStroke);
     }
 
     drawQuadraticCurveEx(xFrom:number, yFrom:number, 
-        arrPoints:Array<Array<number>>,  //[[xcp1,ycp1,x1,y1],[],...]
-        mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
+            arrPoints:Array<Array<number>>,  //[[xcp1,ycp1,x1,y1],[],...]
+            mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
         this.canvas2d.drawQuadraticCurveEx(xFrom, yFrom, arrPoints, mode, colorFill, colorStroke);
     }
 
     drawCubicCurve(x1:number, y1:number, x2:number, y2:number, 
-        xcp1:number, ycp1:number, xcp2:number, ycp2:number,
-        mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
+            xcp1:number, ycp1:number, xcp2:number, ycp2:number,
+            mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
         this.canvas2d.drawCubicCurve(x1, y1, x2, y2, xcp1, ycp1, xcp2, ycp2, mode, colorFill, colorStroke);
     }
 
     drawCubicCurveEx(xFrom:number, yFrom:number, 
-        arrPoints:Array<Array<number>>,  //[[xcp1,ycp1,xcp2,ycp2x1,y1],[],...]
-        mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
+            arrPoints:Array<Array<number>>,  //[[xcp1,ycp1,xcp2,ycp2x1,y1],[],...]
+            mode:string="stroke", colorFill:Color = null, colorStroke:Color = null) {
         this.canvas2d.drawCubicCurveEx(xFrom, yFrom, arrPoints, mode, colorFill, colorStroke);
+    }
+
+    drawImage(img: HTMLImageElement, x:number, y:number, destW:number=undefined, destH:number=undefined) {
+        this.canvas2d.drawImage(img, x, y, destW, destH);
+    }
+
+    drawImageEx(img: HTMLImageElement, sx:number, sy:number, sw:number, sh:number,
+            dx:number, dy:number, dw:number, dh:number) {
+        this.canvas2d.drawImageEx(img, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 }

@@ -7,6 +7,7 @@ export class PropertyType {
     static Enable       = 2 ** 2;     //是否已经加入节点
     static InteractAble = 2 ** 3;     //是否可交互
     static Clip         = 2 ** 4;     //是否开启裁剪
+    static ImgReady     = 2 ** 5;     //图片下载完毕
 }
 
 export class DebugType {

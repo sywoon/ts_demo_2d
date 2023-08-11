@@ -71,11 +71,11 @@ export class UINode extends EventDispatcher {
     public anchor: Vec2 = new Vec2(0.5, 0.5);
     public swallowEvent: boolean = true;  //是否吞噬事件
 
-    private _width: number = 100;
-    private _height: number = 100;
-    private _property:number = 1;
-    private _parent: UINode = null;
-    private _children: Array<UINode> = new Array<UINode>();
+    protected _width: number = 100;
+    protected _height: number = 100;
+    protected _property:number = 1;
+    protected _parent: UINode = null;
+    protected _children: Array<UINode> = new Array<UINode>();
     protected _clipRect: Rect = null;
 
     get x(): number {

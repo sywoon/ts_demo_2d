@@ -51,6 +51,16 @@ export class ViewMain extends ViewBase {
             btn.text = "调色板";
             btn.onEvent(GameEvent.CLICK, this._onBtnColor, this);
         }
+
+        {
+            x += 120;
+            let btn = new UIButton();
+            nodeRoot.addChild(btn);
+            btn.x = x;
+            btn.y = y;
+            btn.text = "图片测试";
+            btn.onEvent(GameEvent.CLICK, this._onBtnImage, this);
+        }
     }
 
     onRender(x: number, y: number): void {
@@ -67,5 +77,9 @@ export class ViewMain extends ViewBase {
 
     private _onBtnColor(evt: MyMouseEvent, btn:UIButton) {
         this.uimgr.openUI("ui_colorPalette");
+    }
+
+    private _onBtnImage(evt: MyMouseEvent, btn:UIButton) {
+        this.uimgr.openUI("ui_imageTest");
     }
 }

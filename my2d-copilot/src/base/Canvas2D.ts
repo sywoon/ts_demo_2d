@@ -344,6 +344,22 @@ export class Canvas2D {
         // ctx.closePath();
     }
 
+    //destW 目标大小 实现图片的缩放效果
+    drawImage(img: HTMLImageElement, x:number, y:number, destW:number=undefined, destH:number=undefined) {
+        if (this.context === null) return;
+        let ctx = this.context;
+        ctx.drawImage(img, x, y, destW, destH);
+    }
+
+    //可理解为源头某个区域 到 目标的某个区域  两者可能不同的canvas 源头不一定是图片
+    //实现切片效果 从而可以从合图中读取单张图片
+    drawImageEx(img: HTMLImageElement, sx:number, sy:number, sw:number, sh:number,
+            dx:number, dy:number, dw:number, dh:number) {
+        if (this.context === null) return;
+        let ctx = this.context;
+        ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+    }
+
     //canvas原生鼠标事件转游戏内部鼠标事件
     public toMouseEvent(evt: MouseEvent): MyMouseEvent {
         let mouseEvt = new MyMouseEvent();
