@@ -34,12 +34,16 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
         this.canvas2d = new Canvas2D(canvas);
 
         this.graphic = new Graphic(this.canvas2d);
-        this.stage = new Stage(this.canvas2d);
+        this.stage = new Stage(this.canvas2d)
         this.timer = new Timer();
         this.uimgr = new UIMgr();
 
         this._registerCanvasEvent();
         this._createInput();
+    }
+
+    init() {
+        this.stage.init();
     }
 
     public getCanvasSize(): Size {

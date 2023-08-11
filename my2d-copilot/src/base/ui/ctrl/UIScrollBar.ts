@@ -100,6 +100,10 @@ export class UIScrollBar extends UINode {
         if (!parent)
             return;
 
+        let scrollAble = this.parent as UIPanel;
+        if (!scrollAble.getScrollContent())
+            return;
+
         if (this.dir == Scroll_Dir.Horizontal) {
             this._refrshSize_Horizontal();
         } else if (this.dir == Scroll_Dir.Vertical) {

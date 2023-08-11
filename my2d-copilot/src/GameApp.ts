@@ -5,7 +5,10 @@ import { AppRoot } from "./base/AppRoot";
 export class GameApp extends AppRoot {
     public constructor() {
         super();
+    }
 
+    init() {
+        super.init();
     }
 
     run() {

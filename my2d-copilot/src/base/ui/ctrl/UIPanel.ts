@@ -1,4 +1,5 @@
 import { GameEvent, MyMouseEvent, MyWheelEvent } from "../../EventDefine";
+import { Vec2 } from "../../math/Vec2";
 import { DebugType, Scroll_Dir } from "../UIDefine";
 import { UINode } from "./UINode";
 import { IUIScrollAble, UIScrollBar } from "./UIScrollBar";
@@ -13,8 +14,9 @@ export class UIPanel extends UINode implements IUIScrollAble {
     vscroll: UIScrollBar = null;
 
     set content(v:UINode) {
-        this._content.removeFromParent();
+        this._content && this._content.removeFromParent();
         this._content = v;
+        v.setClip(true);
         this.addChildAt(this._content, 0);
 
         this.hscroll && this.hscroll.refreshSize();
@@ -39,13 +41,6 @@ export class UIPanel extends UINode implements IUIScrollAble {
         
         this.width = 200;
         this.height = 200;
-
-        this._content = new UINode();
-        this._content.width = 400;
-        this._content.height = 400;
-        this.addChild(this._content);
-
-        
     }
 
     public onEnable(): void {
@@ -62,6 +57,18 @@ export class UIPanel extends UINode implements IUIScrollAble {
         this.stage.offEvent(GameEvent.MOUSE_MOVE, this._onContentMouseMove, this);
         this.stage.offEvent(GameEvent.MOUSE_UP, this._onContentMouseUp, this);
         this.stage.offEvent(GameEvent.MOUSE_WHEEL, this._onContentMouseWheel, this);
+    }
+
+    public onRender(x: number, y: number): void {
+        if (this._content) { //先让内容按照自己的大小裁剪
+            let pos = this.parent.localToGlobal(this.x, this.y, Vec2.temp);
+            let _x = Math.max(0, pos.x);
+            let _y = Math.max(0, pos.y);
+            let _w = Math.min(this.width, this.stage.width - _x);
+            let _h = Math.min(this.height, this.stage.height - _y);
+            this._content.setClipRect(_x, _y, _w, _h);
+        }
+        super.onRender(x, y);
     }
 
     getScrollContent(): UINode {
@@ -86,7 +93,7 @@ export class UIPanel extends UINode implements IUIScrollAble {
     }
 
     private _onContentMouseMove(evt: MyMouseEvent, stage:UINode) {
-        if (!this._startScroll)
+        if (!this._startScroll || !this._content)
             return;
         let pos = this.globalToLocal(evt.x, evt.y);
         let hit = this.hitTest(pos.x, pos.y);
@@ -94,8 +101,8 @@ export class UIPanel extends UINode implements IUIScrollAble {
         if (!hit)
             return;
 
-        let diffx = (evt.x - evt.mouseLast.x);
-        let diffy = (evt.y - evt.mouseLast.y);
+        let diffx = -1 * (evt.x - evt.mouseLast.x);
+        let diffy = -1 * (evt.y - evt.mouseLast.y);
         let scale = 0.2;
 
         if (this.dir == Scroll_Dir.Horizontal) {
@@ -114,14 +121,14 @@ export class UIPanel extends UINode implements IUIScrollAble {
     }
 
     private _onContentMouseUp(evt: MyMouseEvent, stage:UINode) {
-        if (!this._startScroll || !this.isMouseIn) {
+        if (!this._content || !this._startScroll || !this.isMouseIn) {
             this._startScroll = false;
             return;
         }
         
         this._startScroll = false;
-        let diffx = evt.x - evt.mouseDown.x;
-        let diffy = evt.y - evt.mouseDown.y;
+        let diffx = -1 * (evt.x - evt.mouseDown.x);
+        let diffy = -1 * (evt.y - evt.mouseDown.y);
         let time = Date.now() - evt.mouseDownTime;
 
         if (this.dir == Scroll_Dir.Horizontal) {

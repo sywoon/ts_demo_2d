@@ -1,5 +1,6 @@
 import { GameEvent, MyKeyboardEvent, MyMouseEvent } from "./EventDefine";
 import { Color } from "./math/Color";
+import { Rect } from "./math/Rect";
 import { Size } from "./math/Size";
 
 export class Canvas2D {
@@ -104,6 +105,26 @@ export class Canvas2D {
         this.context.restore();
     }
 
+    public clip(rect:Rect) {
+        // beginPath() 和 closePath() 不一定要成对出现或匹配
+        // beginPath()：此方法用于开始创建一个新的路径。当你调用此方法时，任何先前定义的路径都将被清除，开始定义一个新的路径
+        // closePath()：此方法用于关闭当前路径，这样它可以形成一个闭合的形状。它实际上是将当前路径的最后一个点与其第一个点连接起来
+        if (this.context === null) return;
+        let ctx = this.context;
+        ctx.beginPath();
+        ctx.rect(rect.x, rect.y, rect.width, rect.height);
+        ctx.clip();
+        // ctx.closePath();
+
+        this.strokeRect(rect.x, rect.y, rect.width, rect.height, Color.Red);
+    }
+
+    public resetClip() {
+        let rect = Rect.temp;
+        rect.set(0, 0, this.size.width, this.size.height);
+        this.clip(rect);
+    }
+
     //只能拿到宽度 怎么拿高度？
     public measureText(text:string): Size {
         let obj:TextMetrics  = this.context.measureText(text);
@@ -169,6 +190,7 @@ export class Canvas2D {
         ctx.arc(x + radius, y + height - radius, radius, Math.PI / 2, Math.PI);
         ctx.lineTo(x, y + radius);
         ctx.arc(x + radius, y + radius, radius, Math.PI, Math.PI * 3 / 2);
+        // ctx.closePath();
 
         this._drawByMode(mode, colorFill, colorStroke);
     }
@@ -225,9 +247,9 @@ export class Canvas2D {
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
+        // ctx.closePath();
 
         this._drawByMode(mode, colorFill, colorStroke);
-        ctx.closePath();
     }
 
     public drawTriangle(x1:number, y1:number, x2:number, y2:number, 
@@ -239,9 +261,9 @@ export class Canvas2D {
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
         ctx.lineTo(x3, y3);
+        ctx.closePath();
 
         this._drawByMode(mode, colorFill, colorStroke);
-        ctx.closePath();
     }
 
     drawArc(x:number, y:number, radius:number, startAngle:number, endAngle:number, 
@@ -252,7 +274,7 @@ export class Canvas2D {
         ctx.beginPath();
         ctx.arc(x, y, radius, startAngle, endAngle, antiClockWise);
         this._drawByMode(mode, colorFill, colorStroke);
-        ctx.closePath();
+        // ctx.closePath();
     }
 
     //二次曲线 起点、终点、控制点
@@ -265,7 +287,7 @@ export class Canvas2D {
         ctx.moveTo(x1, y1);
         ctx.quadraticCurveTo(xcp1, ycp1, x2, y2);
         this._drawByMode(mode, colorFill, colorStroke);
-        ctx.closePath();
+        // ctx.closePath();
     }
 
     //二次曲线 支持多组点  一次画一个闭环
@@ -286,7 +308,7 @@ export class Canvas2D {
         }
 
         this._drawByMode(mode, colorFill, colorStroke);
-        ctx.closePath();
+        // ctx.closePath();
     }
 
     //三次曲线 起点、终点、控制点1 控制点2
@@ -299,7 +321,7 @@ export class Canvas2D {
         ctx.moveTo(x1, y1);
         ctx.bezierCurveTo(xcp1, ycp1, xcp2, ycp2, x2, y2);
         this._drawByMode(mode, colorFill, colorStroke);
-        ctx.closePath();
+        // ctx.closePath();
     }
 
     //三次曲线 支持多组点
@@ -320,7 +342,7 @@ export class Canvas2D {
             ctx.bezierCurveTo(xcp1, ycp1, xcp2, ycp2, x1, y1);
         }
         this._drawByMode(mode, colorFill, colorStroke);
-        ctx.closePath();
+        // ctx.closePath();
     }
 
     //canvas原生鼠标事件转游戏内部鼠标事件

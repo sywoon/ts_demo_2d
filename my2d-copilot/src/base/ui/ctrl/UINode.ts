@@ -21,6 +21,7 @@ import { EventDispatcher } from "../../EventDispatcher";
 import { Color } from "../../math/Color";
 import { GameEvent } from "../../EventDefine";
 import { PropertyType, DebugType, BTN_CLICK_DIS_SQ } from "../UIDefine";
+import { Rect } from "../../math/Rect";
 
 
 //坐标系：采用opengl坐标系  左下角为原点 同cocos creator
@@ -63,8 +64,8 @@ export class UINode extends EventDispatcher {
     }
 
     public debug: number = 0;
-    public x: number = 0;
-    public y: number = 0;
+    public _x: number = 0;
+    public _y: number = 0;
     public isMouseDown:boolean = false;
     public isMouseIn:boolean = false;  //down后 就算移出控件外部 也可以接收move事件
     public anchor: Vec2 = new Vec2(0.5, 0.5);
@@ -75,6 +76,20 @@ export class UINode extends EventDispatcher {
     private _property:number = 1;
     private _parent: UINode = null;
     private _children: Array<UINode> = new Array<UINode>();
+    protected _clipRect: Rect = null;
+
+    get x(): number {
+        return this._x;
+    }
+    get y(): number {
+        return this._y;
+    }
+    set x(x: number) {
+        this._x = x;
+    }
+    set y(y: number) {
+        this._y = y;
+    }
 
     get width(): number {
         return this._width;
@@ -152,8 +167,26 @@ export class UINode extends EventDispatcher {
             }
         }
 
+        if (this.isClip()) {
+            if (this._clipRect) {
+                let rect = this._clipRect;
+                this.stage.clip(rect.x, rect.y, rect.width, rect.height);
+            } else {
+                let pos = this.parent.localToGlobal(this.x, this.y, Vec2.temp);
+                let _x = Math.max(0, pos.x);
+                let _y = Math.max(0, pos.y);
+                let _w = Math.min(this.width, this.stage.width - _x);
+                let _h = Math.min(this.height, this.stage.height - _y);
+                this.stage.clip(_x, _y, _w, _h);
+            }
+        }
+
         for (let child of this._children) {
             child.onRender(_x, _y);
+        }
+
+        if (this.isClip()) {
+            this.stage.resetClip();
         }
     }
 
@@ -306,7 +339,7 @@ export class UINode extends EventDispatcher {
     }
 
     public localToGlobal(x:number, y:number, out:Vec2=null): Vec2 {
-        let pos = new Vec2();
+        let pos = out || new Vec2();
         pos.x = x+this.x;
         pos.y = y+this.y;
 
@@ -390,7 +423,28 @@ export class UINode extends EventDispatcher {
             this._property = this._property & ~PropertyType.InteractAble;
         }
     }
-    //
+
+    public isClip(): boolean {
+        return (this._property & PropertyType.Clip) > 0;
+    }
+
+    public setClip(v:boolean): void {
+        if (v) {
+            this._property = this._property | PropertyType.Clip;
+        } else {
+            this._property = this._property & ~PropertyType.Clip;
+        }
+    }
+
+    public setClipRect(x:number, y:number, w:number, h:number) {
+        if (this._clipRect == null) {
+            this._clipRect = new Rect();
+        }
+        this._clipRect.x = x;
+        this._clipRect.y = y;
+        this._clipRect.width = w;
+        this._clipRect.height = h;
+    }
     //-------------------------------------------
 
     //-------------------------------------------

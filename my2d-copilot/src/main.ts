@@ -7,4 +7,5 @@ console.log("hello world");
 let app = new GameApp();
 AppRoot.instance = app;
 
+app.init();
 app.run();

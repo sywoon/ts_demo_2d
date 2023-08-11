@@ -13,6 +13,7 @@ import { MyKeyboardEvent, MyMouseEvent, MyWheelEvent } from "./EventDefine";
 import { Timer } from "./Timer";
 import { GameEvent } from "./EventDefine";
 import { Vec2 } from "./math/Vec2";
+import { Rect } from "./math/Rect";
 
 export class Stage extends UINode {
     canvas2d: Canvas2D
@@ -48,6 +49,16 @@ export class Stage extends UINode {
     public render(): void {
         //所有ui节点都挂在它下面
         this.onRender(this.x, this.y);
+    }
+
+    public clip(x:number, y:number, w:number, h:number) {
+        let temp = Rect.temp;
+        temp.set(x, y, w, h);
+        this.canvas2d.clip(temp);
+    }
+
+    public resetClip() {
+        this.canvas2d.resetClip();
     }
 
     public dispatchWheelEvent(evt: MyWheelEvent): boolean {
