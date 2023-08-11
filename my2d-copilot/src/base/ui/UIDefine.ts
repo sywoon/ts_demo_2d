@@ -3,8 +3,9 @@
 
 export class PropertyType {
     static Visible      = 2 ** 0;
-    static Awake        = 2 ** 1;      //是否已经创建
-    static InteractAble = 2 ** 2;  //是否可交互
+    static Awake        = 2 ** 1;     //是否已经创建
+    static Enable       = 2 ** 2;     //是否已经加入节点
+    static InteractAble = 2 ** 3;     //是否可交互
 }
 
 export class DebugType {

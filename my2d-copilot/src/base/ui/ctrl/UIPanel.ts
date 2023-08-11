@@ -45,10 +45,23 @@ export class UIPanel extends UINode implements IUIScrollAble {
         this._content.height = 400;
         this.addChild(this._content);
 
+        
+    }
+
+    public onEnable(): void {
+        super.onEnable();
         this.stage.onEvent(GameEvent.MOUSE_DOWN, this._onContentMouseDown, this);
         this.stage.onEvent(GameEvent.MOUSE_MOVE, this._onContentMouseMove, this);
         this.stage.onEvent(GameEvent.MOUSE_UP, this._onContentMouseUp, this);
         this.stage.onEvent(GameEvent.MOUSE_WHEEL, this._onContentMouseWheel, this);
+    }
+
+    public onDisable(): void {
+        super.onDisable();
+        this.stage.offEvent(GameEvent.MOUSE_DOWN, this._onContentMouseDown, this);
+        this.stage.offEvent(GameEvent.MOUSE_MOVE, this._onContentMouseMove, this);
+        this.stage.offEvent(GameEvent.MOUSE_UP, this._onContentMouseUp, this);
+        this.stage.offEvent(GameEvent.MOUSE_WHEEL, this._onContentMouseWheel, this);
     }
 
     getScrollContent(): UINode {

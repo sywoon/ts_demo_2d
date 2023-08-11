@@ -22,6 +22,8 @@ export class Stage extends UINode {
     mouseDownTime:number = 0;
     mouseLast: Vec2 = new Vec2();  //上一帧的坐标
 
+    private _uiTempCache: UINode[] = [];  //临时缓存  移除的子树 未销毁或未重新加入前 临时保存的地方
+
     constructor(canvas2d: Canvas2D) {
         super();
         this.canvas2d = canvas2d;
@@ -99,5 +101,22 @@ export class Stage extends UINode {
         this.sendEvent(evt.type, evt, this);  //全局事件
         super.dispatchKeyEvent(evt);
         return true;
+    }
+
+
+    //============================================
+    public addUIInCache(ui:UINode) {
+        this._uiTempCache.push(ui);
+    }
+
+    public removeUIFromCache(ui:UINode) {
+        let idx = this._uiTempCache.indexOf(ui);
+        if (idx >= 0) {
+            this._uiTempCache.splice(idx, 1);
+        }
+    }
+
+    public dumpUICache() {
+        console.log("ui cache len:", this._uiTempCache.length, this._uiTempCache);
     }
 }

@@ -88,6 +88,15 @@ export class Timer {
         }
     }
 
+    clearByCaller(caller:any): void {
+        let handlers = this._handlers;
+        for (let i = handlers.length - 1; i >= 0; i--) {
+            if (handlers[i].caller == caller) {
+                handlers[i].clear();
+            }
+        }
+    }
+
     private _create(delay: number, interval:number, repeat: number, caller: any, method: Function, args: any[], coverBefore: boolean): void {
         if (this._inLock) {
             let handler = TimerHandler.create();

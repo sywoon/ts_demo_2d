@@ -32,6 +32,18 @@ import { PropertyType, DebugType, BTN_CLICK_DIS_SQ } from "../UIDefine";
 // |-创建和释放  create destory
 // |-渲染 onRender 
 // |-鼠标和键盘 控件事件(焦点 大小改变)  onTouchEvent onKeyEvent onCtrlEvent
+
+// 节点创建 加入 移除 销毁逻辑
+// 1.创建节点时 只有构造函数
+// 2. 加入节点时 第一次onAwake onEnable  ;由addChild发起 不含子节点
+// 3. 移除节点时 onDisable  ；由removeChild发起 不含子节点
+// 4. 销毁节点时 onDestroy  ；由destroy发起 会递归调用子节点的destroy
+// 
+// 注意：
+// 1.remove后的子节点树 如果没人引用 会引起内存泄漏 甚至业务报错 比如timer
+// 2.只有调用destory才会真正销毁节点 释放事件监听和资源
+// 3.移除掉的子节点树 为了方便查bug 会被临时保存到一个列表中 
+
 export class UINode extends EventDispatcher {
     get appRoot(): AppRoot {
         return AppRoot.getInstance();
@@ -91,6 +103,8 @@ export class UINode extends EventDispatcher {
         for (let child of this._children) {
             child.destory();
         }
+
+        this.stage.removeUIFromCache(this);
         this.onDestroy();
     }
 
@@ -100,23 +114,14 @@ export class UINode extends EventDispatcher {
 
     //第一次加入节点
     public onAwake(): void {
-        for (let child of this._children) {
-            child.onAwake();
-        }
     }
 
     //每次加入节点
     public onEnable(): void {
-        for (let child of this._children) {
-            child.onEnable();
-        }
     }
 
     //每次离开节点
     public onDisable(): void {
-        for (let child of this._children) {
-            child.onDisable();
-        }
     }
 
     //每次销毁节点
@@ -124,6 +129,7 @@ export class UINode extends EventDispatcher {
         for (let child of this._children) {
             child.onDestroy();
         }
+        this.timer.clearByCaller(this);
         this.offAll();
         this.removeFromParent();
     }
@@ -361,6 +367,18 @@ export class UINode extends EventDispatcher {
         return (this._property & PropertyType.Awake) > 0;
     }
 
+    public setEnable(v:boolean): void {
+        if (v) {
+            this._property = this._property | PropertyType.Enable;
+        } else {
+            this._property = this._property & ~PropertyType.Enable;
+        }
+    }
+
+    public isEnable(): boolean {
+        return (this._property & PropertyType.Enable) > 0;
+    }
+
     public isInteractAble(): boolean {
         return (this._property & PropertyType.InteractAble) > 0;
     }
@@ -378,6 +396,7 @@ export class UINode extends EventDispatcher {
     //-------------------------------------------
     // 子节点
     public addChild(node: UINode): void {
+        this.stage.removeUIFromCache(node);
         node._parent = this;
         this._children.push(node);
 
@@ -385,10 +404,14 @@ export class UINode extends EventDispatcher {
             node.setAwake(true);
             node.onAwake();
         }
-        node.onEnable();
+        if (!node.isEnable()) {
+            node.setEnable(true);  //防止加入父节点后  父父再加入另一个节点触发多次
+            node.onEnable();
+        }
     }
 
     public addChildAt(node: UINode, idx:number): void {
+        this.stage.removeUIFromCache(node);
         node._parent = this;
         this._children.splice(idx, 0, node);
 
@@ -400,11 +423,13 @@ export class UINode extends EventDispatcher {
     }
 
     public removeChild(node: UINode): void {
-        node.onDisable();
+        this.stage.addUIInCache(node);
+        node._parent = null;
         let index = this._children.indexOf(node);
         if (index >= 0) {
             this._children.splice(index, 1);
         }
+        node.onDisable();
     }
     public removeChildAt(index: number): void {
         if (index >= 0 && index < this._children.length) {
@@ -414,7 +439,6 @@ export class UINode extends EventDispatcher {
     public removeFromParent(): void {
         if (this._parent) {
             this._parent.removeChild(this);
-            this._parent = null;
         }
     }
     public removeAllChildren(): void {

@@ -151,7 +151,7 @@ export class EventDispatcher {
 
     //取消某一个类型的所有监听者中的某一个
     //caller可以为null
-    offEvent(type:string, caller:any, listener:Function): void {
+    offEvent(type:string, listener:Function, caller:any=null): void {
         let arr = this._events.get(type);
         if (!arr) {
             return;

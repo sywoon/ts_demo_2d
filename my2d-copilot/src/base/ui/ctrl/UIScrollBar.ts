@@ -90,6 +90,11 @@ export class UIScrollBar extends UINode {
         this.parent.onEvent(GameEvent.RESIZE, this.refreshSize, this);
     }
 
+    public onDestroy(): void {
+        this.parent.offEvent(GameEvent.RESIZE, this.refreshSize, this);
+        super.onDestroy();
+    }
+
     public refreshSize() {
         let parent = this.parent;
         if (!parent)
