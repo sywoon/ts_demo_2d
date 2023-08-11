@@ -1,3 +1,4 @@
+import { Rect } from "../../math/Rect";
 import { Size } from "../../math/Size";
 import { Vec2 } from "../../math/Vec2";
 import { PropertyType } from "../UIDefine";
@@ -8,6 +9,8 @@ export class UIImage extends UINode {
     imgHtml: HTMLImageElement;
 
     private _path: string;
+    private _mode: string;  //normal cut
+    private _cutRect: Rect;
 
     set src(path:string) {
         if (this.imgHtml == null) {
@@ -24,6 +27,15 @@ export class UIImage extends UINode {
         super();
         this.width = 0;
         this.height = 0;
+        this._mode = "normal";
+    }
+
+    setCutRect(x:number, y:number, w:number, h:number) {
+        if (this._cutRect == null) {
+            this._cutRect = new Rect();
+        }
+        this._cutRect.set(x, y, w, h);
+        this._mode = "cut";
     }
 
     private _onImageReady() {
@@ -57,6 +69,12 @@ export class UIImage extends UINode {
         if (!this.isImageReady)
             return;
 
-        this.graphic.drawImage(this.imgHtml, this.x+x, this.y+y, this.width, this.height);
+        if (this._mode == "normal") {
+            this.graphic.drawImage(this.imgHtml, this.x+x, this.y+y, this.width, this.height);
+        } else if (this._mode == "cut") {
+            let cut = this._cutRect;
+            this.graphic.drawImageEx(this.imgHtml, cut.x, cut.y, cut.width, cut.height,
+                this.x+x, this.y+y, this.width, this.height);
+        }
     }
 }
