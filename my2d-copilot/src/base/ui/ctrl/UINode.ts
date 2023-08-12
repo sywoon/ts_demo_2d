@@ -376,64 +376,56 @@ export class UINode extends EventDispatcher {
 
     //-------------------------------------------
     // 属性部分
-    public setVisible(v:boolean): void {
-        if (v) {
-            this._property = this._property | PropertyType.Visible;
+    public hasProperty(v:number) {
+        return (this._property & v) > 0;
+    }
+
+    public setProperty(v:number, flag:boolean) {
+        if (flag) {
+            this._property = this._property | v;
         } else {
-            this._property = this._property & ~PropertyType.Visible;
+            this._property = this._property & ~v;
         }
     }
 
     public isVisible(): boolean {
-        return (this._property & PropertyType.Visible) > 0;
+        return this.hasProperty(PropertyType.Visible);
     }
 
-    public setAwake(v:boolean): void {
-        if (v) {
-            this._property = this._property | PropertyType.Awake;
-        } else {
-            this._property = this._property & ~PropertyType.Awake;
-        }
+    public setVisible(v:boolean): void {
+        this.setProperty(PropertyType.Visible, v);
     }
 
     public isAwake(): boolean {
-        return (this._property & PropertyType.Awake) > 0;
+        return this.hasProperty(PropertyType.Awake);
     }
 
-    public setEnable(v:boolean): void {
-        if (v) {
-            this._property = this._property | PropertyType.Enable;
-        } else {
-            this._property = this._property & ~PropertyType.Enable;
-        }
+    public setAwake(v:boolean): void {
+        this.setProperty(PropertyType.Awake, v);
     }
 
     public isEnable(): boolean {
-        return (this._property & PropertyType.Enable) > 0;
+        return this.hasProperty(PropertyType.Enable);
+    }
+
+    public setEnable(v:boolean): void {
+        this.setProperty(PropertyType.Enable, v);
     }
 
     public isInteractAble(): boolean {
-        return (this._property & PropertyType.InteractAble) > 0;
+        return this.hasProperty(PropertyType.InteractAble);
     }
 
     public setInteractAble(v:boolean): void {
-        if (v) {
-            this._property = this._property | PropertyType.InteractAble;
-        } else {
-            this._property = this._property & ~PropertyType.InteractAble;
-        }
+        this.setProperty(PropertyType.InteractAble, v);
     }
 
     public isClip(): boolean {
-        return (this._property & PropertyType.Clip) > 0;
+        return this.hasProperty(PropertyType.Clip);
     }
 
     public setClip(v:boolean): void {
-        if (v) {
-            this._property = this._property | PropertyType.Clip;
-        } else {
-            this._property = this._property & ~PropertyType.Clip;
-        }
+        this.setProperty(PropertyType.Clip, v);
     }
 
     public setClipRect(x:number, y:number, w:number, h:number) {

@@ -80,22 +80,18 @@ export class UIImage extends UINode {
 
 
     public setImageReady(v:boolean): void {
-        if (v) {
-            this._property = this._property | PropertyType.Enable;
-        } else {
-            this._property = this._property & ~PropertyType.Enable;
-        }
+        this.setProperty(PropertyType.ImgReady, v);
     }
 
     public isImageReady(): boolean {
-        return (this._property & PropertyType.Enable) > 0;
+        return this.hasProperty(PropertyType.ImgReady);
     }
 
     public onRender(x: number, y: number): void {
         if (this.width == 0 || this.height == 0)
             return;
         super.onRender(x, y);
-        if (!this.isImageReady)
+        if (!this.isImageReady())
             return;
 
         if (this._ningRect) {
