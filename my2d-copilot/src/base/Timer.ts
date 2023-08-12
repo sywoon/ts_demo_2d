@@ -152,6 +152,8 @@ export class Timer {
     //===================================
     // call later
     callLater(method:Function, caller:any=null, args:any[] = null):void {
+        this.clearCallLater(method, caller);
+        
         let handler = TimerHandler.create();
         handler.caller = caller;
         handler.method = method;
@@ -159,9 +161,20 @@ export class Timer {
         this._laterHandlers.push(handler);
     }
 
+    clearCallLater(method:Function, caller:any=null) {
+        let handlers = this._laterHandlers;
+        for (let i = handlers.length - 1; i >= 0; i--) {
+            if (handlers[i].caller == caller && handlers[i].method == method) {
+                handlers[i].clear();
+            }
+        }
+    }
+
     runCallLater():void {
         let handlers = this._laterHandlers;
         for (let handler of handlers) {
+            if (handler.method == null)
+                continue;
             handler.run();
             handler.recycle();
         }

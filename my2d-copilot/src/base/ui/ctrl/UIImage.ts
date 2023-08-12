@@ -94,7 +94,7 @@ export class UIImage extends UINode {
     }
 
     private _parseNineGrid(): void {
-        if (!this._nineRect)
+        if (!this._nineRect || !this.isImageReady())
             return;
 
         if (this._nineGrid == null) {
@@ -140,13 +140,14 @@ export class UIImage extends UINode {
             this.height = this.imgHtml.height;
         }
         this.setImageReady(true);
+        this.timer.callLater(this._parseNineGrid, this);
 
         if (this._nineRect) {
             let rect = this._nineRect;
             if (rect.x <= 0 || rect.y <= 0 || (rect.x+rect.width) >= this.originWidth 
                 || (rect.y+rect.height) >= this.originHeight) {
                 console.error("setNineRect error size", rect, this.originWidth, this.originWidth);
-                return;
+                this._nineRect = null;
             }
         }
     }
@@ -236,15 +237,63 @@ export class UIImage extends UINode {
         }
 
         {  //上中
-            // let sx = (cutRect ? cutRect.x : 0) + this._ningRect.x;
-            // let sy = cutRect ? cutRect.y : 0;
-            // let sw = this._ningRect.width;
-            // let sh = this._ningRect.y;
-            // let dx = this.x + x + this._ningRect.x;
-            // let dy = this.y + y;
-            // let dw = this.width - this._ningRect.x;
-            // let dh = sh;
-            // this.graphic.drawImageEx(this.imgHtml, sx, sy, sw, sh, dx, dy, dw, dh);
+            let sx = grid.sx1;
+            let sy = grid.sy0;
+            let sw = grid.sx2 - grid.sx1;
+            let sh = grid.sy1 - grid.sy0;
+            let dx = grid.dx1 + x;
+            let dy = grid.dy0 + y;
+            let dw = grid.dx2 - grid.dx1;
+            let dh = grid.dy1 - grid.dy0;
+            this.graphic.drawImageEx(this.imgHtml, sx, sy, sw, sh, dx, dy, dw, dh);
+        }
+
+        {  //下中
+            let sx = grid.sx1;
+            let sy = grid.sy2;
+            let sw = grid.sx2 - grid.sx1;
+            let sh = grid.sy3 - grid.sy2;
+            let dx = grid.dx1 + x;
+            let dy = grid.dy2 + y;
+            let dw = grid.dx2 - grid.dx1;
+            let dh = grid.dy3 - grid.dy2;
+            this.graphic.drawImageEx(this.imgHtml, sx, sy, sw, sh, dx, dy, dw, dh);
+        }
+
+        {  //左中
+            let sx = grid.sx0;
+            let sy = grid.sy1;
+            let sw = grid.sx1 - grid.sx0;
+            let sh = grid.sy2 - grid.sy1;
+            let dx = grid.dx0 + x;
+            let dy = grid.dy1 + y;
+            let dw = grid.dx1 - grid.dx0;
+            let dh = grid.dy2 - grid.dy1;
+            this.graphic.drawImageEx(this.imgHtml, sx, sy, sw, sh, dx, dy, dw, dh);
+        }
+
+        {  //右中
+            let sx = grid.sx2;
+            let sy = grid.sy1;
+            let sw = grid.sx3 - grid.sx2;
+            let sh = grid.sy2 - grid.sy1;
+            let dx = grid.dx2 + x;
+            let dy = grid.dy1 + y;
+            let dw = grid.dx3 - grid.dx2;
+            let dh = grid.dy2 - grid.dy1;
+            this.graphic.drawImageEx(this.imgHtml, sx, sy, sw, sh, dx, dy, dw, dh);
+        }
+
+        {  //中
+            let sx = grid.sx1;
+            let sy = grid.sy1;
+            let sw = grid.sx2 - grid.sx1;
+            let sh = grid.sy2 - grid.sy1;
+            let dx = grid.dx1 + x;
+            let dy = grid.dy1 + y;
+            let dw = grid.dx2 - grid.dx1;
+            let dh = grid.dy2 - grid.dy1;
+            this.graphic.drawImageEx(this.imgHtml, sx, sy, sw, sh, dx, dy, dw, dh);
         }
     }
 }

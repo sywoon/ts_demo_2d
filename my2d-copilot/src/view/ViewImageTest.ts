@@ -46,7 +46,7 @@ export class ViewImageTest extends ViewBase {
             img.width = 200;  //如果不设置 默认按图片大小
             img.height = 200;
             img.src = "res/ui/btn/btn01_normal.png";
-            img.setNineRect(20, 10, 110, 30);
+            img.setNineRect(20, 10, 100, 20);
         }
     }
 }
