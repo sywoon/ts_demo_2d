@@ -36,10 +36,10 @@ export class Timer {
                 if (handler.repeat == 0) {
                     handler.clear();  //后面统一处理
                 } else {
-                    handler.exeTime = time + handler.invertal;
+                    handler.exeTime = time + handler.interval;
                 }
             } else if (handler.repeat == 0) {
-                handler.exeTime = time + handler.invertal;
+                handler.exeTime = time + handler.interval;
             } else {
                 handler.clear();
             }
@@ -134,7 +134,7 @@ export class Timer {
         handler.caller = caller;
         handler.method = method;
         handler.args = args;
-        handler.exeTime = delay + this._currTimer;
+        handler.exeTime = delay > 0 ? delay + this._currTimer : interval + this._currTimer;
 
         this._handlers.push(handler);
     }

@@ -3,20 +3,35 @@ import { UILabel } from "./UILabel";
 import { Color } from "../../math/Color";
 import { GameEvent, MyMouseEvent } from "../../EventDefine";
 import { PropertyType, DebugType } from "../UIDefine";
+import { UIProgressStyle } from "./UIStyle";
 
-export class UIButton extends UINode {
+export class UIProgress extends UINode {
     label:UILabel;
-    strokeColors:Color[] = [Color.Black, Color.Red];
-    isMouseDown:boolean = false;
-    roundCorner:boolean = true;
+    style: UIProgressStyle = new UIProgressStyle();
+    private _progress:number;
+
+    set bgColor(color:Color) {
+        this.style.bgColor = color;
+    }
+
+    set proColor(color:Color) {
+        this.style.proColor = color;
+    }
+
+    //0-1
+    set progress(v:number) {
+        v = Math.max(0, Math.min(1, v));
+        this._progress = v;
+        this.label.text = Math.floor(v * 100) + "%";
+    }
+
+    get progress():number {
+        return this._progress;
+    }
 
     public constructor() {
         super();
         this.debug = DebugType.Origin;
-
-        this.width = 100;
-        this.height = 50;
-        this.setActive(true);
 
         this.label = new UILabel();
         this.addChild(this.label);
@@ -50,20 +65,9 @@ export class UIButton extends UINode {
         let _x = x + this.x;  //不能修改x的值 需要上传
         let _y = y + this.y;
 
-        let color = this.isMouseDown ? this.strokeColors[1] : this.strokeColors[0];
-        if (this.roundCorner) {
-            this.graphic.roundRect(_x, _y, this.width, this.height, 10, "fill", Color.Gray);
-            color = this.isActive() ? color : Color.Silver;
-            this.graphic.roundRect(_x, _y, this.width, this.height, 10, "stroke", null, color);
-        } else {
-            this.graphic.fillRect(_x, _y, this.width, this.height, Color.Gray);
-            color = this.isActive() ? color : Color.Silver;
-            this.graphic.strokeRect(_x, _y, this.width, this.height, color);
-        }
+        this.graphic.fillRect(_x, _y, this.width, this.height, this.style.bgColor);
 
-        //先画自己 再画子节点
-        super.onRender(x, y);
+        let w = this.width * this._progress;
+        this.graphic.fillRect(_x, _y, w, this.height, this.style.proColor);
     }
 }
-
- 

@@ -160,9 +160,11 @@ export class Color {
         let b = Math.floor(this.b * 255);
         let a = Math.floor(this.a * 255);
         if (showA) {
-            return "#" + r.toString(16) + g.toString(16) + b.toString(16) + a.toString(16);
+            return '#' + ((a << 24) + (r << 16) + (g << 8) + b).toString(16);
+            // return "#" + a.toString(16) + r.toString(16) + g.toString(16) + b.toString(16);
         } else {
-            return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+            return '#' + ((r << 16) + (g << 8) + b).toString(16);
+            // return "#" + r.toString(16) + g.toString(16) + b.toString(16);
         }
     }
 

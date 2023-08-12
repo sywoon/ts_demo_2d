@@ -62,3 +62,8 @@ export class UIGeometryStyle extends UIStyle {
         }
     }
 }
+
+export class UIProgressStyle {
+    bgColor: Color = Color.Create().fromHex(0x42a5f5);
+    proColor: Color = Color.Create().fromHex(0x0d47a1);
+}

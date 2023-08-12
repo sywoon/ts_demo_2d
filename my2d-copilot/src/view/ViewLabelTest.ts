@@ -5,6 +5,7 @@ import { Color } from "../base/math/Color";
 import { UIPanel } from "../base/ui/ctrl/UIPanel";
 import { DebugType, Scroll_Dir } from "../base/ui/UIDefine";
 import { UINode } from "../base/ui/ctrl/UINode";
+import { UIProgress } from "../base/ui/ctrl/UIProgress";
 
 
 export class ViewLabelTest extends ViewBase {
@@ -38,6 +39,23 @@ export class ViewLabelTest extends ViewBase {
             lable.addDebugType(DebugType.LabelRect);
             this.lblTime = lable;
             this.timer.loop(0, 100, 0, this, this._onTimeCount);
+        }
+
+        {
+            let pro = new UIProgress();
+            this.addChild(pro);
+            pro.x = 230;
+            pro.y = 100;
+            pro.width = 200;
+            pro.height = 30;
+            pro.progress = 0;
+
+            this.timer.loop(0, 1000, 0, this, ()=>{
+                pro.progress += 0.1;
+                if (pro.progress >= 1) {
+                    pro.progress = 0;
+                }
+            });
         }
 
         {
