@@ -20,7 +20,7 @@ export class ViewBase extends UINode {
 
     public constructor() {
         super();
-        this.setInteractAble(true);  //接收鼠标事件  防止透到下一层
+        this.setActive(true);  //接收鼠标事件  防止透到下一层
     }
 
     

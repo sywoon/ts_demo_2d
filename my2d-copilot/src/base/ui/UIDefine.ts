@@ -4,8 +4,7 @@
 export class PropertyType {
     static Visible      = 2 ** 0;
     static Awake        = 2 ** 1;     //是否已经创建
-    static Enable       = 2 ** 2;     //是否已经加入节点
-    static InteractAble = 2 ** 3;     //是否可交互
+    static Active       = 2 ** 3;     //是否可交互 控件是否可交互
     static Clip         = 2 ** 4;     //是否开启裁剪
     static ImgReady     = 2 ** 5;     //图片下载完毕
 }

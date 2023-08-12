@@ -43,10 +43,13 @@ export class ViewLabelTest extends ViewBase {
         {
             let btn = new UIButton();
             this.addChild(btn);
-
             btn.text = "按钮";
             btn.x = 100;
             btn.y = 100;
+            btn.onEvent("click", ()=>{
+                console.log("click 按钮")
+                btn.setActive(false);
+            });
         }
 
         {
@@ -55,8 +58,8 @@ export class ViewLabelTest extends ViewBase {
             panel.scrollDir = Scroll_Dir.Both;
             panel.x = 50;
             panel.y = 150;
-            panel.width = 200;
-            panel.height = 200;
+            panel.width = 300;
+            panel.height = 300;
 
             let content = new UINode();
             content.width = 1000;
@@ -81,7 +84,7 @@ export class ViewLabelTest extends ViewBase {
                 btn.y = 100;
                 content.addChild(btn);
                 btn.onEvent("click", ()=>{
-                    console.log("click")
+                    console.log("click 你好，世界!")
                 });
             }
 

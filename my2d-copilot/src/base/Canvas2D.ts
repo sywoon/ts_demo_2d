@@ -134,18 +134,22 @@ export class Canvas2D {
     }
 
     // public访问级别的成员函数
-    public drawText(text: string, x: number, y: number, color:Color = null): void {
+    public drawText(text: string, x: number, y: number, colorFill:Color = null, colorStroke:Color = null): void {
         if (this.context === null) return;
         let ctx = this.context;
-        if (color) {
-            let cssColor = color.toCssColor();
+        if (colorFill) {
+            let cssColor = colorFill.toCssColor();
             ctx.fillStyle = cssColor;
         }
 
         //调用文字填充命令
         ctx.fillText(text, x, y);
-        //调用文字描边命令
-        ctx.strokeText(text, x, y);
+
+        if (colorStroke) {
+            let cssColor = colorStroke.toCssColor();
+            ctx.strokeStyle = cssColor;
+            ctx.strokeText(text, x, y);  //调用文字描边命令
+        }
     }
 
     public fillRect(x:number, y:number, width:number, height:number, color:Color = null) {

@@ -199,7 +199,7 @@ export class UINode extends EventDispatcher {
             }
         }
 
-        if (!this.isVisible() || !this.isInteractAble())
+        if (!this.isVisible() || !this.isActive())
             return false;
 
         let rtn = this.onWheelEvent(evt);
@@ -223,7 +223,7 @@ export class UINode extends EventDispatcher {
             }
         }
 
-        if (!this.isVisible() || !this.isInteractAble())
+        if (!this.isVisible() || !this.isActive())
             return false;
 
         let rtn = this.onTouchEvent(evt);
@@ -234,7 +234,7 @@ export class UINode extends EventDispatcher {
     }
     
     public onTouchEvent(evt: MyMouseEvent): boolean {  //返回true表示事件被处理了
-        if (!this.isInteractAble())
+        if (!this.isActive())
             return false;
 
         let pos = this.globalToLocal(evt.x, evt.y);
@@ -298,7 +298,7 @@ export class UINode extends EventDispatcher {
             }
         }
 
-        if (!this.isVisible() || !this.isInteractAble())
+        if (!this.isVisible() || !this.isActive())
             return false;
 
         return this.onKeyEvent(evt);
@@ -404,20 +404,12 @@ export class UINode extends EventDispatcher {
         this.setProperty(PropertyType.Awake, v);
     }
 
-    public isEnable(): boolean {
-        return this.hasProperty(PropertyType.Enable);
+    public isActive(): boolean {
+        return this.hasProperty(PropertyType.Active);
     }
 
-    public setEnable(v:boolean): void {
-        this.setProperty(PropertyType.Enable, v);
-    }
-
-    public isInteractAble(): boolean {
-        return this.hasProperty(PropertyType.InteractAble);
-    }
-
-    public setInteractAble(v:boolean): void {
-        this.setProperty(PropertyType.InteractAble, v);
+    public setActive(v:boolean): void {
+        this.setProperty(PropertyType.Active, v);
     }
 
     public isClip(): boolean {
@@ -450,10 +442,7 @@ export class UINode extends EventDispatcher {
             node.setAwake(true);
             node.onAwake();
         }
-        if (!node.isEnable()) {
-            node.setEnable(true);  //防止加入父节点后  父父再加入另一个节点触发多次
-            node.onEnable();
-        }
+        node.onEnable();
     }
 
     public addChildAt(node: UINode, idx:number): void {

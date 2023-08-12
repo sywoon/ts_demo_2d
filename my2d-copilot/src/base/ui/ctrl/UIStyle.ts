@@ -22,7 +22,7 @@ export class UILabelStyle extends UIStyle {
         this.font = "sans-serif";
         this.fontSize = 20;
         this.fillColor = Color.Black; //独立文字颜色 虽然canvas实现时 还是转换为fillStyle
-        this.strokeColor = Color.Black; //画矩形框
+        this.strokeColor = Color.Black; //字体描边框
         this.hAlign = "left";  //left center right
         this.vAlign = "middle";  //top middle bottom
     }

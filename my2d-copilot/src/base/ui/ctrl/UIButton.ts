@@ -16,7 +16,7 @@ export class UIButton extends UINode {
 
         this.width = 100;
         this.height = 50;
-        this.setInteractAble(true);
+        this.setActive(true);
 
         this.label = new UILabel();
         this.addChild(this.label);
@@ -44,6 +44,8 @@ export class UIButton extends UINode {
     public onRender(x:number, y:number): void {
         if (!this.isVisible())
             return;
+
+        this.label.fontColor = this.isActive() ? Color.Black : Color.Silver;
             
         let _x = x + this.x;  //不能修改x的值 需要上传
         let _y = y + this.y;

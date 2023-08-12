@@ -26,7 +26,7 @@ export class UIColorGrid extends UIGeometry {
         this.width = w * cw;
         this.height = h * ch;
 
-        this.setInteractAble(true);
+        this.setActive(true);
         this.onEvent(GameEvent.CLICK, this._onClicked, this);
     }
 

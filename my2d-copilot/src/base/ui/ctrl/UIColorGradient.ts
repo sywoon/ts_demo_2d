@@ -34,7 +34,7 @@ export class UIColorGradient extends UIGeometry {
         colorUnit.y = 30;
         colorUnit.setColor(this._curSelColor);
 
-        this.setInteractAble(true);
+        this.setActive(true);
         this.onEvent(GameEvent.CLICK, this._onClick, this);
         this.onEvent(GameEvent.MOUSE_MOVE, this._onMouseMove, this);
     }

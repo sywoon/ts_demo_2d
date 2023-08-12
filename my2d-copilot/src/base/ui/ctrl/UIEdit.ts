@@ -17,7 +17,7 @@ export class UIEdit extends UINode {
         super();
         this.width = 120;
         this.height = 40;
-        this.setInteractAble(true);
+        this.setActive(true);
 
         let label = new UILabel();
         this.label = label;
