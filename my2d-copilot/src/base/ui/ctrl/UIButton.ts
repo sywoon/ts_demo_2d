@@ -7,12 +7,13 @@ import { PropertyType, DebugType } from "../UIDefine";
 export class UIButton extends UINode {
     label:UILabel;
     strokeColors:Color[] = [Color.Black, Color.Red];
+    bgColor:Color = Color.Gray;
     isMouseDown:boolean = false;
     roundCorner:boolean = true;
 
     public constructor() {
         super();
-        this.debug = DebugType.Origin;
+        this.debug = 0;  //DebugType.Origin;
 
         this.width = 100;
         this.height = 50;
@@ -30,6 +31,14 @@ export class UIButton extends UINode {
 
     get text():string {
         return this.label.text;
+    }
+
+    set fontSize(v:number) {
+        this.label.fontSize = v;
+    }
+
+    get fontSize():number {
+        return this.label.fontSize;
     }
 
     private _onLabelResize(width:number, height:number):void {
@@ -52,11 +61,11 @@ export class UIButton extends UINode {
 
         let color = this.isMouseDown ? this.strokeColors[1] : this.strokeColors[0];
         if (this.roundCorner) {
-            this.graphic.roundRect(_x, _y, this.width, this.height, 10, "fill", Color.Gray);
+            this.graphic.roundRect(_x, _y, this.width, this.height, 10, "fill", this.bgColor);
             color = this.isActive() ? color : Color.Silver;
             this.graphic.roundRect(_x, _y, this.width, this.height, 10, "stroke", null, color);
         } else {
-            this.graphic.fillRect(_x, _y, this.width, this.height, Color.Gray);
+            this.graphic.fillRect(_x, _y, this.width, this.height, this.bgColor);
             color = this.isActive() ? color : Color.Silver;
             this.graphic.strokeRect(_x, _y, this.width, this.height, color);
         }

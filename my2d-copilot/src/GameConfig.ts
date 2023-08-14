@@ -4,8 +4,12 @@ import { ViewRectTest } from "./view/ViewRectTest";
 import { ViewMain } from "./view/ViewMain";
 import { ViewColorPalette } from "./view/ViewColorPalette";
 import { ViewImageTest } from "./view/ViewImageTest";
+import { ViewEditor } from "./editor/ViewEditor";
 
 export let ViewConfig:any = {
+    ui_editor: {
+        cls: ViewEditor, desc: "编辑器界面", isFullScreen: true,
+    },
     ui_main: {
         cls: ViewMain, desc: "主界面", isFullScreen: true,
     },

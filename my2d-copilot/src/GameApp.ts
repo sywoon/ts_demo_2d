@@ -1,5 +1,6 @@
 import { GameConfig } from "./GameConfig";
 import { AppRoot } from "./base/AppRoot";
+import { Editor } from "./editor/Editor";
 
 
 export class GameApp extends AppRoot {
@@ -15,7 +16,13 @@ export class GameApp extends AppRoot {
         super.run();
         GameConfig.init();
         
-        this.uimgr.openUI("ui_main");
+        let editorMode = this.checkUrlParam("editor", "1");
+        if (editorMode) {
+            Editor.instance.init();
+            this.uimgr.openUI("ui_editor");
+        } else {
+            this.uimgr.openUI("ui_main");
+        }
     }
 }
 

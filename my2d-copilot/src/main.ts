@@ -9,3 +9,4 @@ AppRoot.instance = app;
 
 app.init();
 app.run();
+

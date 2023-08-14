@@ -4,6 +4,7 @@ import { UIButton } from "./UIButton";
 import { UIPanel } from "./UIPanel";
 import { GameEvent, MyMouseEvent } from "../../EventDefine";
 import { Vec2 } from "../../math/Vec2";
+import { Color } from "../../math/Color";
 
 export interface IUIScrollAble {
     getScrollContent(): UINode;
@@ -20,10 +21,16 @@ export class UIScrollBar extends UINode {
     end:UIButton = null;
     block:UIButton = null;  //滑块
     slider:UIButton = null; //滑动区域
+    private _fixSize = 20;
 
     private _percent: number = 0;
     private _speed: number = 0;
     private _inAutoMoving = false;
+
+    set fixSize(v:number) {
+        this._fixSize = v;
+        this.refreshSize();
+    }
 
     get percent(): number {
         return this._percent;
@@ -71,6 +78,8 @@ export class UIScrollBar extends UINode {
         this.end.onEvent(GameEvent.CLICK, this._onBtnEnd, this);
 
         this.block = new UIButton();
+        this.block.roundCorner = false;
+        this.block.bgColor = Color.Silver;
         this.block.onEvent(GameEvent.MOUSE_MOVE, this._onBtnBlockMove, this);
         
         this.addChild(this.slider);
@@ -201,7 +210,7 @@ export class UIScrollBar extends UINode {
         let cw = scrollAble.getScrollContent().width;
         let ch = scrollAble.getScrollContent().height;
 
-        let fixSize = 20;  //固定值 影响：滑块大小 滑动区域大小
+        let fixSize = this._fixSize;;  //固定值 影响：滑块大小 滑动区域大小
 
         if (this.dir == Scroll_Dir.Horizontal) {
             if (cw <= w) {
@@ -251,7 +260,7 @@ export class UIScrollBar extends UINode {
         let cw = scrollAble.getScrollContent().width;
         let ch = scrollAble.getScrollContent().height;
 
-        let fixSize = 20;  //固定值 影响：滑块大小 滑动区域大小
+        let fixSize = this._fixSize;;  //固定值 影响：滑块大小 滑动区域大小
         this.width = w;
         this.height = fixSize;
 
@@ -287,7 +296,7 @@ export class UIScrollBar extends UINode {
         let cw = scrollAble.getScrollContent().width;
         let ch = scrollAble.getScrollContent().height;
 
-        let fixSize = 20;  //固定值 影响：滑块大小 滑动区域大小
+        let fixSize = this._fixSize;  //固定值 影响：滑块大小 滑动区域大小
         this.width = fixSize;
         this.height = h;
 

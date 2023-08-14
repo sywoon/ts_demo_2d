@@ -20,6 +20,7 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
     visible: boolean = true;
     inputElement: HTMLInputElement = null;
     inputUI: UIEdit = null;
+    urlParams: any = {};  //html入口带的参数 ?a=1&b=2&c=3
 
     public static instance: AppRoot = null; //基类中实例化
     public static getInstance(): AppRoot {
@@ -43,7 +44,27 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
     }
 
     init() {
+        this._initUrlParams();
         this.stage.init();
+    }
+
+    checkUrlParam(key: string, value:string): boolean {
+        return this.urlParams[key] == value;
+    }
+
+    private _initUrlParams() {
+        let urlParams = this.urlParams;
+        if (window.location && window.location.search) {  //search本身就是从?开始的内容
+            let searchHref = window.location.search.replace('?', '');  //去除?后 后面内容全是参数
+            let params = searchHref.split('&');
+            for (let param of params) {
+                if (param == "" || param.indexOf("=") == -1)
+                    continue;
+
+                let paramSplit = param.split('=');
+                urlParams[paramSplit[0]] = paramSplit[1];
+            }
+        }
     }
 
     public getCanvasSize(): Size {

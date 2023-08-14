@@ -20,6 +20,11 @@ export class GameEvent {
 
     //自定义事件 UI扩展
     static COLOR_SELECTED = "color_selected";  //颜色选择器颜色改变
+
+    static PROGRESS = "progress";  //进度改变
+    static ERROR = "error"; 
+    static COMPLETE = "complete";
+    static LOADED = "loaded";  //加载完成
 }
 
 //避免和dom的MouseEvent冲突 换个名字
