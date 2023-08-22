@@ -8,6 +8,7 @@ import { Size } from "./math/Size";
 import { UIMgr } from "./ui/UIMgr";
 import { GameEvent } from "./EventDefine";
 import { UIEdit } from "./ui/ctrl/UIEdit";
+import Time from "./Time";
 
 
 //EventListenerObject dom中注册的addEventListener回调监听
@@ -16,11 +17,14 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
     graphic: Graphic;
     stage: Stage;
     uimgr: UIMgr;
+    time: Time;
     timer: Timer;
     visible: boolean = true;
     inputElement: HTMLInputElement = null;
     inputUI: UIEdit = null;
     urlParams: any = {};  //html入口带的参数 ?a=1&b=2&c=3
+
+    private _timeId: number = 0;
 
     public static instance: AppRoot = null; //基类中实例化
     public static getInstance(): AppRoot {
@@ -36,6 +40,7 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
 
         this.graphic = new Graphic(this.canvas2d);
         this.stage = new Stage(this.canvas2d)
+        this.time = new Time();
         this.timer = new Timer();
         this.uimgr = new UIMgr();
 
@@ -114,6 +119,7 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
                 }
                 this.visible = visible;
                 this.sendEvent(GameEvent.VISIBILITY_CHANGE, visible);
+                this._switchLoopType();
             });
         }
 
@@ -263,17 +269,32 @@ export class AppRoot extends EventDispatcher implements EventListenerObject {
     }
 
     run() {
+        //timestamp:启动到现在的时间差
         let step = (timestamp: number) => {
-
-            this.update(timestamp);
-            this.render();
+            this._loop();
             requestAnimationFrame(step);
         };
 
+        //注意：切后台后 不会再调用
         requestAnimationFrame(step);
     }
 
-    update(timestamp: number) {
+    private _loop() {
+        // console.log("approot loop", this.time.getTimeStr());
+        this.update();
+        this.render();
+    }
+
+    private _switchLoopType() {
+        //切后台后 保留一定的刷新功能 维持业务逻辑 比如心跳
+        if (this.visible) {
+            this._timeId = window.setInterval(this._loop.bind(this), 1000);
+        } else {
+            window.clearInterval(this._timeId);
+        }
+    }
+
+    update() {
         this.timer.runCallLater();  //上一帧积累的回调
         this.timer.update();
         this.stage.update();

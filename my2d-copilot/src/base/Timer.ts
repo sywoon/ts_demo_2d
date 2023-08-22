@@ -4,6 +4,7 @@ export class Timer {
     private _handlers: any[] = [];
     private _currTimer: number = Date.now();
     private _lastTimer: number = Date.now();
+    private _delta: number = 0;
 
     //解决执行过程中添加和删除事件问题
     private _inLock:boolean = false;
@@ -11,13 +12,18 @@ export class Timer {
 
     private _laterHandlers: TimerHandler[] = [];
 
+    get delta(): number {
+        return this._delta;
+    }
+
     public constructor() {
     }
 
     update(): void {
         let now = Date.now();
-        this._currTimer = Date.now();
+        this._currTimer = now;
         var dt: number = (now - this._lastTimer) * this.scale;
+        this._delta = dt;
         this._currTimer += dt;
         this._lastTimer = now;
 
