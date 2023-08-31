@@ -1,4 +1,4 @@
-module StringEx {
+export module StringEx {
     export function padStart (text:string|number, targetLength: number, paddingChar: string): string {
         text = text.toString();
         const paddingLength = targetLength - text.length;
