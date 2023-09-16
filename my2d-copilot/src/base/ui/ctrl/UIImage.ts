@@ -47,6 +47,9 @@ export class UIImage extends UINode {
             this.imgHtml.onload = ()=>{
                 this._onImageReady();
             }
+            this.imgHtml.onerror = ()=>{
+                console.error("load image error: " + path);
+            }
         }
         this._path = path;
         this.imgHtml.src = path;
