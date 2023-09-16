@@ -2,6 +2,7 @@
 #files
 01/*.js
 *.rar
+*.DS_Store
 
 
 #folders
