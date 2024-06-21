@@ -18,154 +18,97 @@
 
 import { StringEx } from "./StringExt";
 
+
 export default class Time {
-	private _serverTime: number;
-	private _svrUtcOff: number;  //与服务器所在时区差值
-	private _localUtcOff: number;
-	private _localTime: number;
-	private _bootTime:number;  //启动用时
+    private _bootTime: number = Date.now(); //游戏启动用时
+    private _serverTime: number;
+    private _svrUtcOff: number; //与服务器所在时区差值
+    private _localUtcOff: number;
+    private _localTime: number;
+    private _formatCall: { [key: string]: Function } = {};
 
-	constructor() {
-		this._localUtcOff = new Date().getTimezoneOffset() * 60 * 1000;  //获得的是分钟 转为毫秒
-		this._svrUtcOff = this._localUtcOff;
-		this._bootTime = Date.now();
+    constructor() {
+        this._localUtcOff = new Date().getTimezoneOffset() * 60 * 1000; //获得的是分钟 转为毫秒
+        this._svrUtcOff = this._localUtcOff;
 
-		this.setServerTime(this.getLocalTime(), this._svrUtcOff);
-	}
+        this._formatCall = {
+            F0: this._formatTimeStr0,
+        };
 
-	//启动到现在的时间
-	getUsedTime():number {
-		return Date.now() - this._bootTime;
-	}
+        this.setServerTime(this.getLocalTime(), this.getLocalTime(), this._svrUtcOff);
+    }
 
-	// 同步服务器时间
-	// 服务器当前时间戳(毫秒) + utc差值(转换毫秒)  东区为负数 西区为正 和getTimezoneOffset一致
-	setServerTime(time:number, svrUtcOff:number=0) {  
-		this._svrUtcOff = svrUtcOff;
-		this._serverTime = time;
-		this._localTime = this.getLocalTime();
-	}
+    registerFormats(data: { [type: string]: Function }) {
+        for (let type in data) {
+            this._formatCall[type] = data[type];
+        }
+    }
 
-	//本地时区和服务器时区的差值 毫秒
-	getUtcOff(): number {
-		return this._localUtcOff - this._svrUtcOff;
-	}
+    //游戏已经运行的时间(毫秒)
+    getRunTime() {
+        return Date.now() - this._bootTime;
+    }
 
-	//毫秒级别 1970年1月1日至今的毫秒数
-	//时间戳是基于协调世界时（UTC，Coordinated Universal Time）
-	// 是一种与时区无关的时间标准
-	getLocalTime(): number {  
-		return Date.now();
-	}
+    getRunTimeStr() {
+        let diff = this.getRunTime();
+        return this.formatSecondsAuto(diff / 1000);
+    }
 
-	//时间戳 毫秒
-	//设置服务器时间后 以下时间就和服务器时间同步 
-	getTime(): number {
-		let time = this._serverTime + (this.getLocalTime() - this._localTime);
-		return time;
-	}
+    // 同步服务器时间
+    setServerTime(svrTime: number, localTime: number, svrUtcOff: number = 0) {
+        //服务器当前时间戳(毫秒) + utc差值  东区为负数 西区为正 和getTimezoneOffset一致
+        this._svrUtcOff = svrUtcOff;
+        this._serverTime = svrTime;
+        this._localTime = localTime;
+    }
 
-	//fmt:"hh:mm:ss.iii"带毫秒 "hh:mm:ss"
-	getTimeStr(utcStamp:number=0, fmt="hh:mm:ss"): string {
-		return this.formatDateStr(utcStamp, fmt);
-	}
+    //时间戳：毫秒级别 1970年1月1日至今的毫秒数  本地时间和服务器无关
+    getLocalTime(): number {
+        return Date.now();
+    }
 
-	getTimeUtcStr(utcStamp:number=0, fmt="hh:mm:ss"): string {
-		return this.formatDateUtcStr(utcStamp, fmt);
-	}
+    //-------------------具体时间相关-----------------
 
-	// 获取当天指定时间的时间戳 "00:00:00" 格式 时:分:秒
-	getTimeFromStr(str: string) {
-		var data = this.getDate();
-		data.setHours(0, 0, 0, 0);
+    //登录后 以下时间就是服务器时间  时区也和服务器相同  时间戳也是基于这个时区
+    //return number 毫秒
+    getTime(): number {
+        let time = this._serverTime + (this.getLocalTime() - this._localTime);
+        return time;
+    }
 
-		var strl = str.split(":");
-		data.setHours(parseInt(strl[0]));
-		data.setMinutes(parseInt(strl[1]));
-		data.setSeconds(parseInt(strl[2]));
-		return data.getTime();
-	}
+    //return 秒
+    //fix 0:带小数 1:四舍五入 2:向下取整 3:向上取整
+    //避免比服务器快 默认采用向下取整
+    getSecondTime(fix: number = 2): number {
+        let t = this.getTime() / 1000;
+        switch (fix) {
+            case 0:
+                return t;
+            case 1:
+                return Math.round(t);
+            case 2:
+                return Math.floor(t);
+            case 3:
+                return Math.ceil(t);
+            default:
+                return t;
+        }
+    }
 
-	//秒
-	getSecondTime(): number {
-		return Math.floor(this.getTime() / 1000);
-	}
-	
-	//得到Date
-	//utcStamp：毫秒 时间戳 
-	//设置服务器时区差后 得到的Date对象就是服务器时区的
-	getDate(utcStamp:number=0) {  
-		if (utcStamp === 0) {
-			utcStamp = this.getTime();  
-		}
+    //return 服务器时区的date
+    getDate(stamp?: number): Date {
+        stamp = stamp ? stamp : this.getTime();
+        let date = new Date();
+        date.setTime(stamp + this._getUtcOff());
+        return date;
+    }
 
-		utcStamp += this.getUtcOff();  //转为服务器时区
-		//date.setTime(this.getTime() + this.getUtcOff());  //两者用法等同
-		return new Date(utcStamp);
-	}
-
-	getDateStr(utcStamp:number=0, fmt="yyyy-MM-dd hh:mm:ss"): string {
-		return this.formatDateStr(utcStamp, fmt);
-	}
-
-	getDateUtcStr(utcStamp:number=0, fmt="yyyy-MM-dd hh:mm:ss"): string {
-		return this.formatDateUtcStr(utcStamp, fmt);
-	}
+    private _getUtcOff(): number {
+        return this._localUtcOff - this._svrUtcOff;
+    }
 
 
-	// yyyy-MM-dd hh:mm:ss				utc:时间戳(秒) 2023-08-20 12:36:12
-	// yyyy年MM月dd日 hh时mm分ss秒	 	 utc:时间戳(秒) 2023年08月20日12时37分41秒
-	// yyyy/MM/dd						utc:时间戳(秒) 2023/8/20
-	// fmt: "yyyy-MM-dd hh:mm:ss.iii" 自定义输出格式
-	formatDateStr(utcStamp:number=0, fmt:string="yyyy-MM-dd hh:mm:ss"): string {
-		const date = this.getDate(utcStamp);
-		const year = date.getFullYear().toString();
-		const month = StringEx.padStart(date.getMonth() + 1, 2, '0');
-		const day = StringEx.padStart(date.getDate(), 2, '0');
-		const hours = StringEx.padStart(date.getHours(), 2, '0');
-		const minutes = StringEx.padStart(date.getMinutes(), 2, '0');
-		const seconds = StringEx.padStart(date.getSeconds(), 2, '0');
-		const milliseconds = StringEx.padStart(date.getMilliseconds(), 3, '0');
-
-		const formattedDate = fmt
-			.replace("yyyy", year)
-			.replace("MM", month)
-			.replace("dd", day)
-			.replace("hh", hours)
-			.replace("mm", minutes)
-			.replace("ss", seconds)
-			.replace("iii", milliseconds);
-
-		return formattedDate;
-	}
-
-	//根据当前地区的日期时间 得到标准时区日期和时间
-	formatDateUtcStr(utcStamp:number=0, fmt:string): string {
-		const date = this.getDate(utcStamp);
-		const year = date.getUTCFullYear().toString();
-		const month = StringEx.padStart(date.getUTCMonth() + 1, 2, '0');
-		const day = StringEx.padStart(date.getUTCDate(), 2, '0');
-		const hours = StringEx.padStart(date.getUTCHours(), 2, '0');
-		const minutes = StringEx.padStart(date.getUTCMinutes(), 2, '0');
-		const seconds = StringEx.padStart(date.getUTCSeconds(), 2, '0');
-		const milliseconds = StringEx.padStart(date.getUTCMilliseconds(), 3, '0');
-
-		const formattedDate = fmt
-			.replace("yyyy", year)
-			.replace("MM", month)
-			.replace("dd", day)
-			.replace("hh", hours)
-			.replace("mm", minutes)
-			.replace("ss", seconds)
-			.replace("iii", milliseconds);
-
-		return formattedDate;
-	}
-
-
-	//==============================================
-	// 倒计时相关 以秒为单位
-	//
+    //-------------------倒计时相关 以秒为单位-------------------
 
 	// hh:mm:ss						second:秒 1000 -> 02:46:40
 	// dd天hh:mm:ss					second:秒 1000 -> 1天02:46:40
@@ -189,109 +132,179 @@ export default class Time {
 		return formattedDate;
 	}
 
+    //根据剩余长度 显示不同的格式
 	formatSecondsAuto(second: number): string {
 		if (second >= 24 * 60 * 60) {
 			return this.formatSeconds(second, "dd天hh:mm:ss");
 		}
-		return second >= 3600 ? this.formatSeconds(second, "hh:mm:ss") : this.formatSeconds(second, "mm:ss");
+        if (second >= 3600) {
+            return this.formatSeconds(second, "hh:mm:ss");
+        }
+		return this.formatSeconds(second, "mm:ss");
 	}
 
 
-	
-	//===============================================
-	// 跨天 跨周 跨月 倒计时
-	//
+    //-------------------时间戳转换显示-----------------
+
+    //fmt:"hh:mm:ss.iii"带毫秒 "hh:mm:ss"
+    getTimeStr(stamp: number = 0, fmt = "hh:mm:ss"): string {
+        return this.formatDateStr(stamp, fmt);
+    }
+
+    getTimeUtcStr(stamp: number = 0, fmt = "hh:mm:ss"): string {
+        return this.formatDateUtcStr(stamp, fmt);
+    }
+
+    // hh:mm:ss 由外部扩展转换方式  保留手段 优先使用getTimeStr
+    getTimeStrEx(stamp: number): string {
+        return this.formatTimeStrT("F0", stamp);
+    }
+
+    // 格式类型 		         调用参数
+    // F0: hh:mm:ss				second:秒
+    formatTimeStrT(type: string, ...args: any[]): string {
+        let func = this._formatCall[type];
+        if (func == null) {
+            console.error("formatTimeStr type error:" + type);
+            return;
+        }
+        return func.apply(this, args);
+    }
+
+    // 时间格式0 hh:mm:ss  秒转倒计时
+    private _formatTimeStr0(second: number): string {
+        return this.formatSeconds(second, "hh:mm:ss");
+    }
+
+    //-------------------日期转换显示-----------------
+
+    getDateStr(stamp: number = 0, fmt = "yyyy-MM-dd hh:mm:ss"): string {
+        return this.formatDateStr(stamp, fmt);
+    }
+
+    getDateUtcStr(stamp: number = 0, fmt = "yyyy-MM-dd hh:mm:ss"): string {
+        return this.formatDateUtcStr(stamp, fmt);
+    }
+
+    // yyyy-MM-dd hh:mm:ss				utc:时间戳(秒) 2023-08-20 12:36:12
+    // yyyy年MM月dd日 hh时mm分ss秒	 	 utc:时间戳(秒) 2023年08月20日12时37分41秒
+    // yyyy/MM/dd						utc:时间戳(秒) 2023/8/20
+    // fmt: "yyyy-MM-dd hh:mm:ss.iii" 自定义输出格式
+    formatDateStr(stamp: number = 0, fmt: string = "yyyy-MM-dd hh:mm:ss"): string {
+        const date = this.getDate(stamp);
+        const year = date.getFullYear().toString();
+        const month = StringEx.padStart(date.getMonth() + 1, 2, "0");
+        const day = StringEx.padStart(date.getDate(), 2, "0");
+        const hours = StringEx.padStart(date.getHours(), 2, "0");
+        const minutes = StringEx.padStart(date.getMinutes(), 2, "0");
+        const seconds = StringEx.padStart(date.getSeconds(), 2, "0");
+        const milliseconds = StringEx.padStart(date.getMilliseconds(), 3, "0");
+
+        const formattedDate = fmt.replace("yyyy", year).replace("MM", month)
+                .replace("dd", day).replace("hh", hours).replace("mm", minutes)
+                .replace("ss", seconds).replace("iii", milliseconds);
+        return formattedDate;
+    }
+
+    //根据当前地区的日期时间 得到标准时区日期和时间
+    formatDateUtcStr(stamp: number = 0, fmt: string): string {
+        const date = this.getDate(stamp);
+        const year = date.getUTCFullYear().toString();
+        const month = StringEx.padStart(date.getUTCMonth() + 1, 2, "0");
+        const day = StringEx.padStart(date.getUTCDate(), 2, "0");
+        const hours = StringEx.padStart(date.getUTCHours(), 2, "0");
+        const minutes = StringEx.padStart(date.getUTCMinutes(), 2, "0");
+        const seconds = StringEx.padStart(date.getUTCSeconds(), 2, "0");
+        const milliseconds = StringEx.padStart(date.getUTCMilliseconds(), 3, "0");
+
+        const formattedDate = fmt.replace("yyyy", year).replace("MM", month)
+                .replace("dd", day).replace("hh", hours).replace("mm", minutes)
+                .replace("ss", seconds).replace("iii", milliseconds);
+        return formattedDate;
+    }
 
 
-	//用于计算倒计时
-	getNextTime(second: number): number {
-		let time = this.getTime();
-		return time + second * 1000;
-	}
+    //-------------------跨天 跨周 跨月-----------------
 
-	// 获取第二天零点  返回第二天0点时间戳 毫秒
-	getTimeZeroTomorrow(): number {
-		var data = this.getDate();  //服务器时区的date
-		data.setHours(0, 0, 0, 0);  //今天的0点
-		let dayCount = 24 * 60 * 60 * 1000;  //一天的毫秒数
-		return data.getTime() + dayCount;
-	}
-
-	// 获取相对当前时间下周某天的零点(s) day 星期几 1-7  默认周一0点
-	getNextWeekZeroTime(day:number=1): number {
-		let targetDay = this.getDate();
-		let weekDay = targetDay.getDay() == 0 ? 7 : targetDay.getDay();
-		let dayNum = 0;
-		if(weekDay > day) {
-			dayNum = 7 - weekDay + day;
-		} else {
-			dayNum = day - weekDay;
-		}
-		let time = targetDay.getTime() + dayNum * ( 60 * 60 * 24 * 1000 );
-		targetDay.setTime(time);  //下周某天的当前时间
-		targetDay.setHours(0, 0, 0, 0);  //转为当天的0点
-		return targetDay.getTime();
-	}
-
-	// 获取相对当前时间下个月1号零点(s)
-	getNextMonthZeroTime(): number {
-		let targetDay = this.getDate();
-		let monthDay = targetDay.getMonth();
-		targetDay.setMonth(monthDay + 1);
-		targetDay.setDate(1);
-		targetDay.setHours(0, 0, 0, 0);
-		return targetDay.getTime();
-	}
+    // 获取第二天零点 以服务器时区为准
+    getTimeZeroToDay(stamp?: number): number {
+        //方案1: 使用0时区重置
+        stamp = stamp ? stamp : this.getTime();
+        let data = new Date(stamp - this._svrUtcOff); //转为0时区 时间调成服务器一致
+        data.setUTCHours(0, 0, 0, 0);
+        let dayCount = 86400;
+        return data.getTime() / 1000 + dayCount + this._svrUtcOff / 1000;  //补上之前减少的时间差
 
 
-	
+        //方案2: 使用本地时区重置
+        // let data = new Date(stamp + this._getUtcOff());
+        // data.setHours(0, 0, 0, 0);
+        // return data.getTime() / 1000 + dayCount - this._getUtcOff() / 1000;
+    }
 
-	
-	//===============================================
-	// 其他
-	//
+    // 获取相对当前时间下周一零点(s)
+    getNextWeekZeroTime(stamp?: number): number {
+        stamp = stamp ? stamp : this.getTime();
+        let targetDay = new Date(stamp - this._svrUtcOff);
+        let weekDay = targetDay.getUTCDay() == 0 ? 7 : targetDay.getUTCDay();
+        targetDay.setUTCDate(targetDay.getUTCDate() + (8 - weekDay));
+        targetDay.setUTCHours(0, 0, 0, 0);
+        return targetDay.getTime() / 1000 + this._svrUtcOff / 1000;
+    }
 
-	// 是否在同一天
-	// date1 date2: number 毫秒数
-	isSameDay(date1: number | Date, date2: number | Date) {
-		let d1 = typeof date1 === 'number' ? new Date(date1 + this.getUtcOff()) : date1;
-		let d2 = typeof date2 === 'number' ? new Date(date2 + this.getUtcOff()) : date2;
-		return d1.getFullYear() === d2.getFullYear() &&
-			d1.getMonth() === d2.getMonth() &&
-			d1.getDate() === d2.getDate();
-	}
+    // 获取相对当前时间下个月1号零点(s)
+    getNextMonthZeroTime(stamp?: number): number {
+        stamp = stamp ? stamp : this.getTime();
+        let targetDay = new Date(this.getTime() - this._svrUtcOff);
+        let monthDay = targetDay.getUTCMonth();
+        targetDay.setUTCMonth(monthDay + 1);
+        targetDay.setUTCDate(1);
+        targetDay.setUTCHours(0, 0, 0, 0);
+        return targetDay.getTime() / 1000 + this._svrUtcOff / 1000;
+    }
 
-	/**
-	 * 比较两个日期相差的天数
-	 * @param startTimes  //毫秒
-	 * @param endTimes
-	 * @param start
-	 * @param end
-	 * @return 
-	 * 
-	 */
-	subtractDate(startTimes: number = 0, endTimes: number = 0, start: Date = null, end: Date = null, isRounding: boolean = true): number {
-		// 先个自计算出距离 1970-1-1 的日期差，然后相减
-		const ONE_DAY: number = 24 * 60 * 60 * 1000;
-		let timezoneOffset: number = (new Date()).getTimezoneOffset() * 60 * 1000;//计算机的本地时间和通用时间 (UTC) 之间的差值
+    // 获取相对当前时间下周某天的零点(s) day 星期几 1-7
+    getNextWeekZeroTime2(day: number): number {
+        let targetDay = new Date(this.getTime() - this._svrUtcOff);
+        let weekDay = targetDay.getUTCDay() == 0 ? 7 : targetDay.getUTCDay();
+        let dayNum = 0;
+        if (weekDay > day) {
+            dayNum = 7 - weekDay + day;
+        } else {
+            dayNum = day - weekDay;
+        }
+        let time = targetDay.getTime() + dayNum * (60 * 60 * 24 * 1000);
+        targetDay.setTime(time);
+        targetDay.setUTCHours(0, 0, 0, 0);
+        return targetDay.getTime() / 1000 + this._svrUtcOff / 1000;
+    }
 
-		let stime: number = startTimes;
-		let etime: number = endTimes;
-		if (start && end) {
-			stime = start.getTime();
-			etime = end.getTime();
-		}
 
-		var sdays: number = (stime - timezoneOffset) / ONE_DAY;
-		var edays: number = (etime - timezoneOffset) / ONE_DAY;
-		//若start < 1970-1-1,则日期差了一天,需要修正
-		if (stime < 0) {
-			sdays--;
-		}
-		//若end < 1970-1-1,则日期差了一天,需要修正
-		if (etime < 0) {
-			edays--;
-		}
-		return isRounding ? Math.floor(edays - sdays) : edays - sdays;
-	}
+    //-------------------其他--------------------
+
+    //获取当天指定时间的时间戳 "00:00" or "00:00:00" 格式 时:分 or 时:分:秒
+    getTimeStampByStr(str: string) {
+        let data = new Date();
+        data.setTime(this.getTime() - this._svrUtcOff);
+        data.setUTCHours(0, 0, 0, 0);
+
+        let strl = str.split(":");
+        data.setUTCHours(parseInt(strl[0]));
+        data.setUTCMinutes(parseInt(strl[1]));
+        if (strl.length > 2) {
+            data.setUTCSeconds(parseInt(strl[2]));
+        }
+        return data.getTime() + this._svrUtcOff;
+    }
+
+    // 是否在同一天
+    // @param date1 时间戳1
+    // @param date2 时间戳2
+    isSameDay(stamp1: number, stamp2: number) {
+        let d1 = this.getDate(stamp1);
+        let d2 = this.getDate(stamp2);
+        return d1.getFullYear() === d2.getFullYear() 
+            && d1.getMonth() === d2.getMonth() 
+            && d1.getDate() === d2.getDate();
+    }
 }
